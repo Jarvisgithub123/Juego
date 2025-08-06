@@ -21,7 +21,7 @@ FUENTE_TITULO = pygame.font.Font(None, 90)
 FUENTE_SUBTITULO = pygame.font.Font(None, 40)
 FUENTE_BOTON = pygame.font.Font(None, 55)
 FUENTE_PEQUENA = pygame.font.Font(None, 32)
-s
+
 # --- Clase Ventana  ---
 class Ventana:
     def __init__(self, rel_x, rel_y, ancho, alto, es_eco=False):
