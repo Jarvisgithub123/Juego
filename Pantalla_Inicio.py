@@ -68,180 +68,7 @@ class Ventana:
             color_apagado = Constantes.COLOR_VENTANA_APAGADA + (int(255 * multiplicador_alfa),)
             pygame.draw.rect(superficie, color_apagado, rect_abs)
 
-# --- Clase Edificio ---
-class Edificio:
-    def __init__(self, x, y, ancho, alto, profundidad, tipo_edificio="normal"):
-        self.x = x
-        self.y = y
-        self.ancho = ancho
-        self.alto = alto
-        self.profundidad = profundidad
-        self.tipo_edificio = tipo_edificio 
-        self.ventanas = []
-        
-        if tipo_edificio == "eco":
-            self.tiene_brillo_azotea = random.random() < 0.4 
-            self.tiene_paneles_solares = random.random() < 0.8
-        elif tipo_edificio == "solar":
-            self.tiene_brillo_azotea = True
-            self.tiene_paneles_solares = True
-        else:
-            self.tiene_brillo_azotea = random.random() < 0.15
-            self.tiene_paneles_solares = False
-            
-        if self.tiene_brillo_azotea:
-            self.alfa_brillo = random.randint(120, 220)
-            self.velocidad_desvanecimiento_brillo = random.uniform(0.5, 1.2)
-            self.direccion_desvanecimiento_brillo = random.choice([-1, 1])
-            if tipo_edificio in ["eco", "solar"]:
-                self.color_brillo = random.choice([Constantes.BRILLO_VERDE, Constantes.BRILLO_ECO_CLARO])
-            else:
-                self.color_brillo = random.choice(Constantes.COLORES_BRILLO_FUTURISTA)
-                
-        self._generar_ventanas()
 
-    def _generar_ventanas(self):
-        espaciado_ventana_x = 12
-        espaciado_ventana_y = 25
-        ancho_ventana = 6
-        alto_ventana = 12
-        
-        es_edificio_eco = self.tipo_edificio in ["eco", "solar"]
-        
-        for wx in range(8, self.ancho - 8, espaciado_ventana_x):
-            for wy in range(15, self.alto - 25, espaciado_ventana_y):
-                es_ventana_eco = es_edificio_eco or random.random() < 0.3
-                self.ventanas.append(Ventana(wx, wy, ancho_ventana, alto_ventana, es_ventana_eco))
-
-    def actualizar(self):
-        for ventana in self.ventanas:
-            ventana.actualizar()
-            
-        if self.tiene_brillo_azotea:
-            self.alfa_brillo += self.direccion_desvanecimiento_brillo * self.velocidad_desvanecimiento_brillo
-            if self.alfa_brillo <= 120 or self.alfa_brillo >= 220:
-                self.direccion_desvanecimiento_brillo *= -1
-                self.alfa_brillo = max(120, min(220, self.alfa_brillo))
-
-    def dibujar(self, superficie, factor_escala=1.0, factor_alfa=1.0):
-        ancho_escalado = int(self.ancho * factor_escala)
-        alto_escalado = int(self.alto * factor_escala)
-        profundidad_escalada = int(self.profundidad * factor_escala)
-        
-        # Calcular vértices isométricos
-        p1_base = (self.x, self.y)
-        p2_base = (self.x + ancho_escalado, self.y)
-        p3_base = (self.x + ancho_escalado + profundidad_escalada * 0.5, self.y + profundidad_escalada * 0.5)
-        p4_base = (self.x + profundidad_escalada * 0.5, self.y + profundidad_escalada * 0.5)
-        
-        p1_superior = (p1_base[0], p1_base[1] - alto_escalado)
-        p2_superior = (p2_base[0], p2_base[1] - alto_escalado)
-        p3_superior = (p3_base[0], p3_base[1] - alto_escalado)
-        p4_superior = (p4_base[0], p4_base[1] - alto_escalado)
-        
-        puntos_cara_lateral = [p2_base, p3_base, p3_superior, p2_superior]
-        puntos_cara_frontal = [p1_base, p2_base, p2_superior, p1_superior]
-        puntos_cara_superior = [p1_superior, p2_superior, p3_superior, p4_superior]
-        
-        if self.tipo_edificio == "eco":
-            color_lateral = Constantes.COLOR_EDIFICIO_ECO + (int(255 * factor_alfa),)
-            color_frontal = (Constantes.COLOR_EDIFICIO_ECO[0] + 20, Constantes.COLOR_EDIFICIO_ECO[1] + 20, Constantes.COLOR_EDIFICIO_ECO[2] + 20) + (int(255 * factor_alfa),)
-            color_superior = (Constantes.COLOR_EDIFICIO_ECO[0] + 40, Constantes.COLOR_EDIFICIO_ECO[1] + 40, Constantes.COLOR_EDIFICIO_ECO[2] + 40) + (int(255 * factor_alfa),)
-        else:
-            color_lateral = Constantes.COLOR_EDIFICIO_OSCURO + (int(255 * factor_alfa),)
-            color_frontal = Constantes.COLOR_EDIFICIO_MEDIO + (int(255 * factor_alfa),)
-            color_superior = Constantes.COLOR_EDIFICIO_CLARO + (int(255 * factor_alfa),)
-            
-        # Dibujar caras
-        pygame.draw.polygon(superficie, color_lateral, puntos_cara_lateral)
-        pygame.draw.polygon(superficie, color_frontal, puntos_cara_frontal)
-        pygame.draw.polygon(superficie, color_superior, puntos_cara_superior)
-        
-        if self.tiene_paneles_solares:
-            color_panel = (100, 150, 200) + (int(200 * factor_alfa),)
-            ancho_panel = int(ancho_escalado * 0.8)
-            alto_panel = int(profundidad_escalada * 0.8)
-            rect_panel = pygame.Rect(
-                p1_superior[0] + (ancho_escalado - ancho_panel) // 2,
-                p1_superior[1] + (profundidad_escalada - alto_panel) // 4,
-                ancho_panel,
-                alto_panel
-            )
-            pygame.draw.rect(superficie, color_panel, rect_panel)
-            
-        # Dibujar contornos 
-        color_contorno = random.choice(Constantes.COLORES_BRILLO_FUTURISTA) + (int(150 * factor_alfa),)
-        ancho_contorno = max(1, int(2 * factor_escala))
-        
-        pygame.draw.line(superficie, color_contorno, p1_superior, p2_superior, ancho_contorno)
-        pygame.draw.line(superficie, color_contorno, p2_superior, p3_superior, ancho_contorno)
-        pygame.draw.line(superficie, color_contorno, p1_superior, p4_superior, ancho_contorno)
-        pygame.draw.line(superficie, color_contorno, p1_superior, p1_base, ancho_contorno)
-        pygame.draw.line(superficie, color_contorno, p2_superior, p2_base, ancho_contorno)
-        pygame.draw.line(superficie, color_contorno, p3_superior, p3_base, ancho_contorno)
-        pygame.draw.line(superficie, color_contorno, p1_base, p2_base, ancho_contorno)
-        pygame.draw.line(superficie, color_contorno, p2_base, p3_base, ancho_contorno)
-        
-        # Dibujar ventanas
-        for ventana in self.ventanas:
-            ventana.dibujar(superficie, p1_superior[0], p1_superior[1], multiplicador_alfa=factor_alfa)
-            
-        if self.tiene_brillo_azotea:
-            color_brillo = self.color_brillo + (int(self.alfa_brillo * factor_alfa),)
-            tamano_brillo = int(8 * factor_escala)
-            s = pygame.Surface((tamano_brillo * 2, tamano_brillo * 2), pygame.SRCALPHA)
-            pygame.draw.circle(s, color_brillo, (tamano_brillo, tamano_brillo), tamano_brillo)
-            superficie.blit(s, (int(p1_superior[0] + ancho_escalado / 2 - tamano_brillo), int(p1_superior[1] - tamano_brillo)))
-
-# --- Generación de Ciudad  ( EDIFICIOS) ---
-FILAS_CUADRICULA_EDIFICIOS = 30 
-COLUMNAS_CUADRICULA_EDIFICIOS = 40 
-ESPACIADO_EDIFICIO_X = 38 
-ESPACIADO_EDIFICIO_Y = 32 
-edificios = []
-
-def generar_edificios_ciudad_isometricos():
-    global edificios
-    edificios = []
-    
-    origen_mundo_x = -Constantes.ANCHO_PANTALLA // 2  
-    origen_mundo_y = Constantes.ALTO_PANTALLA - 80
-    
-    for fila in range(FILAS_CUADRICULA_EDIFICIOS):
-        for col in range(COLUMNAS_CUADRICULA_EDIFICIOS):
-            base_x = col * ESPACIADO_EDIFICIO_X + origen_mundo_x
-            base_y = fila * ESPACIADO_EDIFICIO_Y + origen_mundo_y
-            
-            # Variar más las dimensiones del edificio
-            ancho = random.randint(22, 65)
-            alto = random.randint(70, 320)
-            profundidad = random.randint(12, 40)
-            
-            tipo_edificio_aleatorio = random.random()
-            if tipo_edificio_aleatorio < 0.3:
-                tipo_edificio = "eco"
-            elif tipo_edificio_aleatorio < 0.4:
-                tipo_edificio = "solar"
-            else:
-                tipo_edificio = "normal"
-                
-            # Escala y alfa según la distancia
-            factor_escala = 1.0 - (fila / FILAS_CUADRICULA_EDIFICIOS) * 0.75
-            factor_alfa = 1.0 - (fila / FILAS_CUADRICULA_EDIFICIOS) * 0.8
-            
-            # Ajustar posición
-            x_ajustado = base_x + (1 - factor_escala) * (ancho / 2)
-            y_ajustado = base_y + (1 - factor_escala) * (alto / 2)
-            
-            edificios.append({
-                'obj': Edificio(x_ajustado, y_ajustado, ancho, alto, profundidad, tipo_edificio),
-                'escala': factor_escala,
-                'alfa': factor_alfa,
-                'orden_dibujo_y': y_ajustado + alto * factor_escala
-            })
-    edificios.sort(key=lambda b: b['orden_dibujo_y'])
-
-generar_edificios_ciudad_isometricos()
 
 # --- Clase Botón ---
 class Boton:
@@ -280,27 +107,6 @@ class Boton:
                 self.accion()
 
 # --- Función de Dibujo de Fondo Dinámico (Simplificada con árboles) ---
-def dibujar_fondo_dinamico(superficie):
-    superficie.fill(Constantes.COLOR_FONDO_BASE)
-    
-    pygame.draw.circle(superficie, Constantes.COLOR_LUNA, (Constantes.ANCHO_PANTALLA - 100, 80), 30)
-    
-    for datos_edificio in edificios:
-        edificio = datos_edificio['obj']
-        escala = datos_edificio['escala']
-        alfa = datos_edificio['alfa']
-        edificio.actualizar()
-        edificio.dibujar(superficie, factor_escala=escala, factor_alfa=alfa)
-        
-   
-        
-    superficie_bruma = pygame.Surface(superficie.get_size(), pygame.SRCALPHA)
-    superficie_bruma.fill(Constantes.COLOR_BRUMA)
-    superficie.blit(superficie_bruma, (0,0))
-    
-    # Plano del suelo
-    pygame.draw.rect(superficie, Constantes.COLOR_SUELO, (0, Constantes.ALTO_PANTALLA - 50, Constantes.ANCHO_PANTALLA, 50))
-
 
 
 # --- Funciones del Menú ---
@@ -309,11 +115,9 @@ def Juego():
 
 
 def ver_opciones():
-    print("Viendo Opciones Ambientales")
     ejecutar_menu_opciones() 
 
 def salir_juego():
-    print("Saliendo de Eco-Ciudad")
     pygame.quit()
     sys.exit()
 
@@ -373,8 +177,6 @@ def ejecutar_menu_opciones():
             boton_sonido.manejar_evento(evento)
 
        
-
-        dibujar_fondo_dinamico(PANTALLA)
         
         superficie_titulo_opciones = FUENTE_TITULO.render("Opciones", True, Constantes.COLOR_TEXTO_EN_FONDO)
         rect_titulo_opciones = superficie_titulo_opciones.get_rect(center=(Constantes.ANCHO_PANTALLA // 2, 120))
@@ -414,11 +216,10 @@ def main_menu():
                 salir_juego()
             for boton in botones:
                 boton.manejar_evento(evento)
-        dibujar_fondo_dinamico(PANTALLA)
-        superficie_titulo = FUENTE_TITULO.render("Centro Eco-Ciudad", True, Constantes.COLOR_TEXTO_EN_FONDO)
+        superficie_titulo = FUENTE_TITULO.render("Go UAIBOT", True, Constantes.COLOR_TEXTO_EN_FONDO)
         rect_titulo = superficie_titulo.get_rect(center=(Constantes.ANCHO_PANTALLA // 2, 120))
         PANTALLA.blit(superficie_titulo, rect_titulo)
-        superficie_subtitulo = FUENTE_SUBTITULO.render("Construyendo un Futuro Sostenible", True, Constantes.COLOR_TEXTO_SUTIL_EN_FONDO)
+        superficie_subtitulo = FUENTE_SUBTITULO.render(":)", True, Constantes.COLOR_TEXTO_SUTIL_EN_FONDO)
         rect_subtitulo = superficie_subtitulo.get_rect(center=(Constantes.ANCHO_PANTALLA // 2, 180))
         PANTALLA.blit(superficie_subtitulo, rect_subtitulo)
         for boton in botones:
@@ -429,7 +230,6 @@ if __name__ == "__main__":
     PANTALLA = pygame.display.set_mode((Constantes.ANCHO_PANTALLA, Constantes.ALTO_PANTALLA))
     pygame.display.set_caption(f"Neo-Ciudad Vista - {Constantes.ANCHO_PANTALLA}x{Constantes.ALTO_PANTALLA}")
     
-    generar_edificios_ciudad_isometricos()
 
     for i in range(20):
         x = random.randint(50, Constantes.ANCHO_PANTALLA - 50)
