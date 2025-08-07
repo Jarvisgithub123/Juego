@@ -22,51 +22,6 @@ FUENTE_SUBTITULO = pygame.font.Font(None, 40)
 FUENTE_BOTON = pygame.font.Font(None, 55)
 FUENTE_PEQUENA = pygame.font.Font(None, 32)
 
-# --- Clase Ventana  ---
-class Ventana:
-    def __init__(self, rel_x, rel_y, ancho, alto, es_eco=False):
-        self.rect_rel = pygame.Rect(rel_x, rel_y, ancho, alto)
-        self.es_eco = es_eco 
-        self.esta_encendida = random.random() < (0.2 if es_eco else 0.3)
-        self.alfa_actual = 255 if self.esta_encendida else 0
-        self.velocidad_desvanecimiento = random.uniform(1.0, 2.5) 
-        self.direccion_desvanecimiento = 0
-        self.tiempo_cambio_siguiente_estado = pygame.time.get_ticks() + random.randint(2000, 8000) 
-
-    def actualizar(self):
-        tiempo_actual = pygame.time.get_ticks()
-        if self.direccion_desvanecimiento != 0:
-            self.alfa_actual += self.direccion_desvanecimiento * self.velocidad_desvanecimiento
-            self.alfa_actual = max(0, min(255, self.alfa_actual))
-            if (self.direccion_desvanecimiento == 1 and self.alfa_actual >= 255) or \
-               (self.direccion_desvanecimiento == -1 and self.alfa_actual <= 0):
-                self.direccion_desvanecimiento = 0
-                self.esta_encendida = (self.alfa_actual > 0)
-                self.tiempo_cambio_siguiente_estado = tiempo_actual + random.randint(2000, 8000)
-        if self.direccion_desvanecimiento == 0 and tiempo_actual >= self.tiempo_cambio_siguiente_estado:
-            probabilidad_cambio = 0.03 if self.es_eco else 0.05
-            if random.random() < probabilidad_cambio:
-                if self.esta_encendida:
-                    self.direccion_desvanecimiento = -1
-                else:
-                    self.direccion_desvanecimiento = 1
-                self.tiempo_cambio_siguiente_estado = tiempo_actual + random.randint(2000, 8000)
-
-    def dibujar(self, superficie, abs_x, abs_y, multiplicador_alfa=1.0):
-        rect_abs = self.rect_rel.copy()
-        rect_abs.x += abs_x
-        rect_abs.y += abs_y
-        if self.alfa_actual > 0:
-            if self.es_eco:
-                color_ventana = Constantes.COLOR_VENTANA_ECO + (int(self.alfa_actual * multiplicador_alfa),)
-            else:
-                color_ventana = Constantes.COLOR_VENTANA_CLARA + (int(self.alfa_actual * multiplicador_alfa),)
-            s = pygame.Surface((rect_abs.width, rect_abs.height), pygame.SRCALPHA)
-            s.fill(color_ventana)
-            superficie.blit(s, (rect_abs.x, rect_abs.y))
-        else:
-            color_apagado = Constantes.COLOR_VENTANA_APAGADA + (int(255 * multiplicador_alfa),)
-            pygame.draw.rect(superficie, color_apagado, rect_abs)
 
 
 
@@ -106,7 +61,7 @@ class Boton:
             if self.rect.collidepoint(evento.pos) and self.accion:
                 self.accion()
 
-# --- Función de Dibujo de Fondo Dinámico (Simplificada con árboles) ---
+
 
 
 # --- Funciones del Menú ---
@@ -163,6 +118,7 @@ def ejecutar_menu_opciones():
     )
     
     ejecutando = True
+    
     while ejecutando:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -211,6 +167,7 @@ def main_menu():
     ]
     ejecutando = True
     while ejecutando:
+        PANTALLA.fill(Constantes.COLOR_FONDO_BASE)
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 salir_juego()
@@ -219,7 +176,7 @@ def main_menu():
         superficie_titulo = FUENTE_TITULO.render("Go UAIBOT", True, Constantes.COLOR_TEXTO_EN_FONDO)
         rect_titulo = superficie_titulo.get_rect(center=(Constantes.ANCHO_PANTALLA // 2, 120))
         PANTALLA.blit(superficie_titulo, rect_titulo)
-        superficie_subtitulo = FUENTE_SUBTITULO.render(":)", True, Constantes.COLOR_TEXTO_SUTIL_EN_FONDO)
+        superficie_subtitulo = FUENTE_SUBTITULO.render("(:)", True, Constantes.COLOR_TEXTO_SUTIL_EN_FONDO)
         rect_subtitulo = superficie_subtitulo.get_rect(center=(Constantes.ANCHO_PANTALLA // 2, 180))
         PANTALLA.blit(superficie_subtitulo, rect_subtitulo)
         for boton in botones:
