@@ -1,10 +1,11 @@
 import pygame
 import sys
 import os
+import Constantes
 
 pygame.init()
 
-RUTA_ARCHIVO_FONDO = "ciudad.jpg" 
+RUTA_ARCHIVO_FONDO = "Recursos\Imagenes\ciudad.jpg" 
 COLOR_BLANCO = (255, 255, 255)
 COLOR_NEGRO = (0, 0, 0)
 COLOR_ROJO = (200, 0, 0)
@@ -32,9 +33,9 @@ txtInstrucciones_desplazamiento = 10
 txtInstrucciones_rect = txtInstrucciones.get_rect()
 txtInstrucciones_rect.topleft = (10, 10)
 fondo_rect = pygame.Rect(txtInstrucciones_rect.left - txtInstrucciones_desplazamiento,
-                      txtInstrucciones_rect.top - txtInstrucciones_desplazamiento,
-                      txtInstrucciones_rect.width + 2 * txtInstrucciones_desplazamiento,
-                      txtInstrucciones_rect.height + 2 * txtInstrucciones_desplazamiento)
+                        txtInstrucciones_rect.top - txtInstrucciones_desplazamiento,
+                        txtInstrucciones_rect.width + 2 * txtInstrucciones_desplazamiento,
+                         txtInstrucciones_rect.height + 2 * txtInstrucciones_desplazamiento)
 
 font_TxtGameOver = pygame.font.SysFont(None, 100)
 txtGameOver = font_TxtGameOver.render("JUEGO TERMINADO", True, COLOR_ROJO)
@@ -53,9 +54,48 @@ auto_vel_x = 7
 juegoEnEjecucion = True
 game_over = False
 
+
+class Personaje(pygame.sprite.Sprite):
+    def __init__(self, x, y,scale):
+        super().__init__()
+
+
+        imagen = pygame.image.load("Recursos/Imagenes/UAIBOT.png").convert_alpha()
+
+        ancho = int(imagen.get_width() * scale)
+        alto = int(imagen.get_height() * scale)
+        self.image = pygame.transform.scale(imagen, (ancho, alto))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.vel_y = 0
+        self.en_el_aire = False
+        self.y = y  
+
+    def saltar(self):
+        if not self.en_el_aire:
+            self.vel_y = -15
+            self.en_el_aire = True
+
+    def actualizar(self):
+        self.vel_y += Constantes.GRAVEDAD
+        if self.vel_y > 10:
+            self.vel_y = 10
+
+        self.rect.y += self.vel_y
+        self.y = self.rect.y  
+
+        if self.rect.bottom >= PISO_POS_Y:
+            self.rect.bottom = PISO_POS_Y
+            self.en_el_aire = False
+
+    def dibujar(self, pantalla):
+        pantalla.blit(self.image, self.rect)
+
+
+personaje = Personaje(100,PISO_POS_Y - 64, scale=0.2)
+
 while juegoEnEjecucion:
     clock.tick(FPS)
-
     if img_fondo:
         fondo_desplazamiento_y = -(PANTALLA_ALTO - PISO_POS_Y)
         pantalla.blit(img_fondo, (0, fondo_desplazamiento_y))
@@ -78,17 +118,18 @@ while juegoEnEjecucion:
 
     if not game_over:
         keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            personaje.saltar()
   
         auto_x -= auto_vel_x
         if auto_x < -auto_ancho:
             auto_x = PANTALLA_ANCHO  
 
-        robot_rect = pygame.Rect(robot_x, robot_y, robot_tamaño, robot_tamaño)
         auto_rect = pygame.Rect(auto_x, auto_y, auto_ancho, auto_alto)
 
-    robot_rect = pygame.Rect(robot_x, robot_y, robot_tamaño, robot_tamaño)
+    personaje.actualizar()
+    personaje.dibujar(pantalla) 
     auto_rect = pygame.Rect(auto_x, auto_y, auto_ancho, auto_alto)
-    pygame.draw.rect(pantalla, COLOR_AZUL, robot_rect)
     pygame.draw.rect(pantalla, COLOR_ROJO, auto_rect)
 
     if not game_over:
