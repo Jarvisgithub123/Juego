@@ -5,6 +5,7 @@ import math
 import random
 from Constantes import *
 
+
 def juego():
         
     pygame.init()
@@ -209,9 +210,9 @@ def juego():
         
             # Crear textos
             self.txt_game_over = self.font_game_over.render("JUEGO TERMINADO", True, COLOR_ROJO)
-            self.txt_reintentar = self.font_reintentar.render("Presione [ENTER] para volver a jugar", True, COLOR_VERDE)
+            self.txt_reintentar = self.font_reintentar.render("Presione [ENTER] o [ESPACIO] para volver a jugar", True, COLOR_VERDE)
             self.txt_victoria = self.font_victoria.render("¡El paquete fue entregado con exito!", True, COLOR_TEXTO_VICTORIA)
-            self.txt_salir = self.font_normal.render("Presiona [ESCAPE] o [ESPACIO] para volver al menu", True, COLOR_BLANCO)
+            self.txt_salir = self.font_normal.render("Presiona [ESCAPE]  para volver al menu", True, COLOR_BLANCO)
             
             # Posicionar textos
             self.game_over_rect = self.txt_game_over.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2) - 200))
@@ -270,17 +271,23 @@ def juego():
                 self.img_fondo = pygame.transform.scale(self.img_fondo, (PANTALLA_ANCHO, PANTALLA_ALTO))
             else:
                 self.img_fondo = None
-        
+
         def manejar_eventos(self):
             """Maneja todos los eventos del juego"""
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
                     self.ejecutando = False
+                
                 keys = pygame.key.get_pressed()
-                if (keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER] or keys[pygame.K_SPACE]) and self.game_over:
-                    juego()
-                elif keys[pygame.K_ESCAPE]:
-                    self.ejecutando = False
+                if (keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER] or keys[pygame.K_SPACE]) and self.game_over or self.victoria:
+                    return "reiniciar"  # Reiniciar el juego
+                elif (keys[pygame.K_ESCAPE]) and self.game_over:
+                    return "menu"  # Volver al menú
+                
+
+
         
         def manejar_input(self):
             """Maneja el input del jugador"""
@@ -412,10 +419,10 @@ def juego():
             while self.ejecutando:
                 # Mantener framerate
                 self.clock.tick(FPS)
-                
-                # Manejar eventos
-                self.manejar_eventos()
-                
+                resultado = self.manejar_eventos()  
+                if resultado in ["reiniciar", "menu"]:
+                    return resultado
+                    
                 # Manejar input del jugador
                 self.manejar_input()
                 
@@ -427,10 +434,18 @@ def juego():
                 
                 # Actualizar pantalla
                 pygame.display.flip()
-            
-    game = Game()
-    game.run()          
+  
+      
+    while True:
+        game = Game()
+        resultado = game.run()
+
+        if resultado == "reiniciar":
+            continue
+        elif resultado == "menu":
+            break
+    return
 
     # Punto de entrada del programa
-    if __name__ == "__main__":
-        juego()
+if __name__ == "__main__":
+    juego()

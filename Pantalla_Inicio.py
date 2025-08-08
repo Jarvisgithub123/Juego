@@ -70,8 +70,7 @@ class Boton:
 # --- Funciones del Menú ---
 def Juego():
     musica = pygame.mixer.music.stop()
-    juego()  # Llamar a la función de inicio del juego desde el módulo Ronda1Inicio
-    # Llamar a la función de inicio del juego desde el módulo Juego
+    juego() 
 
 
 def ver_opciones():
@@ -171,6 +170,7 @@ def main_menu():
         Boton("Salir", inicio_x, inicio_y + 2 * (alto_boton + espaciado), ancho_boton, alto_boton, salir_juego)
     ]
     ejecutando = True
+    
     while ejecutando:
         PANTALLA.fill(Constantes.COLOR_FONDO_BASE)
         for evento in pygame.event.get():
