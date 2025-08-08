@@ -3,10 +3,13 @@ import sys
 import random
 import math
 import Constantes
+from Ronda1_Inicio import juego
+
+
+
+
 # Inicializar Pygame
 pygame.init()
-
-
 
 PANTALLA = pygame.display.set_mode((Constantes.ANCHO_PANTALLA, Constantes.ALTO_PANTALLA))
 pygame.display.set_caption("Neo-Ciudad Vista - Edición Eco")
@@ -66,7 +69,9 @@ class Boton:
 
 # --- Funciones del Menú ---
 def Juego():
-    musica = pygame.mixer.music.stop()  # Llamar a la función de inicio del juego desde el módulo Juego
+    musica = pygame.mixer.music.stop()
+    juego()  # Llamar a la función de inicio del juego desde el módulo Ronda1Inicio
+    # Llamar a la función de inicio del juego desde el módulo Juego
 
 
 def ver_opciones():
