@@ -2,96 +2,13 @@ import pygame
 import sys
 import os
 import math
-import Constantes
+import random
+from Constantes import *
 
 pygame.init()
 
-# Configuracion de archivos y colores
-RUTA_ARCHIVO_FONDO = "Recursos\Imagenes\ciudad.jpg" 
-COLOR_BLANCO = (255, 255, 255)
-COLOR_NEGRO = (0, 0, 0)
-COLOR_ROJO = (200, 0, 0)
-COLOR_AZUL = (0, 0, 200)
-COLOR_VERDE = (0, 200, 0)
-COLOR_INSTRUCCION_FONDO = (50, 50, 50)
-COLOR_BARRA_ENERGIA = (100, 255, 100)  # Verde claro para la energia
-COLOR_BARRA_FONDO = (50, 50, 50)       # Gris oscuro para el fondo de barras
-COLOR_TEXTO_VICTORIA = (0, 255, 0)     # Verde para mensaje de victoria
-COLOR_AMARILLO = (255, 255, 0)         # Amarillo para contador kilometros
-
-# Configuracion de pantalla
-PANTALLA_ANCHO = 1280
-PANTALLA_ALTO = 720
-PISO_POS_Y = 650
-clock = pygame.time.Clock()
-FPS = 60
-
-# Variables del juego
-DURACION_ENERGIA = 60  # 60 segundos de energia
-KILOMETROS_OBJETIVO = 1.0  # 1 kilometro objetivo
-DECREMENTO_KM_POR_SEGUNDO = 0.03  # 0.03km por segundo
-
-pantalla = pygame.display.set_mode((PANTALLA_ANCHO, PANTALLA_ALTO))
-pygame.display.set_caption("OFIRCA 2025 - Ronda 1 Inicio")
-
-# Cargar imagen de fondo
-if os.path.exists(RUTA_ARCHIVO_FONDO):
-    img_fondo = pygame.image.load(RUTA_ARCHIVO_FONDO)
-    img_fondo = pygame.transform.scale(img_fondo, (PANTALLA_ANCHO, PANTALLA_ALTO))
-else:
-    img_fondo = None
-
-# Configuracion de fuentes
-font_TxtInstrucciones = pygame.font.SysFont(None, 36)
-font_TxtGameOver = pygame.font.SysFont(None, 100)
-font_TxtVictoria = pygame.font.SysFont(None, 80)
-font_HUD = pygame.font.SysFont(None, 32)  # Fuente para interfaz de usuario
-
-# Textos de instrucciones
-txtInstrucciones = font_TxtInstrucciones.render("Usa la barra espaciadora para saltar", True, COLOR_BLANCO)
-txtInstrucciones_desplazamiento = 10
-txtInstrucciones_rect = txtInstrucciones.get_rect()
-txtInstrucciones_rect.topleft = (10, 10)
-fondo_rect = pygame.Rect(txtInstrucciones_rect.left - txtInstrucciones_desplazamiento,
-                        txtInstrucciones_rect.top - txtInstrucciones_desplazamiento,
-                        txtInstrucciones_rect.width + 2 * txtInstrucciones_desplazamiento,
-                         txtInstrucciones_rect.height + 2 * txtInstrucciones_desplazamiento)
-
-# Textos de game over y victoria
-txtGameOver = font_TxtGameOver.render("JUEGO TERMINADO", True, COLOR_ROJO)
-txtGameOver_rect = txtGameOver.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2)-200))
-
-txtVictoria = font_TxtVictoria.render("¡El paquete fue entregado con exito!", True, COLOR_TEXTO_VICTORIA)
-txtVictoria_rect = txtVictoria.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2)-200))
-
-# Variables del robot
-robot_tamaño = 50
-robot_x = 100
-robot_y = PISO_POS_Y - robot_tamaño
-
-# Variables del auto
-auto_ancho = 100
-auto_alto = 40
-auto_x = PANTALLA_ANCHO
-auto_y = PISO_POS_Y - auto_alto
-auto_vel_x = 7
-
-# Variables de estado del juego
-juegoEnEjecucion = True
-game_over = False
-victoria = False
-
-# Variables para animacion del fondo
-fondo_x1 = 0
-fondo_x2 = PANTALLA_ANCHO
-velocidad_fondo = 2  # Velocidad de desplazamiento del fondo
-
-# Variables de tiempo y energia
-tiempo_inicio = pygame.time.get_ticks()
-energia_restante = DURACION_ENERGIA
-kilometros_restantes = KILOMETROS_OBJETIVO
-
 class Personaje(pygame.sprite.Sprite):
+    """Clase que representa al personaje principal UAIBOT"""
     def __init__(self, x, y, scale):
         super().__init__()
         
@@ -118,13 +35,13 @@ class Personaje(pygame.sprite.Sprite):
     def saltar(self):
         """Hace que el personaje salte si esta en el suelo"""
         if not self.en_el_aire:
-            self.vel_y = -15  # Velocidad inicial del salto (negativa = hacia arriba)
+            self.vel_y = -15
             self.en_el_aire = True
 
     def actualizar(self):
         """Actualiza la fisica del personaje (gravedad y posicion)"""
         # Aplicar gravedad
-        self.vel_y += Constantes.GRAVEDAD
+        self.vel_y += GRAVEDAD
         
         # Limitar velocidad maxima de caida
         if self.vel_y > 10:
@@ -138,200 +55,378 @@ class Personaje(pygame.sprite.Sprite):
         if self.rect.bottom >= PISO_POS_Y:
             self.rect.bottom = PISO_POS_Y
             self.en_el_aire = False
-            self.vel_y = 0  # Detener velocidad vertical al tocar el suelo
+            self.vel_y = 0
 
+class Auto(pygame.sprite.Sprite):
+    """Clase que representa los autos enemigos"""
+    def __init__(self, x, y, velocidad=7, ancho=100, alto=40):
+        super().__init__()
+        
+        # Intentar cargar imagen del auto o crear rectangulo como respaldo
+        try:
+            imagen = pygame.image.load("Recursos/Imagenes/auto.png").convert_alpha()
+            self.image = pygame.transform.scale(imagen, (ancho, alto))
+        except:
+            # Crear superficie roja como respaldo
+            self.image = pygame.Surface((ancho, alto))
+            self.image.fill(COLOR_ROJO)
+        
+        self.rect = pygame.Rect(x, y, ancho, alto)
+        self.velocidad = velocidad
+        self.ancho = ancho
+        self.alto = alto
+        
+    def actualizar(self):
+        """Actualiza la posicion del auto moviendolo hacia la izquierda"""
+        self.rect.x -= self.velocidad
+        
+        # Si sale de la pantalla, reiniciar posicion
+        if self.rect.right < 0:
+            self.rect.left = PANTALLA_ANCHO
+            
     def dibujar(self, pantalla):
-        """Dibuja el personaje en la pantalla"""
-        pantalla.blit(self.image, self.rect)
+        """Dibuja el auto en la pantalla"""
+        if hasattr(self, 'image'):
+            pantalla.blit(self.image, self.rect)
+        else:
+            pygame.draw.rect(pantalla, COLOR_ROJO, self.rect)
 
-def dibujar_barra_energia(pantalla, energia_actual, energia_maxima):
-    """Dibuja la barra de energia en la parte superior derecha de la pantalla"""
-    # Calcular porcentaje de energia restante
-    porcentaje = (energia_actual / energia_maxima) * 100
-    
-    # Posicion y dimensiones de la barra
-    barra_ancho = 200
-    barra_alto = 20
-    barra_x = PANTALLA_ANCHO - barra_ancho - 20
-    barra_y = 20
-    
-    # Dibujar fondo de la barra (gris oscuro)
-    pygame.draw.rect(pantalla, COLOR_BARRA_FONDO, (barra_x, barra_y, barra_ancho, barra_alto))
-    
-    # Calcular ancho de la barra de energia segun porcentaje
-    ancho_energia = int((energia_actual / energia_maxima) * barra_ancho)
-    
-    # Cambiar color segun nivel de energia
-    if porcentaje > 60:
-        color_energia = COLOR_BARRA_ENERGIA  
-    elif porcentaje > 30:
-        color_energia = COLOR_AMARILLO       
-    else:
-        color_energia = COLOR_ROJO          
-    
-    # Dibujar barra de energia
-    if ancho_energia > 0:
-        pygame.draw.rect(pantalla, color_energia, (barra_x, barra_y, ancho_energia, barra_alto))
-    
-    # Dibujar borde de la barra
-    pygame.draw.rect(pantalla, COLOR_BLANCO, (barra_x, barra_y, barra_ancho, barra_alto), 2)
-    
-    # Dibujar texto con porcentaje
-    texto_energia = font_HUD.render(f"Energia: {porcentaje:.0f}%", True, COLOR_BLANCO)
-    pantalla.blit(texto_energia, (barra_x, barra_y - 25))
-
-def dibujar_contador_kilometros(pantalla, km_restantes):
-    """Dibuja el contador de kilometros en la parte superior izquierda"""
-    # Posicion del contador
-    contador_x = 20
-    contador_y = 60
-    
-    # Crear texto con kilometros restantes
-    texto_km = font_HUD.render(f"Kilometros restantes: {km_restantes:.2f} km", True, COLOR_AMARILLO)
-    
-    # Dibujar fondo semi-transparente para el texto
-    texto_rect = texto_km.get_rect()
-    texto_rect.topleft = (contador_x, contador_y)
-    
-    fondo_contador = pygame.Rect(texto_rect.left - 5, texto_rect.top - 5, 
-                                texto_rect.width + 10, texto_rect.height + 10)
-    pygame.draw.rect(pantalla, COLOR_INSTRUCCION_FONDO, fondo_contador)
-    
-    # Dibujar el texto
-    pantalla.blit(texto_km, (contador_x, contador_y))
-
-def dibujar_fondo_animado(pantalla, img_fondo, fondo_x1, fondo_x2):
-    """Dibuja el fondo animado para crear sensacion de movimiento"""
-    if img_fondo:
-        # Dibujar dos copias del fondo para crear loop continuo
-        pantalla.blit(img_fondo, (fondo_x1, -(PANTALLA_ALTO - PISO_POS_Y)))
-        pantalla.blit(img_fondo, (fondo_x2, -(PANTALLA_ALTO - PISO_POS_Y)))
-    else:
-        # Si no hay imagen, llenar con color blanco
-        pantalla.fill(COLOR_BLANCO)
-
-def verificar_colision(rect_personaje, rect_auto):
-    """Verifica si hay colision entre el personaje y el auto"""
-    return rect_personaje.colliderect(rect_auto)
-
-def actualizar_tiempo_y_distancia(tiempo_inicio):
-    """Actualiza el tiempo transcurrido y calcula kilometros restantes"""
-    tiempo_actual = pygame.time.get_ticks()
-    tiempo_transcurrido = (tiempo_actual - tiempo_inicio) / 1000  # Convertir a segundos
-    
-    # Calcular energia restante
-    energia_actual = max(0, DURACION_ENERGIA - tiempo_transcurrido)
-    
-    # Calcular kilometros restantes
-    km_recorridos = tiempo_transcurrido * DECREMENTO_KM_POR_SEGUNDO
-    km_restantes = max(0, KILOMETROS_OBJETIVO - km_recorridos)
-    
-    return energia_actual, km_restantes, tiempo_transcurrido
-
-# Crear instancia del personaje
-personaje = Personaje(100, PISO_POS_Y - 64, scale=0.2)
-
-# Bucle principal del juego
-while juegoEnEjecucion:
-    clock.tick(FPS)
-    
-    # Actualizar tiempo, energia y distancia
-    if not game_over and not victoria:
-        energia_restante, kilometros_restantes, tiempo_transcurrido = actualizar_tiempo_y_distancia(tiempo_inicio)
+class Collisions:
+    """Clase para manejar las colisiones entre sprites"""
+    def __init__(self):
+        pass
         
-        # Verificar condiciones de victoria o derrota
-        if energia_restante <= 0:
-            game_over = True
-        elif kilometros_restantes <= 0:
-            victoria = True
+    def verificar_colision_personaje_autos(self, personaje, autos):
+        """Verifica colision entre el personaje y una lista de autos"""
+        for auto in autos:
+            if personaje.rect.colliderect(auto.rect):
+                return True
+        return False
     
-    # Animar fondo (mover hacia la izquierda para simular movimiento)
-    if not game_over and not victoria:
-        fondo_x1 -= velocidad_fondo
-        fondo_x2 -= velocidad_fondo
-        
-        # Reiniciar posiciones cuando salen de pantalla
-        if fondo_x1 <= -PANTALLA_ANCHO:
-            fondo_x1 = PANTALLA_ANCHO
-        if fondo_x2 <= -PANTALLA_ANCHO:
-            fondo_x2 = PANTALLA_ANCHO
+    def verificar_colision_sprites(self, sprite1, sprite2):
+        """Verifica colision entre dos sprites cualesquiera"""
+        return sprite1.rect.colliderect(sprite2.rect)
     
-    # Dibujar fondo animado
-    dibujar_fondo_animado(pantalla, img_fondo, fondo_x1, fondo_x2)
-    
-    # Dibujar el piso (linea verde)
-    piso_altura = PANTALLA_ALTO - PISO_POS_Y
-    piso_rect = pygame.Rect(0, PISO_POS_Y, PANTALLA_ANCHO, piso_altura)
-    pygame.draw.rect(pantalla, COLOR_VERDE, piso_rect)
-    pygame.draw.line(pantalla, COLOR_NEGRO, (0, PISO_POS_Y), (PANTALLA_ANCHO, PISO_POS_Y), 3)
+    def verificar_colision_grupo(self, sprite, grupo_sprites):
+        """Verifica colision entre un sprite y un grupo de sprites"""
+        for sprite_grupo in grupo_sprites:
+            if sprite.rect.colliderect(sprite_grupo.rect):
+                return sprite_grupo
+        return None
 
-    # Manejar eventos
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            juegoEnEjecucion = False
+class UI:
+    """Clase para manejar la interfaz de usuario (HUD)"""
+    def __init__(self):
+        # Configurar fuentes
+        self.font_instrucciones = pygame.font.SysFont(None, 36)
+        self.font_hud = pygame.font.SysFont(None, 32)
         
-        # Si el juego termino, cualquier tecla cierra el juego
-        if game_over or victoria:
-            if event.type == pygame.KEYDOWN:
-                juegoEnEjecucion = False
-
-    # Logica del juego (solo si no ha terminado)
-    if not game_over and not victoria:
-        # Manejar input del jugador
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
-            personaje.saltar()
-  
-        # Mover el auto hacia la izquierda
-        auto_x -= auto_vel_x
+        # Crear textos estaticos
+        self.txt_instrucciones = self.font_instrucciones.render(
+            "Usa la barra espaciadora para saltar", True, COLOR_BLANCO)
+        self.instrucciones_rect = self.txt_instrucciones.get_rect()
+        self.instrucciones_rect.topleft = (10, 10)
         
-        # Si el auto sale de pantalla, reiniciar posicion (consigna 4)
-        if auto_x < -auto_ancho:
-            auto_x = PANTALLA_ANCHO
-
-    # Actualizar y dibujar personaje
-    personaje.actualizar()
-    personaje.dibujar(pantalla)
+        # Configurar fondo de instrucciones
+        padding = 10
+        self.fondo_instrucciones = pygame.Rect(
+            self.instrucciones_rect.left - padding,
+            self.instrucciones_rect.top - padding,
+            self.instrucciones_rect.width + 2 * padding,
+            self.instrucciones_rect.height + 2 * padding
+        )
     
-    # Dibujar auto
-    auto_rect = pygame.Rect(auto_x, auto_y, auto_ancho, auto_alto)
-    pygame.draw.rect(pantalla, COLOR_ROJO, auto_rect)
+    def dibujar_instrucciones(self, pantalla):
+        """Dibuja las instrucciones en pantalla"""
+        pygame.draw.rect(pantalla, COLOR_INSTRUCCION_FONDO, self.fondo_instrucciones)
+        pantalla.blit(self.txt_instrucciones, self.instrucciones_rect)
     
-    # Verificar colision entre personaje y auto
-    if not game_over and not victoria:
-        if verificar_colision(personaje.rect, auto_rect):
-            game_over = True
-    
-    # Dibujar interfaz de usuario (HUD)
-    if not game_over and not victoria:
-        # Dibujar instrucciones
-        pygame.draw.rect(pantalla, COLOR_INSTRUCCION_FONDO, fondo_rect)
-        pantalla.blit(txtInstrucciones, txtInstrucciones_rect)
+    def dibujar_barra_energia(self, pantalla, energia_actual, energia_maxima):
+        """Dibuja la barra de energia en la parte superior derecha"""
+        # Calcular porcentaje
+        porcentaje = (energia_actual / energia_maxima) * 100
+        
+        # Configuracion de la barra
+        barra_ancho = 200
+        barra_alto = 20
+        barra_x = PANTALLA_ANCHO - barra_ancho - 20
+        barra_y = 20
+        
+        # Dibujar fondo de la barra
+        pygame.draw.rect(pantalla, COLOR_BARRA_FONDO, (barra_x, barra_y, barra_ancho, barra_alto))
+        
+        # Calcular ancho segun energia restante
+        ancho_energia = int((energia_actual / energia_maxima) * barra_ancho)
+        
+        # Determinar color segun nivel de energia
+        if porcentaje > 60:
+            color_energia = COLOR_BARRA_ENERGIA
+        elif porcentaje > 30:
+            color_energia = COLOR_AMARILLO
+        else:
+            color_energia = COLOR_ROJO
         
         # Dibujar barra de energia
-        dibujar_barra_energia(pantalla, energia_restante, DURACION_ENERGIA)
+        if ancho_energia > 0:
+            pygame.draw.rect(pantalla, color_energia, (barra_x, barra_y, ancho_energia, barra_alto))
         
-        # Dibujar contador de kilometros
-        dibujar_contador_kilometros(pantalla, kilometros_restantes)
+        # Dibujar borde
+        pygame.draw.rect(pantalla, COLOR_BLANCO, (barra_x, barra_y, barra_ancho, barra_alto), 2)
+        
+        # Dibujar texto con porcentaje
+        texto_energia = self.font_hud.render(f"Energia: {porcentaje:.0f}%", True, COLOR_BLANCO)
+        pantalla.blit(texto_energia, (barra_x, barra_y - 25))
     
-    # Mostrar mensaje de game over o victoria
-    if game_over:
-        pantalla.blit(txtGameOver, txtGameOver_rect)
-        # Texto adicional para reiniciar
-        texto_reinicio = font_HUD.render("Presiona cualquier tecla para salir", True, COLOR_BLANCO)
-        rect_reinicio = texto_reinicio.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2)-150))
-        pantalla.blit(texto_reinicio, rect_reinicio)
+    def dibujar_contador_kilometros(self, pantalla, km_restantes):
+        """Dibuja el contador de kilometros en la parte superior izquierda"""
+        contador_x = 20
+        contador_y = 60
+        
+        # Crear texto
+        texto_km = self.font_hud.render(f"Kilometros restantes: {km_restantes:.2f} km", True, COLOR_AMARILLO)
+        
+        # Crear fondo para el texto
+        texto_rect = texto_km.get_rect()
+        texto_rect.topleft = (contador_x, contador_y)
+        
+        fondo_contador = pygame.Rect(texto_rect.left - 5, texto_rect.top - 5, 
+                                    texto_rect.width + 10, texto_rect.height + 10)
+        pygame.draw.rect(pantalla, COLOR_INSTRUCCION_FONDO, fondo_contador)
+        
+        # Dibujar el texto
+        pantalla.blit(texto_km, (contador_x, contador_y))
+
+class GameOver:
+    """Clase para manejar el estado de fin de juego"""
+    def __init__(self):
+        # Configurar fuentes
+        self.font_game_over = pygame.font.SysFont(None, 100)
+        self.font_victoria = pygame.font.SysFont(None, 80)
+        self.font_normal = pygame.font.SysFont(None, 32)
+        
+        # Crear textos
+        self.txt_game_over = self.font_game_over.render("JUEGO TERMINADO", True, COLOR_ROJO)
+        self.txt_victoria = self.font_victoria.render("¡El paquete fue entregado con exito!", True, COLOR_TEXTO_VICTORIA)
+        self.txt_salir = self.font_normal.render("Presiona cualquier tecla para salir", True, COLOR_BLANCO)
+        
+        # Posicionar textos
+        self.game_over_rect = self.txt_game_over.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2) - 200))
+        self.victoria_rect = self.txt_victoria.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2) - 200))
+        self.salir_rect = self.txt_salir.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2) - 150))
     
-    elif victoria:
-        pantalla.blit(txtVictoria, txtVictoria_rect)
-        # Texto adicional para salir
-        texto_salir = font_HUD.render("Presiona cualquier tecla para salir", True, COLOR_BLANCO)
-        rect_salir = texto_salir.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2)-150))
-        pantalla.blit(texto_salir, rect_salir)
+    def dibujar_game_over(self, pantalla):
+        """Dibuja la pantalla de game over"""
+        pantalla.blit(self.txt_game_over, self.game_over_rect)
+        pantalla.blit(self.txt_salir, self.salir_rect)
+    
+    def dibujar_victoria(self, pantalla):
+        """Dibuja la pantalla de victoria"""
+        pantalla.blit(self.txt_victoria, self.victoria_rect)
+        pantalla.blit(self.txt_salir, self.salir_rect)
 
-    # Actualizar pantalla
-    pygame.display.flip()
+class Game:
+    """Clase principal del juego que maneja toda la logica y renderizado"""
+    def __init__(self):
+        # Configurar pantalla
+        self.pantalla = pygame.display.set_mode((PANTALLA_ANCHO, PANTALLA_ALTO))
+        pygame.display.set_caption("OFIRCA 2025 - Ronda 1 Inicio")
+        self.clock = pygame.time.Clock()
+        
+        # Cargar imagen de fondo
+        self.cargar_fondo()
+        
+        # Inicializar componentes del juego
+        self.personaje = Personaje(100, PISO_POS_Y - 64, scale=0.2)
+        self.autos = [Auto(PANTALLA_ANCHO, PISO_POS_Y - 40)]  # Lista de autos
+        self.collisions = Collisions()
+        self.ui = UI()
+        self.game_over_screen = GameOver()
+        
+        # Variables de estado
+        self.ejecutando = True
+        self.game_over = False
+        self.victoria = False
+        
+        # Variables de tiempo y distancia
+        self.tiempo_inicio = pygame.time.get_ticks()
+        self.energia_restante = DURACION_ENERGIA
+        self.kilometros_restantes = KILOMETROS_OBJETIVO
+        
+        # Variables para animacion del fondo
+        self.fondo_x1 = 0
+        self.fondo_x2 = PANTALLA_ANCHO
+        self.velocidad_fondo = 2
+    
+    def cargar_fondo(self):
+        """Carga la imagen de fondo del juego"""
+        if os.path.exists(RUTA_ARCHIVO_FONDO):
+            self.img_fondo = pygame.image.load(RUTA_ARCHIVO_FONDO)
+            self.img_fondo = pygame.transform.scale(self.img_fondo, (PANTALLA_ANCHO, PANTALLA_ALTO))
+        else:
+            self.img_fondo = None
+    
+    def manejar_eventos(self):
+        """Maneja todos los eventos del juego"""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.ejecutando = False
+            
+            # Si el juego termino, cualquier tecla cierra el juego
+            if self.game_over or self.victoria:
+                if event.type == pygame.KEYDOWN:
+                    self.ejecutando = False
+    
+    def manejar_input(self):
+        """Maneja el input del jugador"""
+        if not self.game_over and not self.victoria:
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_SPACE]:
+                self.personaje.saltar()
+    
+    def actualizar_tiempo_y_distancia(self):
+        """Actualiza el tiempo transcurrido y calcula kilometros restantes"""
+        tiempo_actual = pygame.time.get_ticks()
+        tiempo_transcurrido = (tiempo_actual - self.tiempo_inicio) / 1000
+        
+        # Calcular energia restante
+        self.energia_restante = max(0, DURACION_ENERGIA - tiempo_transcurrido)
+        
+        # Calcular kilometros restantes
+        km_recorridos = tiempo_transcurrido * DECREMENTO_KM_POR_SEGUNDO
+        self.kilometros_restantes = max(0, KILOMETROS_OBJETIVO - km_recorridos)
+        
+        return tiempo_transcurrido
+    
+    def verificar_condiciones_fin_juego(self):
+        """Verifica si el juego debe terminar (victoria o derrota)"""
+        if not self.game_over and not self.victoria:
+            # Verificar colision con autos
+            if self.collisions.verificar_colision_personaje_autos(self.personaje, self.autos):
+                self.game_over = True
+                return
+            
+            # Verificar si se agoto la energia
+            if self.energia_restante <= 0:
+                self.game_over = True
+                return
+            
+            # Verificar victoria (completar recorrido)
+            if self.kilometros_restantes <= 0:
+                self.victoria = True
+                return
+    
+    def actualizar_objetos(self):
+        """Actualiza todos los objetos del juego"""
+        if not self.game_over and not self.victoria:
+            # Actualizar personaje
+            self.personaje.actualizar()
+            
+            # Actualizar autos
+            for auto in self.autos:
+                auto.actualizar()
+            
+            # Animar fondo
+            self.fondo_x1 -= self.velocidad_fondo
+            self.fondo_x2 -= self.velocidad_fondo
+            
+            # Reiniciar posiciones del fondo
+            if self.fondo_x1 <= -PANTALLA_ANCHO:
+                self.fondo_x1 = PANTALLA_ANCHO
+            if self.fondo_x2 <= -PANTALLA_ANCHO:
+                self.fondo_x2 = PANTALLA_ANCHO
+    
+    def dibujar_fondo_animado(self):
+        """Dibuja el fondo animado"""
+        if self.img_fondo:
+            self.pantalla.blit(self.img_fondo, (self.fondo_x1, -(PANTALLA_ALTO - PISO_POS_Y)))
+            self.pantalla.blit(self.img_fondo, (self.fondo_x2, -(PANTALLA_ALTO - PISO_POS_Y)))
+        else:
+            self.pantalla.fill(COLOR_BLANCO)
+    
+    def dibujar_piso(self):
+        """Dibuja el piso del juego"""
+        piso_altura = PANTALLA_ALTO - PISO_POS_Y
+        piso_rect = pygame.Rect(0, PISO_POS_Y, PANTALLA_ANCHO, piso_altura)
+        pygame.draw.rect(self.pantalla, COLOR_VERDE, piso_rect)
+        pygame.draw.line(self.pantalla, COLOR_NEGRO, (0, PISO_POS_Y), (PANTALLA_ANCHO, PISO_POS_Y), 3)
+    
+    def dibujar_objetos(self):
+        """Dibuja todos los objetos del juego"""
+        # Dibujar personaje
+        self.pantalla.blit(self.personaje.image, self.personaje.rect)
+        
+        # Dibujar autos
+        for auto in self.autos:
+            auto.dibujar(self.pantalla)
+    
+    def dibujar_ui(self):
+        """Dibuja la interfaz de usuario"""
+        if not self.game_over and not self.victoria:
+            self.ui.dibujar_instrucciones(self.pantalla)
+            self.ui.dibujar_barra_energia(self.pantalla, self.energia_restante, DURACION_ENERGIA)
+            self.ui.dibujar_contador_kilometros(self.pantalla, self.kilometros_restantes)
+    
+    def dibujar_pantallas_fin(self):
+        """Dibuja las pantallas de fin de juego"""
+        if self.game_over:
+            self.game_over_screen.dibujar_game_over(self.pantalla)
+        elif self.victoria:
+            self.game_over_screen.dibujar_victoria(self.pantalla)
+    
+    def dibujar(self):
+        """Dibuja todos los elementos del juego en orden correcto"""
+        # Dibujar fondo
+        self.dibujar_fondo_animado()
+        
+        # Dibujar piso
+        self.dibujar_piso()
+        
+        # Dibujar objetos del juego
+        self.dibujar_objetos()
+        
+        # Dibujar interfaz de usuario
+        self.dibujar_ui()
+        
+        # Dibujar pantallas de fin de juego si es necesario
+        self.dibujar_pantallas_fin()
+    
+    def actualizar(self):
+        """Actualiza toda la logica del juego"""
+        # Actualizar tiempo y distancia
+        self.actualizar_tiempo_y_distancia()
+        
+        # Verificar condiciones de fin de juego
+        self.verificar_condiciones_fin_juego()
+        
+        # Actualizar objetos
+        self.actualizar_objetos()
+    
+    def run(self):
+        """Bucle principal del juego"""
+        while self.ejecutando:
+            # Mantener framerate
+            self.clock.tick(FPS)
+            
+            # Manejar eventos
+            self.manejar_eventos()
+            
+            # Manejar input del jugador
+            self.manejar_input()
+            
+            # Actualizar logica del juego
+            self.actualizar()
+            
+            # Dibujar todo
+            self.dibujar()
+            
+            # Actualizar pantalla
+            pygame.display.flip()
+        
+        # Cerrar pygame
+        pygame.quit()
+        sys.exit()
 
-# Cerrar pygame y salir
-pygame.quit()
-sys.exit()
+# Punto de entrada del programa
+if __name__ == "__main__":
+    juego = Game()
+    juego.run()
