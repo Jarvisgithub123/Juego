@@ -7,7 +7,9 @@ from Constantes import *
 
 
 def juego():
-        
+    sonido_salto = pygame.mixer.Sound("Recursos\Music\Jump.mp3")
+    sonido_derrota = pygame.mixer.Sound("Recursos\Music\Game-over.mp3")
+    sonido_ganar = pygame.mixer.Sound("Recursos\Music\Win.mp3")
     pygame.init()
     class Personaje(pygame.sprite.Sprite):
         """Clase que representa al personaje principal UAIBOT"""
@@ -37,8 +39,9 @@ def juego():
         def saltar(self):
             """Hace que el personaje salte si esta en el suelo"""
             if not self.en_el_aire:
-                self.vel_y = -15
+                self.vel_y = -30
                 self.en_el_aire = True
+                sonido_salto.play()
 
         def actualizar(self):
             """Actualiza la fisica del personaje (gravedad y posicion)"""
@@ -58,6 +61,7 @@ def juego():
                 self.rect.bottom = PISO_POS_Y
                 self.en_el_aire = False
                 self.vel_y = 0
+                sonido_salto.stop()
 
     class Auto(pygame.sprite.Sprite):
         """Clase que representa los autos enemigos"""
@@ -282,8 +286,13 @@ def juego():
                 
                 keys = pygame.key.get_pressed()
                 if (keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER] or keys[pygame.K_SPACE]) and self.game_over or self.victoria:
+                    sonido_derrota.stop()
+                    sonido_ganar.stop()
                     return "reiniciar"  # Reiniciar el juego
-                elif (keys[pygame.K_ESCAPE]) and self.game_over:
+                    
+                elif (keys[pygame.K_ESCAPE]) and self.game_over or self.victoria:
+                    sonido_derrota.stop()
+                    sonido_ganar.stop()
                     return "menu"  # Volver al menú
                 
 
@@ -295,6 +304,7 @@ def juego():
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_SPACE]:
                     self.personaje.saltar()
+
         
         def actualizar_tiempo_y_distancia(self):
             """Actualiza el tiempo transcurrido y calcula kilometros restantes"""
@@ -316,6 +326,7 @@ def juego():
                 # Verificar colision con autos
                 if self.collisions.verificar_colision_personaje_autos(self.personaje, self.autos):
                     self.game_over = True
+                    sonido_derrota.play()
                     return
                 
                 # Verificar si se agoto la energia
@@ -326,6 +337,7 @@ def juego():
                 # Verificar victoria (completar recorrido)
                 if self.kilometros_restantes <= 0:
                     self.victoria = True
+                    sonido_ganar.play()
                     return
         
         def actualizar_objetos(self):
