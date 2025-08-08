@@ -197,6 +197,7 @@ def juego():
             # Dibujar el texto
             pantalla.blit(texto_km, (contador_x, contador_y))
 
+    
     class GameOver:
         """Clase para manejar el estado de fin de juego"""
         def __init__(self):
@@ -204,20 +205,24 @@ def juego():
             self.font_game_over = pygame.font.SysFont(None, 100)
             self.font_victoria = pygame.font.SysFont(None, 80)
             self.font_normal = pygame.font.SysFont(None, 32)
-            
+            self.font_reintentar = pygame.font.SysFont(None, 38)
+        
             # Crear textos
             self.txt_game_over = self.font_game_over.render("JUEGO TERMINADO", True, COLOR_ROJO)
+            self.txt_reintentar = self.font_reintentar.render("Presione [ENTER] para volver a jugar", True, COLOR_VERDE)
             self.txt_victoria = self.font_victoria.render("¡El paquete fue entregado con exito!", True, COLOR_TEXTO_VICTORIA)
-            self.txt_salir = self.font_normal.render("Presiona cualquier tecla para salir", True, COLOR_BLANCO)
+            self.txt_salir = self.font_normal.render("Presiona [ESCAPE] para volver al menu", True, COLOR_BLANCO)
             
             # Posicionar textos
             self.game_over_rect = self.txt_game_over.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2) - 200))
+            self.reintentar_rect = self.txt_reintentar.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2) - 150))
             self.victoria_rect = self.txt_victoria.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2) - 200))
-            self.salir_rect = self.txt_salir.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2) - 150))
+            self.salir_rect = self.txt_salir.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2) - 120))
         
         def dibujar_game_over(self, pantalla):
             """Dibuja la pantalla de game over"""
             pantalla.blit(self.txt_game_over, self.game_over_rect)
+            pantalla.blit(self.txt_reintentar, self.reintentar_rect)
             pantalla.blit(self.txt_salir, self.salir_rect)
         
         def dibujar_victoria(self, pantalla):
@@ -271,11 +276,11 @@ def juego():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.ejecutando = False
-                
-                # Si el juego termino, cualquier tecla cierra el juego
-                if self.game_over or self.victoria:
-                    if event.type == pygame.KEYDOWN:
-                        self.ejecutando = False
+                keys = pygame.key.get_pressed()
+                if (keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and self.game_over:
+                    juego()
+                elif keys[pygame.K_ESCAPE]:
+                    self.ejecutando = False
         
         def manejar_input(self):
             """Maneja el input del jugador"""

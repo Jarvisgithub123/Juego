@@ -181,7 +181,7 @@ def main_menu():
         superficie_titulo = FUENTE_TITULO.render("Go UAIBOT", True, Constantes.COLOR_TEXTO_EN_FONDO)
         rect_titulo = superficie_titulo.get_rect(center=(Constantes.ANCHO_PANTALLA // 2, 120))
         PANTALLA.blit(superficie_titulo, rect_titulo)
-        superficie_subtitulo = FUENTE_SUBTITULO.render("(:)", True, Constantes.COLOR_TEXTO_SUTIL_EN_FONDO)
+        superficie_subtitulo = FUENTE_SUBTITULO.render(":)", True, Constantes.COLOR_TEXTO_SUTIL_EN_FONDO)
         rect_subtitulo = superficie_subtitulo.get_rect(center=(Constantes.ANCHO_PANTALLA // 2, 180))
         PANTALLA.blit(superficie_subtitulo, rect_subtitulo)
         for boton in botones:
