@@ -211,7 +211,7 @@ def juego():
             self.txt_game_over = self.font_game_over.render("JUEGO TERMINADO", True, COLOR_ROJO)
             self.txt_reintentar = self.font_reintentar.render("Presione [ENTER] para volver a jugar", True, COLOR_VERDE)
             self.txt_victoria = self.font_victoria.render("¡El paquete fue entregado con exito!", True, COLOR_TEXTO_VICTORIA)
-            self.txt_salir = self.font_normal.render("Presiona [ESCAPE] para volver al menu", True, COLOR_BLANCO)
+            self.txt_salir = self.font_normal.render("Presiona [ESCAPE] o [ESPACIO] para volver al menu", True, COLOR_BLANCO)
             
             # Posicionar textos
             self.game_over_rect = self.txt_game_over.get_rect(center=(PANTALLA_ANCHO // 2, (PANTALLA_ALTO // 2) - 200))
@@ -277,7 +277,7 @@ def juego():
                 if event.type == pygame.QUIT:
                     self.ejecutando = False
                 keys = pygame.key.get_pressed()
-                if (keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and self.game_over:
+                if (keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER] or keys[pygame.K_SPACE]) and self.game_over:
                     juego()
                 elif keys[pygame.K_ESCAPE]:
                     self.ejecutando = False
