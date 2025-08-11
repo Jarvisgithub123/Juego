@@ -39,7 +39,7 @@ def juego():
         def saltar(self):
             """Hace que el personaje salte si esta en el suelo"""
             if not self.en_el_aire:
-                self.vel_y = -30
+                self.vel_y = -15
                 self.en_el_aire = True
                 sonido_salto.play()
 
