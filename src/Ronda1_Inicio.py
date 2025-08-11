@@ -7,9 +7,9 @@ from Constantes import *
 
 
 def juego():
-    sonido_salto = pygame.mixer.Sound("Assets\Music\Jump.mp3")
-    sonido_derrota = pygame.mixer.Sound("Assets\Music\Game-over.mp3")
-    sonido_ganar = pygame.mixer.Sound("Assets\Music\Win.mp3")
+    sonido_salto = pygame.mixer.Sound("src\Recursos\Music\Jump.mp3")
+    sonido_derrota = pygame.mixer.Sound("src\Recursos\Music\Game-over.mp3")
+    sonido_ganar = pygame.mixer.Sound("src\Recursos\Music\Win.mp3")
     pygame.init()
 
 
