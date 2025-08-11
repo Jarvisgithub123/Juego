@@ -7,9 +7,9 @@ from Constantes import *
 
 
 def juego():
-    sonido_salto = pygame.mixer.Sound("Recursos\Music\Jump.mp3")
-    sonido_derrota = pygame.mixer.Sound("Recursos\Music\Game-over.mp3")
-    sonido_ganar = pygame.mixer.Sound("Recursos\Music\Win.mp3")
+    sonido_salto = pygame.mixer.Sound("src\Recursos\Music\Jump.mp3")
+    sonido_derrota = pygame.mixer.Sound("src\Recursos\Music\Game-over.mp3")
+    sonido_ganar = pygame.mixer.Sound("src\Recursos\Music\Win.mp3")
     pygame.init()
     class Personaje(pygame.sprite.Sprite):
         """Clase que representa al personaje principal UAIBOT"""

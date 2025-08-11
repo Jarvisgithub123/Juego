@@ -10,9 +10,9 @@ pygame.init()
 
 PANTALLA = pygame.display.set_mode((Constantes.ANCHO_PANTALLA, Constantes.ALTO_PANTALLA))
 pygame.display.set_caption("Neo-Ciudad Vista - Edición Eco")
-pygame.mixer.music.load("Recursos\Music\wwd.mp3juice.blog - Aventura - Los Infieles (192 KBps).mp3")
+pygame.mixer.music.load("src\Recursos\Music\Win.mp3")
 pygame.mixer.music.play(-1)  # Reproducir en bucle
-sonido_boton=pygame.mixer.Sound("Recursos\Music\mixkit-arcade-game-jump-coin-216.mp3")
+sonido_boton=pygame.mixer.Sound("src\Recursos\Music\mixkit-arcade-game-jump-coin-216.mp3")
 
 VOLUMEN_MUSICA = 1.0  # Volumen inicial (0.0 a 1.0)
 VOLUMEN_SONIDO = 1.0  # Volumen inicial (0.0 a 1.0)
