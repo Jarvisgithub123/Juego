@@ -27,10 +27,15 @@ class GameManager:
     
     def _load_initial_resources(self):
         """Carga los recursos iniciales del juego"""
-        # Imágenes
+        # Imágenes normales
         self.resource_manager.load_image("uaibot", "Assets/Imagenes/UAIBOT.png")
-        self.resource_manager.load_image("auto", "Assets/Imagenesauto.png")
+        self.resource_manager.load_image("auto", "Assets/Imagenes/auto.png")
         self.resource_manager.load_image("fondo_ciudad", "Assets/Imagenes/ciudad.jpg")
+        
+        # Sprite sheets para personajes (si existen)
+        self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
+        
+        self.resource_manager.load_spritesheet("Auto_azul", "Assets/Sprites/Auto-azul.png", 126, 86)
         
         # Sonidos
         self.resource_manager.load_sound("boton_hover", "Assets/Music/mixkit-arcade-game-jump-coin-216.mp3")
@@ -40,6 +45,11 @@ class GameManager:
         
         # Música
         self.resource_manager.load_music("menu", "Assets/Music/wwd.mp3juice.blog - Aventura - Los Infieles (192 KBps).mp3")
+        
+        
+        # Mostrar información de recursos cargados
+        info = self.resource_manager.get_resource_info()
+        print(f"Recursos cargados: {info}")
     
     def handle_events(self):
         """Maneja los eventos globales del juego"""
@@ -68,3 +78,6 @@ class GameManager:
             self.handle_events()
             self.update(dt)
             self.draw()
+        
+        # Limpiar recursos al salir
+        self.resource_manager.cleanup()

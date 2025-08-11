@@ -22,7 +22,7 @@ class Scene:
         pass
     
     def update(self, dt: float):
-        """Actualiza la lógica de la escena"""
+        """Actualiza la logica de la escena"""
         pass
     
     def draw(self):

@@ -1,58 +1,90 @@
 import pygame
 from src.Constantes import *
 
-class Player(pygame.sprite.Sprite):
-    """Clase que representa al personaje principal UAIBOT"""
-    
-    def __init__(self, x, y, scale, resource_manager):
-        super().__init__()
+class Player:
+    def __init__(self, x, y, gravity, resource_manager):
+        self.rect = pygame.Rect(x, y, 32, 32)
         self.resource_manager = resource_manager
         
-        # Cargar imagen del personaje
-        image = self.resource_manager.get_image("uaibot")
-        if image:
-            # Escalar la imagen según el parámetro scale
-            width = int(image.get_width() * scale)
-            height = int(image.get_height() * scale)
-            self.image = pygame.transform.scale(image, (width, height))
-        else:
-            # Crear imagen de respaldo
-            self.image = self.resource_manager.create_fallback_image((64, 64), COLOR_AZUL)
-        
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
-        
-        # Variables de física del personaje
+        # Variables de física - MÁS DINÁMICAS
         self.vel_y = 0
-        self.is_airborne = False
-        self.y = y
+        self.gravity = gravity * 2.5  # Gravedad más fuerte
+        self.jump_strength = -12      # Salto más potente
+        self.on_ground = True
+        self.original_y = y
+        
+        # Variables de animación simplificadas - MÁS RÁPIDAS
+        self.animation_frame = 0
+        self.animation_timer = 0
+        self.animation_speed = 0.08   # Animación más rápida
+        self.animation_frames = []
+        
+        # Cargar frames de animación
+        self._load_animation_frames()
+        
+        # Sprite actual
+        self.current_sprite = None
+        self._update_sprite()
+    
+    def _load_animation_frames(self):
+        """Carga los frames de animación del jugador"""
+        spritesheet = self.resource_manager.get_spritesheet("UIAbot_walk")
+        
+        if spritesheet:
+            # Cargar frames de caminar (fila 0, columnas 0-4)
+            self.animation_frames = self.resource_manager.get_animation_frames("UIAbot_walk", 0, 4, 0)
+        
+        # Si no hay frames, usar placeholder
+        if not self.animation_frames:
+            placeholder = self.resource_manager.create_fallback_image((32, 32), (0, 100, 255))
+            self.animation_frames = [placeholder]
+            print("Usando placeholder para el jugador")
     
     def jump(self):
-        """Hace que el personaje salte si está en el suelo"""
-        if not self.is_airborne:
-            self.vel_y = -30
-            self.is_airborne = True
+        """Hace saltar al jugador si está en el suelo"""
+        if self.on_ground:
+            self.vel_y = self.jump_strength
+            self.on_ground = False
             self.resource_manager.play_sound("salto")
     
-    def update(self):
-        """Actualiza la física del personaje (gravedad y posición)"""
-        # Aplicar gravedad
-        self.vel_y += GRAVEDAD
-        
-        # Limitar velocidad máxima de caída
-        if self.vel_y > 10:
-            self.vel_y = 10
-        
-        # Actualizar posición vertical
+    def _update_sprite(self):
+        """Actualiza el sprite actual basado en el frame de animación"""
+        if self.animation_frames:
+            frame_index = int(self.animation_frame) % len(self.animation_frames)
+            self.current_sprite = self.animation_frames[frame_index]
+    
+    def update(self, dt=1/60):
+        """Actualiza la física y animación del jugador"""
+        # Física
+        self.vel_y += self.gravity
         self.rect.y += self.vel_y
-        self.y = self.rect.y
         
         # Verificar colisión con el suelo
-        if self.rect.bottom >= PISO_POS_Y:
-            self.rect.bottom = PISO_POS_Y
-            self.is_airborne = False
+        if self.rect.y >= self.original_y:
+            self.rect.y = self.original_y
             self.vel_y = 0
+            self.on_ground = True
+            
+        # Animación (solo si está en el suelo)
+        if self.on_ground:
+            self._update_animation(dt)
+    
+    def _update_animation(self, dt):
+        """Actualiza el frame de animación actual"""
+        self.animation_timer += dt
+        
+        if self.animation_timer >= self.animation_speed:
+            self.animation_timer = 0
+            self.animation_frame = (self.animation_frame + 1) % len(self.animation_frames)
+            self._update_sprite()
     
     def draw(self, screen):
-        """Dibuja el personaje"""
-        screen.blit(self.image, self.rect)
+        """Dibuja el jugador en la pantalla"""
+        if self.current_sprite:
+            # Centrar el sprite en el rect del jugador
+            sprite_rect = self.current_sprite.get_rect()
+            sprite_rect.center = self.rect.center
+            screen.blit(self.current_sprite, sprite_rect)
+        else:
+            # Fallback: dibujar rectángulo
+            pygame.draw.rect(screen, (0, 100, 255), self.rect)

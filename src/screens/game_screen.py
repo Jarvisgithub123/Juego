@@ -14,7 +14,7 @@ class GameScreen(Scene):
         
         # Inicializar componentes del juego
         self.player = Player(100, PISO_POS_Y - 64, 0.2, resource_manager)
-        self.cars = [Car(PANTALLA_ANCHO, PISO_POS_Y - 40, resource_manager)]
+        self.cars = [Car(PANTALLA_ANCHO, PISO_POS_Y - 86, resource_manager)]
         self.hud = GameHUD(resource_manager)
         
         # Estados del juego
@@ -26,7 +26,7 @@ class GameScreen(Scene):
         self.energy_remaining = DURACION_ENERGIA
         self.km_remaining = KILOMETROS_OBJETIVO
         
-        # Variables para animación del fondo
+        # Variables para animacion del fondo
         self.background_x1 = 0
         self.background_x2 = PANTALLA_ANCHO
         self.background_speed = 2
@@ -65,20 +65,20 @@ class GameScreen(Scene):
         self.scene_manager.change_scene(GameScreen)
     
     def _return_to_menu(self):
-        """Regresa al menú principal"""
+        """Regresa al menu principal"""
         from src.screens.menu_screen import MenuScreen
         self.scene_manager.change_scene(MenuScreen)
     
     def update(self, dt):
-        """Actualiza la lógica del juego"""
+        """Actualiza la logica del juego"""
         if not self.game_over and not self.victory:
             # Actualizar tiempo y distancia
             self._update_time_and_distance()
             
-            # Actualizar entidades
-            self.player.update()
+            # Actualizar entidades (PASAR dt)
+            self.player.update(dt)
             for car in self.cars:
-                car.update()
+                car.update(dt)  # Ahora pasamos dt al auto también
             
             # Verificar colisiones
             self._check_collisions()
@@ -90,14 +90,13 @@ class GameScreen(Scene):
             self._update_background()
     
     def _update_time_and_distance(self):
-        """Actualiza el tiempo transcurrido y calcula kilómetros restantes"""
         current_time = pygame.time.get_ticks()
         elapsed_time = (current_time - self.start_time) / 1000
         
         # Calcular energía restante
         self.energy_remaining = max(0, DURACION_ENERGIA - elapsed_time)
         
-        # Calcular kilómetros restantes
+        # Calcular kilometros restantes
         km_traveled = elapsed_time * DECREMENTO_KM_POR_SEGUNDO
         self.km_remaining = max(0, KILOMETROS_OBJETIVO - km_traveled)
     
@@ -111,7 +110,7 @@ class GameScreen(Scene):
     
     def _check_end_conditions(self):
         """Verifica las condiciones de fin de juego"""
-        # Verificar si se agotó la energía
+        # Verificar si se agoto la energía
         if self.energy_remaining <= 0:
             self.game_over = True
             self.resource_manager.play_sound("game_over")
@@ -124,7 +123,7 @@ class GameScreen(Scene):
             return
     
     def _update_background(self):
-        """Actualiza la animación del fondo"""
+        """Actualiza la animacion del fondo"""
         self.background_x1 -= self.background_speed
         self.background_x2 -= self.background_speed
         
@@ -135,7 +134,6 @@ class GameScreen(Scene):
             self.background_x2 = PANTALLA_ANCHO
     
     def draw(self):
-        """Dibuja todos los elementos del juego"""
         # Dibujar fondo animado
         self._draw_background()
         
@@ -151,7 +149,7 @@ class GameScreen(Scene):
         if not self.game_over and not self.victory:
             self.hud.draw(self.screen, self.energy_remaining, DURACION_ENERGIA, self.km_remaining)
         
-        # Dibujar pantallas de fin
+        # Dibujar pantallas de ganar o perder 
         if self.game_over:
             self._draw_game_over()
         elif self.victory:
@@ -183,7 +181,7 @@ class GameScreen(Scene):
         
         # Texto de game over
         font_large = self.resource_manager.get_font('titulo')
-        font_normal = self.resource_manager.get_font('pequena')
+        font_normal = self.resource_manager.get_font('pequeña')
         
         if font_large:
             game_over_text = font_large.render("JUEGO TERMINADO", True, COLOR_ROJO)
@@ -195,7 +193,7 @@ class GameScreen(Scene):
             restart_rect = restart_text.get_rect(center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 - 50))
             self.screen.blit(restart_text, restart_rect)
             
-            menu_text = font_normal.render("Presiona [ESCAPE] para volver al menú", True, COLOR_BLANCO)
+            menu_text = font_normal.render("Presiona [ESCAPE] para volver al menu", True, COLOR_BLANCO)
             menu_rect = menu_text.get_rect(center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 - 20))
             self.screen.blit(menu_text, menu_rect)
     
@@ -209,7 +207,7 @@ class GameScreen(Scene):
         
         # Texto de victoria
         font_large = self.resource_manager.get_font('titulo')
-        font_normal = self.resource_manager.get_font('pequena')
+        font_normal = self.resource_manager.get_font('pequeña')
         
         if font_large:
             victory_text = font_large.render("¡VICTORIA!", True, COLOR_TEXTO_VICTORIA)
@@ -217,10 +215,10 @@ class GameScreen(Scene):
             self.screen.blit(victory_text, victory_rect)
         
         if font_normal:
-            success_text = font_normal.render("¡El paquete fue entregado con éxito!", True, COLOR_TEXTO_VICTORIA)
+            success_text = font_normal.render("¡El paquete fue entregado con exito!", True, COLOR_TEXTO_VICTORIA)
             success_rect = success_text.get_rect(center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 - 50))
             self.screen.blit(success_text, success_rect)
             
-            menu_text = font_normal.render("Presiona [ESCAPE] para volver al menú", True, COLOR_BLANCO)
+            menu_text = font_normal.render("Presiona [ESCAPE] para volver al menu", True, COLOR_BLANCO)
             menu_rect = menu_text.get_rect(center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 - 20))
             self.screen.blit(menu_text, menu_rect)

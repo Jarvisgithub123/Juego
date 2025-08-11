@@ -4,7 +4,7 @@ from src.core.scene_manager import Scene
 from src.UI.button import Button
 
 class MenuScreen(Scene):
-    """Pantalla del menú principal"""
+    """Pantalla del menu principal"""
     
     def __init__(self, screen, resource_manager):
         super().__init__(screen, resource_manager)
@@ -13,11 +13,11 @@ class MenuScreen(Scene):
         self._create_buttons()
     
     def on_enter(self):
-        """Se ejecuta al entrar en la pantalla del menú"""
+        """Se ejecuta al entrar en la pantalla del menu"""
         self.resource_manager.play_music()
     
     def _create_buttons(self):
-        """Crea los botones del menú"""
+        """Crea los botones del menu"""
         button_width = 250
         button_height = 75
         spacing = 30
@@ -51,17 +51,17 @@ class MenuScreen(Scene):
         exit()
     
     def handle_event(self, event):
-        """Maneja los eventos del menú"""
+        """Maneja los eventos del menu"""
         for button in self.buttons:
             button.handle_event(event)
     
     def update(self, dt):
-        """Actualiza el menú"""
+        """Actualiza el menu"""
         for button in self.buttons:
             button.update(dt)
     
     def draw(self):
-        """Dibuja el menú"""
+        """Dibuja el menu"""
         self.screen.fill(COLOR_FONDO_BASE)
         
         # Título

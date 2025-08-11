@@ -2,7 +2,7 @@ import pygame
 from src.Constantes import *
 
 class Button:
-    """Botón mejorado con efectos y sonidos"""
+    """Boton mejorado con efectos y sonidos"""
     
     def __init__(self, text: str, x: int, y: int, width: int, height: int, 
                  resource_manager, action=None):
@@ -24,7 +24,7 @@ class Button:
         self.scale_speed = 8.0
     
     def handle_event(self, event: pygame.event.Event) -> bool:
-        """Maneja los eventos del botón"""
+        """Maneja los eventos del boton"""
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 and self.rect.collidepoint(event.pos):
                 self.is_pressed = True
@@ -39,7 +39,7 @@ class Button:
         return False
     
     def update(self, dt: float):
-        """Actualiza el estado del botón"""
+        """Actualiza el estado del boton"""
         mouse_pos = pygame.mouse.get_pos()
         is_hovering = self.rect.collidepoint(mouse_pos)
         
@@ -54,7 +54,7 @@ class Button:
         self.hover_scale += (self.target_scale - self.hover_scale) * self.scale_speed * dt
     
     def draw(self, surface: pygame.Surface):
-        """Dibuja el botón"""
+        """Dibuja el boton"""
         # Calcular rectángulo escalado
         if self.hover_scale != 1.0:
             center = self.rect.center
@@ -71,7 +71,7 @@ class Button:
             # Oscurecer si está presionado
             current_color = tuple(max(0, c - 30) for c in current_color)
         
-        # Dibujar botón
+        # Dibujar boton
         pygame.draw.rect(surface, current_color, draw_rect, border_radius=8)
         
         # Dibujar texto

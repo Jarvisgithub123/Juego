@@ -38,10 +38,9 @@ class GameHUD:
     
     def _draw_energy_bar(self, screen, current_energy, max_energy):
         """Dibuja la barra de energía en la parte superior derecha"""
-        # Calcular porcentaje
         percentage = (current_energy / max_energy) * 100
         
-        # Configuración de la barra
+        # Configuracion de la barra
         bar_width = 200
         bar_height = 20
         bar_x = PANTALLA_ANCHO - bar_width - 20
@@ -50,10 +49,9 @@ class GameHUD:
         # Dibujar fondo de la barra
         pygame.draw.rect(screen, COLOR_BARRA_FONDO, (bar_x, bar_y, bar_width, bar_height))
         
-        # Calcular ancho según energía restante
+        # Calcular ancho segun energía restante
         energy_width = int((current_energy / max_energy) * bar_width)
         
-        # Determinar color según nivel de energía
         if percentage > 60:
             energy_color = COLOR_BARRA_ENERGIA
         elif percentage > 30:
@@ -64,25 +62,22 @@ class GameHUD:
         # Dibujar barra de energía
         if energy_width > 0:
             pygame.draw.rect(screen, energy_color, (bar_x, bar_y, energy_width, bar_height))
-        
-        # Dibujar borde
         pygame.draw.rect(screen, COLOR_BLANCO, (bar_x, bar_y, bar_width, bar_height), 2)
         
-        # Dibujar texto con porcentaje
         font_hud = self.resource_manager.get_font('hud')
         if font_hud:
             energy_text = font_hud.render(f"Energía: {percentage:.0f}%", True, COLOR_BLANCO)
             screen.blit(energy_text, (bar_x, bar_y - 25))
     
     def _draw_km_counter(self, screen, km_remaining):
-        """Dibuja el contador de kilómetros en la parte superior izquierda"""
+        """Dibuja el contador de kilometros en la parte superior izquierda"""
         counter_x = 20
         counter_y = 60
         
         # Crear texto
         font_hud = self.resource_manager.get_font('hud')
         if font_hud:
-            km_text = font_hud.render(f"Kilómetros restantes: {km_remaining:.2f} km", True, COLOR_AMARILLO)
+            km_text = font_hud.render(f"Kilometros restantes: {km_remaining:.2f} km", True, COLOR_AMARILLO)
             
             # Crear fondo para el texto
             text_rect = km_text.get_rect()
@@ -91,6 +86,5 @@ class GameHUD:
             bg_counter = pygame.Rect(text_rect.left - 5, text_rect.top - 5,
                                    text_rect.width + 10, text_rect.height + 10)
             pygame.draw.rect(screen, COLOR_INSTRUCCION_FONDO, bg_counter)
-            
-            # Dibujar el texto
+      
             screen.blit(km_text, (counter_x, counter_y))
