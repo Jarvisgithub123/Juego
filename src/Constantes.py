@@ -11,7 +11,7 @@ COLOR_TEXTO_EN_BOTON = (245, 250, 245) # blanco
 
 GRAVEDAD = 0.75
 
-RUTA_ARCHIVO_FONDO = "Recursos\Imagenes\ciudad.jpg" 
+RUTA_ARCHIVO_FONDO = "Assets\Imagenes\ciudad.jpg" 
 COLOR_BLANCO = (255, 255, 255)
 COLOR_NEGRO = (0, 0, 0)
 COLOR_ROJO = (200, 0, 0)

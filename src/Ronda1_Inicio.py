@@ -7,61 +7,11 @@ from Constantes import *
 
 
 def juego():
-    sonido_salto = pygame.mixer.Sound("Recursos\Music\Jump.mp3")
-    sonido_derrota = pygame.mixer.Sound("Recursos\Music\Game-over.mp3")
-    sonido_ganar = pygame.mixer.Sound("Recursos\Music\Win.mp3")
+    sonido_salto = pygame.mixer.Sound("Assets\Music\Jump.mp3")
+    sonido_derrota = pygame.mixer.Sound("Assets\Music\Game-over.mp3")
+    sonido_ganar = pygame.mixer.Sound("Assets\Music\Win.mp3")
     pygame.init()
-    class Personaje(pygame.sprite.Sprite):
-        """Clase que representa al personaje principal UAIBOT"""
-        def __init__(self, x, y, scale):
-            super().__init__()
-            
-            # Cargar imagen del personaje UAIBOT
-            try:
-                imagen = pygame.image.load("Recursos/Imagenes/UAIBOT.png").convert_alpha()
-            except:
-                # Si no encuentra la imagen, crear un rectangulo azul como respaldo
-                imagen = pygame.Surface((64, 64))
-                imagen.fill(COLOR_AZUL)
-            
-            # Escalar la imagen segun el parametro scale
-            ancho = int(imagen.get_width() * scale)
-            alto = int(imagen.get_height() * scale)
-            self.image = pygame.transform.scale(imagen, (ancho, alto))
-            self.rect = self.image.get_rect()
-            self.rect.topleft = (x, y)
-            
-            # Variables de fisica del personaje
-            self.vel_y = 0
-            self.en_el_aire = False
-            self.y = y
 
-        def saltar(self):
-            """Hace que el personaje salte si esta en el suelo"""
-            if not self.en_el_aire:
-                self.vel_y = -15
-                self.en_el_aire = True
-                sonido_salto.play()
-
-        def actualizar(self):
-            """Actualiza la fisica del personaje (gravedad y posicion)"""
-            # Aplicar gravedad
-            self.vel_y += GRAVEDAD
-            
-            # Limitar velocidad maxima de caida
-            if self.vel_y > 10:
-                self.vel_y = 10
-
-            # Actualizar posicion vertical
-            self.rect.y += self.vel_y
-            self.y = self.rect.y
-
-            # Verificar colision con el suelo
-            if self.rect.bottom >= PISO_POS_Y:
-                self.rect.bottom = PISO_POS_Y
-                self.en_el_aire = False
-                self.vel_y = 0
-                sonido_salto.stop()
 
     class Auto(pygame.sprite.Sprite):
         """Clase que representa los autos enemigos"""
@@ -70,7 +20,7 @@ def juego():
             
             # Intentar cargar imagen del auto o crear rectangulo como respaldo
             try:
-                imagen = pygame.image.load("Recursos/Imagenes/auto.png").convert_alpha()
+                imagen = pygame.image.load("Assets/Imagenes/auto.png").convert_alpha()
                 self.image = pygame.transform.scale(imagen, (ancho, alto))
             except:
                 # Crear superficie roja como respaldo

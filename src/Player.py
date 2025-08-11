@@ -7,7 +7,7 @@ class Personaje(pygame.sprite.Sprite):
             
             # Cargar imagen del personaje UAIBOT
             try:
-                imagen = pygame.image.load("Recursos/Imagenes/UAIBOT.png").convert_alpha()
+                imagen = pygame.image.load("Assets/Imagenes/UAIBOT.png").convert_alpha()
             except:
                 # Si no encuentra la imagen, crear un rectangulo azul como respaldo
                 imagen = pygame.Surface((64, 64))
