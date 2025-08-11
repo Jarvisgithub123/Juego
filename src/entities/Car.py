@@ -10,10 +10,10 @@ class Car(pygame.sprite.Sprite):
         self.width = width
         self.height = height
         
-        # Variables de animación - MÁS RÁPIDAS
+        # Variables de animación - MaS RaPIDAS
         self.animation_frame = 0
         self.animation_timer = 0
-        self.animation_speed = 0.1   # Animación más rápida
+        self.animation_speed = 0.1   # Animación mas rapida
         self.animation_frames = []
         
         # Cargar frames de animación
@@ -71,5 +71,5 @@ class Car(pygame.sprite.Sprite):
         if self.current_sprite:
             screen.blit(self.current_sprite, self.rect)
         else:
-            # Fallback: dibujar rectángulo
+            # Fallback: dibujar rectangulo
             pygame.draw.rect(screen, (0, 0, 255), self.rect)

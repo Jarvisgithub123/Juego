@@ -55,7 +55,7 @@ class Button:
     
     def draw(self, surface: pygame.Surface):
         """Dibuja el boton"""
-        # Calcular rectángulo escalado
+        # Calcular rectangulo escalado
         if self.hover_scale != 1.0:
             center = self.rect.center
             scaled_size = (int(self.rect.width * self.hover_scale), 
@@ -68,7 +68,7 @@ class Button:
         # Color actual
         current_color = self.color_hover if self.was_hovering else self.color
         if self.is_pressed:
-            # Oscurecer si está presionado
+            # Oscurecer si esta presionado
             current_color = tuple(max(0, c - 30) for c in current_color)
         
         # Dibujar boton

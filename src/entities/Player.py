@@ -39,7 +39,7 @@ class Player:
         self._update_sprite()
         
     def dash(self, energy_callback):
-        """Ejecuta dash si hay energía y no está en cooldown"""
+        """Ejecuta dash si hay energía y no esta en cooldown"""
         if (not self.is_dashing and 
             self.dash_cooldown_timer <= 0 and 
             energy_callback(DASH_ENERGIA_COSTO)):
@@ -64,7 +64,7 @@ class Player:
             self.animation_frames = [placeholder]
     
     def jump(self):
-        """Hace saltar al jugador si está en el suelo"""
+        """Hace saltar al jugador si esta en el suelo"""
         if self.on_ground:
             self.vel_y = self.jump_strength
             self.on_ground = False
@@ -96,11 +96,11 @@ class Player:
             # Solo retornar si se alejó demasiado
             if abs(distance_from_origin) > 10:  # Pequeño margen
                 if distance_from_origin > 0:
-                    # Está muy a la derecha, mover hacia la izquierda
+                    # Esta muy a la derecha, mover hacia la izquierda
                     return_speed = min(self.return_to_origin_speed, distance_from_origin)
                     self.rect.x -= return_speed
                 else:
-                    # Está muy a la izquierda, mover hacia la derecha
+                    # Esta muy a la izquierda, mover hacia la derecha
                     return_speed = min(self.return_to_origin_speed, abs(distance_from_origin))
                     self.rect.x += return_speed
         
@@ -114,7 +114,7 @@ class Player:
             self.vel_y = 0
             self.on_ground = True
             
-        # Animación (solo si está en el suelo)
+        # Animación (solo si esta en el suelo)
         if self.on_ground:
             self._update_animation(dt)
             

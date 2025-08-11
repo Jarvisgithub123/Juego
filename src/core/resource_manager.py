@@ -27,7 +27,7 @@ class SpriteSheet:
         return frames
 
 class ResourceManager:
-    """Gestor de recursos del juego (imágenes, sonidos, música, sprite sheets, etc.)"""
+    """Gestor de recursos del juego (imagenes, sonidos, música, sprite sheets, etc.)"""
     def __init__(self):
         self.images: Dict[str, pygame.Surface] = {}
         self.sounds: Dict[str, pygame.mixer.Sound] = {}

@@ -10,7 +10,7 @@ class GameHUD:
     def __init__(self, resource_manager):
         self.resource_manager = resource_manager
         
-        # Crear textos estáticos
+        # Crear textos estaticos
         font_instructions = self.resource_manager.get_font('instrucciones')
         if font_instructions:
             self.instructions_text = font_instructions.render(

@@ -24,13 +24,18 @@ class GameManager:
         self.scene_manager.change_scene(MenuScreen)
         
         self.running = True
-    
+        
+
     def _load_initial_resources(self):
         """Carga los recursos iniciales del juego"""
-        # Imágenes normales
+        # Imagenes normales
         self.resource_manager.load_image("uaibot", "Assets/Imagenes/UAIBOT.png")
         self.resource_manager.load_image("auto", "Assets/Imagenes/auto.png")
-        self.resource_manager.load_image("fondo_ciudad", "Assets/Imagenes/fondociudad.png")
+        
+        
+        self.resource_manager.load_image("bg_sky", "Assets/Imagenes/bg_sky.png")
+        self.resource_manager.load_image("bg_mid", "Assets/Imagenes/bg_mid.png")
+        self.resource_manager.load_image("bg_front", "Assets/Imagenes/bg_front.png")
         
         # Sprite sheets para personajes (si existen)
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
