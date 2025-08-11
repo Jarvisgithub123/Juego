@@ -1,6 +1,8 @@
 import pygame
 from src.Constantes import *
 
+#TODO: Añadir animaiciones: Dash
+#TODO: Añadir particulas
 class Player:
     def __init__(self, x, y, gravity, resource_manager):
         self.rect = pygame.Rect(x, y, 32, 32)
@@ -89,10 +91,8 @@ class Player:
             if self.dash_timer <= 0:
                 self.is_dashing = False
         
-        # NUEVA LÓGICA: Retorno gradual a la posición original cuando no hace dash
         if not self.is_dashing:
             distance_from_origin = self.rect.x - self.original_x
-            
             # Solo retornar si se alejó demasiado
             if abs(distance_from_origin) > 10:  # Pequeño margen
                 if distance_from_origin > 0:

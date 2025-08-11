@@ -30,7 +30,7 @@ class GameManager:
         # Imágenes normales
         self.resource_manager.load_image("uaibot", "Assets/Imagenes/UAIBOT.png")
         self.resource_manager.load_image("auto", "Assets/Imagenes/auto.png")
-        self.resource_manager.load_image("fondo_ciudad", "Assets/Imagenes/ciudad.jpg")
+        self.resource_manager.load_image("fondo_ciudad", "Assets/Imagenes/fondociudad.png")
         
         # Sprite sheets para personajes (si existen)
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)

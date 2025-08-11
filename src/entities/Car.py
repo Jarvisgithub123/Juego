@@ -1,6 +1,6 @@
 import pygame
 from src.Constantes import *
-
+#TODO: Añadir diferentes tipos de vehiculos
 class Car(pygame.sprite.Sprite):
     def __init__(self, x, y, resource_manager, speed=15, width=126, height=86):  # VELOCIDAD AUMENTADA
         super().__init__()

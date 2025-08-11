@@ -1,6 +1,9 @@
 import pygame
 from src.Constantes import *
 
+
+#TODO: Añadir iconos
+#TODO: Mejorar interfaz
 class GameHUD:
     """Interfaz de usuario del juego (HUD)"""
     

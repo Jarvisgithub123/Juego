@@ -7,6 +7,15 @@ from src.entities.Car import Car
 from src.UI.game_hud import GameHUD
 from src.core.Camera import Camera
 
+#TODO: Hacer que el fondo se mueva con diferentes paralax
+#TODO: Hacer que sea mas justo el juego 
+#TODO: Añadir plataformas
+#TODO: Añadir musica
+#TODO: Objetos interactivos, como energia o monedas o como Escudo (bloquea 1 golpe).Turbo (aumenta velocidad por unos segundos).
+#TODO: Eventos aleatorios (lluvia,autos raros, etc)
+#TODO: Dia / Noche
+#TODO: Variación de terreno Rutas elevadas vs subterráneas (puentes, túneles). Rampas que te impulsan. Zonas con menos gravedad (salto más alto). Secciones con piso que resbala.
+#TODO: Best Score
 class GameScreen(Scene):
     def __init__(self, screen, resource_manager):
         super().__init__(screen, resource_manager)
@@ -201,20 +210,19 @@ class GameScreen(Scene):
     
     def draw(self):
         """Dibuja todo en pantalla"""
-        # Dibujar fondo animado (SIN offset de cámara)
+        # Dibujar fondo animado
         self._draw_background()
         
-        # Dibujar piso (SIN offset de cámara)
+        # Dibujar piso 
         self._draw_floor()
         
-        # Dibujar entidades CON offset de cámara
+        # Dibujar entidades 
         self._draw_entities()
         
-        # Dibujar HUD (sin offset de cámara)
+        # Dibujar HUD 
         if not self.game_over and not self.victory:
             self.hud.draw(self.screen, self.energy_remaining, DURACION_ENERGIA, self.km_remaining)
             
-        
         # Pantallas de fin
         if self.game_over:
             self._draw_game_over()
@@ -222,7 +230,6 @@ class GameScreen(Scene):
             self._draw_victory()
     
     def _draw_background(self):
-        """Dibuja el fondo animado (sistema original)"""
         if self.background_image:
             y_offset = -(PANTALLA_ALTO - PISO_POS_Y)
             self.screen.blit(self.background_image, (self.background_x1, y_offset))
@@ -231,15 +238,12 @@ class GameScreen(Scene):
             self.screen.fill(COLOR_BLANCO)
     
     def _draw_floor(self):
-        """Dibuja el piso del juego (sistema original)"""
         floor_height = PANTALLA_ALTO - PISO_POS_Y
         floor_rect = pygame.Rect(0, PISO_POS_Y, PANTALLA_ANCHO, floor_height)
-        pygame.draw.rect(self.screen, COLOR_VERDE, floor_rect)
+        pygame.draw.rect(self.screen, COLOR_FONDO, floor_rect)
         pygame.draw.line(self.screen, COLOR_NEGRO, (0, PISO_POS_Y), (PANTALLA_ANCHO, PISO_POS_Y), 3)
     
     def _draw_entities(self):
-        """Dibuja jugador y autos con offset de cámara"""
-        # Dibujar jugador
         self._draw_player()
         
         # Dibujar autos
