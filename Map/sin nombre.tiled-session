@@ -3,15 +3,58 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "Mapa1.tmx",
     "expandedProjectPaths": [
+        "."
     ],
     "file.lastUsedOpenFilter": "Todos los archivos (*)",
     "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "Buildings.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "Mapa1.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 568.6666666666666,
+                "y": 202.66666666666669
+            }
+        },
+        "Objetos.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1.5
+        },
+        "Tiles.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 2,
+            "scaleInEditor": 3
+        }
     },
+    "last.imagePath": "C:/Users/Tobias/OneDrive/Escritorio/Programacion/Juego/Map/GandalfHardcore City Tiles",
+    "map.lastUsedFormat": "tmx",
     "openFiles": [
+        "Mapa1.tmx",
+        "Tiles.tsx",
+        "Objetos.tsx",
+        "Buildings.tsx"
     ],
     "project": "sin nombre.tiled-project",
     "recentFiles": [
-    ]
+        "Buildings.tsx",
+        "Objetos.tsx",
+        "Tiles.tsx",
+        "Mapa1.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    },
+    "tileset.type": 0
 }
