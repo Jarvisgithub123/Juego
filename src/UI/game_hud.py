@@ -15,8 +15,8 @@ class GameHUD:
         self.instructions = []
         if font_instrucciones:
             textos = [
-                ("Presiona 'Espacio' para saltar", (20, 93)),
-                ("Presiona 'Z' para dashear", (20, 130))
+                ("Presiona 'Espacio' para saltar", (20, 60)),
+                ("Presiona 'Z' para dashear", (20,  90))
             ]
             
             for texto, pos in textos:
@@ -46,9 +46,9 @@ class GameHUD:
         # Configuracion de la barra
         bar_width = 200
         bar_height = 20
-        bar_x = PANTALLA_ANCHO - bar_width - 20
-        bar_y = 20
-        
+        bar_x = PANTALLA_ANCHO - bar_width - 100
+        bar_y = 50
+    
         # Dibujar fondo de la barra
         pygame.draw.rect(screen, COLOR_BARRA_FONDO, (bar_x, bar_y, bar_width, bar_height))
         
@@ -65,17 +65,17 @@ class GameHUD:
         # Dibujar barra de energía
         if energy_width > 0:
             pygame.draw.rect(screen, energy_color, (bar_x, bar_y, energy_width, bar_height))
-        pygame.draw.rect(screen, COLOR_BLANCO, (bar_x, bar_y, bar_width, bar_height), 2)
+        pygame.draw.rect(screen, COLOR_NEGRO, (bar_x, bar_y, bar_width, bar_height), 2)
         
         font_hud = self.resource_manager.get_font('hud')
         if font_hud:
-            energy_text = font_hud.render(f"Energía: {percentage:.0f}%", True, COLOR_BLANCO)
+            energy_text = font_hud.render(f"Energía: {percentage:.0f}%", True, COLOR_NEGRO)
             screen.blit(energy_text, (bar_x, bar_y - 25))
     
     def _draw_km_counter(self, screen, km_remaining):
         """Dibuja el contador de kilometros en la parte superior izquierda"""
         counter_x = 20
-        counter_y = 60
+        counter_y = 30
         
         # Crear texto
         font_hud = self.resource_manager.get_font('hud')
