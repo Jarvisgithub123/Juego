@@ -11,21 +11,18 @@ class GameHUD:
         self.resource_manager = resource_manager
         
         # Crear textos estaticos
-        font_instructions = self.resource_manager.get_font('instrucciones')
-        if font_instructions:
-            self.instructions_text = font_instructions.render(
-                "Usa la barra espaciadora para saltar", True, COLOR_BLANCO)
-            self.instructions_rect = self.instructions_text.get_rect()
-            self.instructions_rect.topleft = (10, 10)
+        font_instrucciones = self.resource_manager.get_font('instrucciones')
+        self.instructions = []
+        if font_instrucciones:
+            textos = [
+                ("Presiona 'Espacio' para saltar", (20, 93)),
+                ("Presiona 'Z' para dashear", (20, 130))
+            ]
             
-            # Configurar fondo de instrucciones
-            padding = 10
-            self.instructions_bg = pygame.Rect(
-                self.instructions_rect.left - padding,
-                self.instructions_rect.top - padding,
-                self.instructions_rect.width + 2 * padding,
-                self.instructions_rect.height + 2 * padding
-            )
+            for texto, pos in textos:
+                txt_surface = font_instrucciones.render(texto, True, COLOR_BLANCO)
+                rect = txt_surface.get_rect(topleft=pos)
+                self.instructions.append((txt_surface, rect))
     
     def draw(self, screen, current_energy, max_energy, km_remaining):
         """Dibuja todos los elementos del HUD"""
@@ -34,11 +31,14 @@ class GameHUD:
         self._draw_km_counter(screen, km_remaining)
     
     def _draw_instructions(self, screen):
-        """Dibuja las instrucciones en pantalla"""
-        if hasattr(self, 'instructions_bg'):
-            pygame.draw.rect(screen, COLOR_INSTRUCCION_FONDO, self.instructions_bg)
-            screen.blit(self.instructions_text, self.instructions_rect)
-    
+        """Dibuja todas las instrucciones en pantalla"""
+        for txt_surface, rect in self.instructions:
+            # Dibujar fondo
+            bg = pygame.Rect(rect.left - 5, rect.top - 5,rect.width + 10, rect.height + 10)
+            pygame.draw.rect(screen, COLOR_INSTRUCCION_FONDO, bg)
+            # Dibujar texto
+            screen.blit(txt_surface, rect)
+        
     def _draw_energy_bar(self, screen, current_energy, max_energy):
         """Dibuja la barra de energía en la parte superior derecha"""
         percentage = (current_energy / max_energy) * 100
