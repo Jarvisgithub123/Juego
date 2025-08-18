@@ -13,7 +13,7 @@ def main():
         print(f"Error al iniciar el juego: {e}")
     finally:
         pygame.quit()
-        sys.exit()
+        sys.exit()  
 
 if __name__ == "__main__":
     main()
