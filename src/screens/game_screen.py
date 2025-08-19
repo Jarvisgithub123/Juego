@@ -21,6 +21,7 @@ class GameScreen(Scene):
         self.hud = GameHUD(resource_manager)
         
         # Estado del juego
+        self.pause = False
         self.game_over = False
         self.victory = False
         self.energy_remaining = DURACION_ENERGIA
@@ -36,10 +37,15 @@ class GameScreen(Scene):
     def _handle_gameplay_events(self, event: pygame.event.Event):
         """Maneja eventos durante el juego activo"""
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_SPACE and not self.pause:
                 self.player.jump()
-            elif event.key == pygame.K_z:
+            elif event.key == pygame.K_z and not self.pause:
                 self.player.dash(self._consume_energy)
+            if event.key == pygame.K_p: 
+                self.pause= not self.pause 
+            elif self.pause: 
+                if event.key == pygame.K_ESCAPE:
+                    self._return_to_menu()
     
     def _handle_endgame_events(self, event: pygame.event.Event):
         """Maneja eventos en pantallas de fin de juego"""
@@ -50,6 +56,9 @@ class GameScreen(Scene):
                 self._return_to_menu()
     
     def update(self, delta_time: float):
+        """Para que no se reinicie al entrar en pausa"""
+        if self.pause:
+            return
         """Actualiza toda la lógica del juego"""
         if not self.game_over and not self.victory:
             self._update_game_systems(delta_time)
@@ -146,3 +155,20 @@ class GameScreen(Scene):
             self.renderer.draw_game_over_screen()
         elif self.victory:
             self.renderer.draw_victory_screen()
+        if self.pause and not self.game_over and not self.victory:
+            overlay = pygame.Surface((PANTALLA_ANCHO, PANTALLA_ALTO))
+            overlay.set_alpha(150)  # nivel de transparencia
+            overlay.fill((0, 0, 0))
+            self.screen.blit(overlay, (0, 0))
+
+            font = pygame.font.SysFont(None, 60)
+            text = font.render("Juego Pausado", True, (255, 255, 255))
+            rect = text.get_rect(center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2))
+            self.screen.blit(text, rect)
+
+            font_small = pygame.font.SysFont(None, 36)
+            text2 = font_small.render("Presiona P para continuar o ESC para volver al menu", True, (200, 200, 200))
+            rect2 = text2.get_rect(center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 + 60))
+
+
+            self.screen.blit(text2, rect2)
