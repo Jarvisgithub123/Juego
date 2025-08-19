@@ -122,7 +122,7 @@ class Player:
         self.is_dashing = True
         self.dash_timer = self.dash_duration
         self.dash_cooldown_timer = self.dash_cooldown
-        self.resource_manager.play_sound("salto")
+        self.resource_manager.play_sound("dash")
     
     def can_dash(self) -> bool:
         """Verifica si el jugador puede hacer dash (metodo publico)"""

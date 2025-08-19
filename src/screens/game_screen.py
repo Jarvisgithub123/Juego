@@ -114,6 +114,11 @@ class GameScreen(Scene):
             return True
         return False
     
+    def on_enter(self):
+        """Se ejecuta al entrar en la pantalla del juego"""
+        
+        self.resource_manager.play_music("game_music", volume=0.6)
+    
     def _restart_game(self):
         """Reinicia el juego desde el principio"""
         from src.screens.game_screen import GameScreen

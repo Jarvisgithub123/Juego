@@ -33,7 +33,16 @@ class ResourceManager:
         self.sounds: Dict[str, pygame.mixer.Sound] = {}
         self.fonts: Dict[str, pygame.font.Font] = {}
         self.sprite_sheets: Dict[str, SpriteSheet] = {}
+        
+        # Mantener compatibilidad con código existente
         self.music_loaded = None
+        
+        # Nuevo sistema para manejar múltiples músicas
+        self.music_tracks: Dict[str, str] = {}
+        self.current_music_track = None
+        self.music_volume = 0.7
+        self.music_enabled = True
+        
         self._load_default_fonts()
     
     def _load_default_fonts(self):
@@ -145,30 +154,89 @@ class ResourceManager:
             return True
         return False
     
-    # ===== MÉTODOS PARA MÚSICA =====
+    # ===== MÉTODOS PARA MÚSICA (VERSIÓN MEJORADA) =====
     def load_music(self, name: str, path: str) -> bool:
-        """Carga música de fondo"""
+        """Carga una pista de música y la almacena con el nombre dado"""
         try:
             if os.path.exists(path):
-                pygame.mixer.music.load(path)
+                self.music_tracks[name] = path
+                # Mantener compatibilidad: establecer music_loaded al último cargado
                 self.music_loaded = name
+                print(f"Música '{name}' registrada: {path}")
                 return True
             else:
                 print(f"Advertencia: No se encontró la música en {path}")
                 return False
         except Exception as e:
-            print(f"Error cargando música {path}: {e}")
+            print(f"Error registrando música {path}: {e}")
             return False
     
-    def play_music(self, loops: int = -1, volume: float = 0.7):
-        """Reproduce la música cargada"""
-        if self.music_loaded:
-            pygame.mixer.music.set_volume(volume)
-            pygame.mixer.music.play(loops)
+    def play_music(self, name: str = None, loops: int = -1, volume: float = None, fade_ms: int = 0):
+        """Reproduce una música específica por nombre"""
+        if not hasattr(self, 'music_enabled') or not self.music_enabled:
+            return False
+            
+        if volume is None:
+            volume = getattr(self, 'music_volume', 0.7)
+            
+        # Compatibilidad: si no se especifica nombre, usar el último cargado
+        if name is None:
+            if hasattr(self, 'current_music_track') and self.current_music_track:
+                name = self.current_music_track
+            elif self.music_loaded:
+                name = self.music_loaded
+                
+        if name and name in self.music_tracks:
+            try:
+                # Solo cambiar música si es diferente a la actual
+                current_track = getattr(self, 'current_music_track', None)
+                if current_track != name or not pygame.mixer.music.get_busy():
+                    path = self.music_tracks[name]
+                    
+                    # Detener música actual si hay fade
+                    if pygame.mixer.music.get_busy() and fade_ms > 0:
+                        pygame.mixer.music.fadeout(fade_ms)
+                        pygame.time.wait(fade_ms)
+                    
+                    pygame.mixer.music.load(path)
+                    pygame.mixer.music.set_volume(volume)
+                    pygame.mixer.music.play(loops)
+                    self.current_music_track = name
+                    
+                    print(f"Reproduciendo música: {name}")
+                    return True
+                else:
+                    # Solo ajustar volumen si es la misma música
+                    pygame.mixer.music.set_volume(volume)
+                    return True
+            except Exception as e:
+                print(f"Error reproduciendo música {name}: {e}")
+                return False
+        elif name is None and self.music_tracks:
+            # Reproducir cualquier música disponible si no se especifica
+            first_track = list(self.music_tracks.keys())[0]
+            return self.play_music(first_track, loops, volume, fade_ms)
+        else:
+            print(f"Música '{name}' no encontrada. Disponibles: {list(self.music_tracks.keys())}")
+            return False
     
-    def stop_music(self):
+    def switch_music(self, name: str, fade_out_ms: int = 1000, fade_in_ms: int = 1000):
+        """Cambia de una música a otra con efectos de fade"""
+        if name in self.music_tracks:
+            if pygame.mixer.music.get_busy():
+                pygame.mixer.music.fadeout(fade_out_ms)
+                pygame.time.wait(fade_out_ms)
+            
+            self.play_music(name)
+    
+    def stop_music(self, fade_ms: int = 0):
         """Detiene la música"""
-        pygame.mixer.music.stop()
+        if fade_ms > 0:
+            pygame.mixer.music.fadeout(fade_ms)
+        else:
+            pygame.mixer.music.stop()
+        if hasattr(self, 'current_music_track'):
+            self.current_music_track = None
     
     def pause_music(self):
         """Pausa la música"""
@@ -177,6 +245,33 @@ class ResourceManager:
     def unpause_music(self):
         """Reanuda la música"""
         pygame.mixer.music.unpause()
+    
+    def set_music_volume(self, volume: float):
+        """Establece el volumen de la música (0.0 - 1.0)"""
+        self.music_volume = max(0.0, min(1.0, volume))
+        pygame.mixer.music.set_volume(self.music_volume)
+    
+    def get_music_volume(self) -> float:
+        """Obtiene el volumen actual de la música"""
+        return getattr(self, 'music_volume', 0.7)
+    
+    def is_music_playing(self) -> bool:
+        """Verifica si se está reproduciendo música"""
+        return pygame.mixer.music.get_busy()
+    
+    def get_current_music(self) -> Optional[str]:
+        """Obtiene el nombre de la música actual"""
+        return getattr(self, 'current_music_track', None)
+    
+    def get_available_music(self) -> list:
+        """Obtiene lista de músicas disponibles"""
+        return list(self.music_tracks.keys())
+    
+    def enable_music(self, enabled: bool):
+        """Habilita o deshabilita la música"""
+        self.music_enabled = enabled
+        if not enabled:
+            self.stop_music()
     
     # ===== MÉTODOS PARA FUENTES =====
     def get_font(self, name: str) -> Optional[pygame.font.Font]:
@@ -215,7 +310,9 @@ class ResourceManager:
             "sounds": len(self.sounds),
             "fonts": len(self.fonts),
             "sprite_sheets": len(self.sprite_sheets),
-            "music_loaded": self.music_loaded is not None
+            "music_tracks": len(self.music_tracks),
+            "music_loaded": self.music_loaded is not None,
+            "current_music": getattr(self, 'current_music_track', None)
         }
     
     def cleanup(self):
@@ -224,5 +321,8 @@ class ResourceManager:
         self.sounds.clear()
         self.fonts.clear()
         self.sprite_sheets.clear()
+        self.music_tracks.clear()
+        self.current_music_track = None
         self.music_loaded = None
+        pygame.mixer.music.stop()
         print("Recursos limpiados")

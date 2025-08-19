@@ -14,7 +14,7 @@ class MenuScreen(Scene):
     
     def on_enter(self):
         """Se ejecuta al entrar en la pantalla del menu"""
-        self.resource_manager.play_music()
+        self.resource_manager.play_music("menu", volume=0.5)
     
     def _create_buttons(self):
         """Crea los botones del menu"""
@@ -27,11 +27,11 @@ class MenuScreen(Scene):
         
         self.buttons = [
             Button("Jugar", start_x, start_y, button_width, button_height, 
-                   self.resource_manager, self._start_game),
+                self.resource_manager, self._start_game),
             Button("Ajustes", start_x, start_y + button_height + spacing, 
-                   button_width, button_height, self.resource_manager, self._show_settings),
+                button_width, button_height, self.resource_manager, self._show_settings),
             Button("Salir", start_x, start_y + 2 * (button_height + spacing), 
-                   button_width, button_height, self.resource_manager, self._quit_game)
+                button_width, button_height, self.resource_manager, self._quit_game)
         ]
     
     def _start_game(self):

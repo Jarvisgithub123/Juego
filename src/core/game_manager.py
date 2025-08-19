@@ -45,12 +45,13 @@ class GameManager:
         # Sonidos
         self.resource_manager.load_sound("boton_hover", "Assets/Music/mixkit-arcade-game-jump-coin-216.mp3")
         self.resource_manager.load_sound("salto", "Assets/Music/Jump.mp3")
+        self.resource_manager.load_sound("dash", "Assets/Music/dash.mp3")
         self.resource_manager.load_sound("game_over", "Assets/Music/Game-over.mp3")
         self.resource_manager.load_sound("victoria", "Assets/Music/Win.mp3")
         
         # Música
-        self.resource_manager.load_music("menu", "Assets/Music/wwd.mp3juice.blog - Aventura - Los Infieles (192 KBps).mp3")
-        
+        self.resource_manager.load_music("menu", "Assets/Music/Music-menu.mp3")
+        self.resource_manager.load_music("game_music", "Assets/Music/Game-music.mp3")
         
         # Mostrar información de recursos cargados
         info = self.resource_manager.get_resource_info()
