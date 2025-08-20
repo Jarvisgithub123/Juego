@@ -154,9 +154,9 @@ class ResourceManager:
             return True
         return False
     
-    # ===== MÉTODOS PARA MÚSICA (VERSIÓN MEJORADA) =====
+    # ===== MÉTODOS PARA MÚSICA  =====
     def load_music(self, name: str, path: str) -> bool:
-        """Carga una pista de música y la almacena con el nombre dado"""
+        #Carga una pista de música y la almacena con el nombre dado
         try:
             if os.path.exists(path):
                 self.music_tracks[name] = path
@@ -173,7 +173,8 @@ class ResourceManager:
     
     def play_music(self, name: str = None, loops: int = -1, volume: float = None, fade_ms: int = 0):
         """Reproduce una música específica por nombre"""
-        if not hasattr(self, 'music_enabled') or not self.music_enabled:
+        if not getattr(self, 'music_enabled', True):
+            print("Música desactivada - no se reproducirá")
             return False
             
         if volume is None:
@@ -244,7 +245,11 @@ class ResourceManager:
     
     def unpause_music(self):
         """Reanuda la música"""
-        pygame.mixer.music.unpause()
+        if getattr(self, 'music_enabled', True):
+            pygame.mixer.music.unpause()
+            print("Música reanudada")
+        else:
+            print("Música desactivada - no se puede reanudar")
     
     def set_music_volume(self, volume: float):
         """Establece el volumen de la música (0.0 - 1.0)"""
@@ -272,6 +277,9 @@ class ResourceManager:
         self.music_enabled = enabled
         if not enabled:
             self.stop_music()
+            print("Música desactivada globalmente")
+        else:
+            print("Música activada globalmente")
     
     # ===== MÉTODOS PARA FUENTES =====
     def get_font(self, name: str) -> Optional[pygame.font.Font]:

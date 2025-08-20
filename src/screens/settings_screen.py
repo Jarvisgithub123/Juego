@@ -6,9 +6,8 @@ from src.UI.button import Button
 class SettingsScreen(Scene):
     """Pantalla de configuracion"""
     
-    def __init__(self, screen, resource_manager, sound_enabled=True):
+    def __init__(self, screen, resource_manager):
         super().__init__(screen, resource_manager)
-        self.sound_enabled = sound_enabled
         self.buttons = []
         self._create_buttons()
     
@@ -20,8 +19,10 @@ class SettingsScreen(Scene):
         center_x = ANCHO_PANTALLA // 2
         start_y = ALTO_PANTALLA // 2 - 100
         
+        music_enabled = getattr(self.resource_manager, 'music_enabled', True)
+        
         self.buttons = [
-            Button(f"Musica: {'Activada' if self.sound_enabled else 'Desactivada'}", 
+            Button(f"Musica: {'Activada' if music_enabled else 'Desactivada'}", 
                    center_x - button_width // 2, start_y,
                    button_width, button_height, self.resource_manager, self._toggle_sound),
             Button("Volver al Menu", 
@@ -31,15 +32,23 @@ class SettingsScreen(Scene):
     
     def _toggle_sound(self):
         """Alterna el sonido"""
-        self.sound_enabled = not self.sound_enabled
+        current_state = getattr(self.resource_manager, 'music_enabled', True)
+        new_state = not current_state
         
-        if self.sound_enabled:
-            self.resource_manager.unpause_music()
-        else:
-            self.resource_manager.pause_music()
+        # Cambiar el estado global de música
+        self.resource_manager.enable_music(new_state)
         
-        # Actualizar texto del boton
-        self.buttons[0].text = f"Musica: {'Activada' if self.sound_enabled else 'Desactivada'}"
+        if new_state:
+            # Si se activa la música, reproducir la música actual o la del menú
+            current_music = self.resource_manager.get_current_music()
+            if current_music:
+                self.resource_manager.unpause_music()
+            else:
+                # Si no hay música reproduciéndose, iniciar la música del menú
+                self.resource_manager.play_music("menu")
+        
+        # Actualizar texto del botón
+        self.buttons[0].text = f"Musica: {'Activada' if new_state else 'Desactivada'}"
     
     def _return_to_menu(self):
         """Regresa al menu principal"""
@@ -58,6 +67,11 @@ class SettingsScreen(Scene):
         """Actualiza la pantalla de configuracion"""
         for button in self.buttons:
             button.update(dt)
+        
+        music_enabled = getattr(self.resource_manager, 'music_enabled', True)
+        expected_text = f"Musica: {'Activada' if music_enabled else 'Desactivada'}"
+        if self.buttons[0].text != expected_text:
+            self.buttons[0].text = expected_text
     
     def draw(self):
         """Dibuja la pantalla de configuracion"""

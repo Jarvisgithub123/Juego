@@ -43,7 +43,7 @@ class MenuScreen(Scene):
     def _show_settings(self):
         """Muestra las opciones"""
         from src.screens.settings_screen import SettingsScreen
-        self.scene_manager.change_scene(SettingsScreen, self.sound_enabled)
+        self.scene_manager.change_scene(SettingsScreen)
     
     def _quit_game(self):
         """Sale del juego"""
