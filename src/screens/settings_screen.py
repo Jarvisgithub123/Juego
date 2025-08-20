@@ -21,7 +21,7 @@ class SettingsScreen(Scene):
         start_y = ALTO_PANTALLA // 2 - 100
         
         self.buttons = [
-            Button(f"Sonido: {'Activado' if self.sound_enabled else 'Desactivado'}", 
+            Button(f"Musica: {'Activada' if self.sound_enabled else 'Desactivada'}", 
                    center_x - button_width // 2, start_y,
                    button_width, button_height, self.resource_manager, self._toggle_sound),
             Button("Volver al Menu", 
@@ -39,7 +39,7 @@ class SettingsScreen(Scene):
             self.resource_manager.pause_music()
         
         # Actualizar texto del boton
-        self.buttons[0].text = f"Sonido: {'Activado' if self.sound_enabled else 'Desactivado'}"
+        self.buttons[0].text = f"Musica: {'Activada' if self.sound_enabled else 'Desactivada'}"
     
     def _return_to_menu(self):
         """Regresa al menu principal"""
