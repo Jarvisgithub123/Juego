@@ -128,13 +128,21 @@ class GameScreen(Scene):
         
         self.resource_manager.play_music("game_music", volume=0.6)
     
+    def on_exit(self):
+        """Se ejecuta al salir de la pantalla del juego"""
+        # Detener todos los sonidos que puedan estar reproduciéndose
+        pygame.mixer.stop()  # Detiene todos los sonidos (no la música)
+        print("Sonidos detenidos al salir del juego")
+    
     def _restart_game(self):
         """Reinicia el juego desde el principio"""
+        pygame.mixer.stop()
         from src.screens.game_screen import GameScreen
         self.scene_manager.change_scene(GameScreen)
     
     def _return_to_menu(self):
         """Regresa al menú principal"""
+        pygame.mixer.stop()
         from src.screens.menu_screen import MenuScreen
         self.scene_manager.change_scene(MenuScreen)
     
