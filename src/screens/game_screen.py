@@ -100,11 +100,13 @@ class GameScreen(Scene):
         """Activa el estado de game over"""
         self.game_over = True
         self.resource_manager.play_sound("game_over")
+        self.resource_manager.stop_music()
     
     def _trigger_victory(self):
         """Activa el estado de victoria"""
         self.victory = True
         self.resource_manager.play_sound("victoria")
+        self.resource_manager.stop_music()
     
     def _update_time_and_distance(self, delta_time: float):
         """Actualiza tiempo de energía y distancia recorrida"""
