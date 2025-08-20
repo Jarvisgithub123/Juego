@@ -3,6 +3,7 @@ import os
 from typing import Dict, Optional
 
 class SpriteSheet:
+    """Maneja una hoja de sprites: calcula columnas/filas y recorta frames."""
     def __init__(self, surface, frame_width, frame_height):
         self.sheet = surface
         self.frame_width = frame_width
@@ -11,41 +12,45 @@ class SpriteSheet:
         self.rows = self.sheet.get_height() // frame_height
 
     def get_frame(self, col, row):
-        """Obtiene un frame específico por columna y fila"""
+        """Devuelve un frame por (col, row)."""
         x = col * self.frame_width
         y = row * self.frame_height
         return self.sheet.subsurface((x, y, self.frame_width, self.frame_height))
 
     def get_row(self, row):
+        """Devuelve todos los frames de una fila (para animaciones simples)."""
         return [self.get_frame(col, row) for col in range(self.columns)]
     
     def get_animation_frames(self, start_col, end_col, row):
+        """Devuelve un rango de frames (col inicial→final) de una fila."""
         frames = []
         for col in range(start_col, end_col + 1):
             if col < self.columns:
                 frames.append(self.get_frame(col, row))
         return frames
 
+
 class ResourceManager:
-    """Gestor de recursos del juego (imagenes, sonidos, música, sprite sheets, etc.)"""
+    """Gestor central de recursos: imágenes, sonidos, fuentes, música y sprites."""
     def __init__(self):
+        # Colecciones por tipo de recurso (acceso por nombre/clave).
         self.images: Dict[str, pygame.Surface] = {}
         self.sounds: Dict[str, pygame.mixer.Sound] = {}
         self.fonts: Dict[str, pygame.font.Font] = {}
         self.sprite_sheets: Dict[str, SpriteSheet] = {}
         
-        # Mantener compatibilidad con código existente
-        self.music_loaded = None
-        
-        # Nuevo sistema para manejar múltiples músicas
+        # Sistema de música .
+        self.music_loaded = None          # ultima pista registrada
         self.music_tracks: Dict[str, str] = {}
         self.current_music_track = None
         self.music_volume = 0.7
         self.music_enabled = True
         
+        # Fuentes por defecto .
         self._load_default_fonts()
     
     def _load_default_fonts(self):
+        """Fuentes base para títulos, botones, HUD, etc."""
         self.fonts['titulo'] = pygame.font.Font(None, 90)
         self.fonts['subtitulo'] = pygame.font.Font(None, 40)
         self.fonts['boton'] = pygame.font.Font(None, 55)
@@ -53,14 +58,13 @@ class ResourceManager:
         self.fonts['hud'] = pygame.font.SysFont(None, 32)
         self.fonts['instrucciones'] = pygame.font.SysFont(None, 36)
 
+    # ===== IMÁGENES =====
     def load_image(self, name: str, path: str, convert_alpha: bool = True) -> bool:
+        """Carga imagen desde disco y la registra con 'name' ."""
         try:
             if os.path.exists(path):
                 image = pygame.image.load(path)
-                if convert_alpha:
-                    image = image.convert_alpha()
-                else:
-                    image = image.convert()
+                image = image.convert_alpha() if convert_alpha else image.convert()
                 self.images[name] = image
                 return True
             else:
@@ -71,17 +75,19 @@ class ResourceManager:
             return False
     
     def get_image(self, name: str) -> Optional[pygame.Surface]:
+        """Obtiene una imagen por nombre (o none si no existe)."""
         return self.images.get(name)
     
     def get_scaled_image(self, name: str, size: tuple) -> Optional[pygame.Surface]:
-        """Obtiene una imagen escalada"""
+        """Devuelve una copia escalada si la imagen existe."""
         image = self.get_image(name)
         if image:
             return pygame.transform.scale(image, size)
         return None
-    
+
+    # ===== SPRITE SHEETS =====
     def load_spritesheet(self, name: str, path: str, frame_width: int, frame_height: int) -> bool:
-        """Carga una hoja de sprites y la almacena con el nombre dado"""
+        """Carga una hoja de sprites. Si falta, crea placeholder magenta (debug)."""
         try:
             if os.path.exists(path):
                 image = pygame.image.load(path).convert_alpha()
@@ -90,46 +96,45 @@ class ResourceManager:
                 return True
             else:
                 print(f"Advertencia: No se encontró el sprite sheet en {path}")
-                # Crear placeholder para debug
                 placeholder = pygame.Surface((frame_width, frame_height))
-                placeholder.fill((255, 0, 255))  # Magenta para debug
+                placeholder.fill((255, 0, 255))  # magenta = recurso faltante
                 self.sprite_sheets[name] = SpriteSheet(placeholder, frame_width, frame_height)
                 return False
         except Exception as e:
             print(f"Error cargando sprite sheet {path}: {e}")
-            # Crear placeholder para debug
             placeholder = pygame.Surface((frame_width, frame_height))
-            placeholder.fill((255, 0, 255))  # Magenta para debug
+            placeholder.fill((255, 0, 255))
             self.sprite_sheets[name] = SpriteSheet(placeholder, frame_width, frame_height)
             return False
     
     def get_spritesheet(self, name: str) -> Optional[SpriteSheet]:
-        """Obtiene una hoja de sprites por su nombre"""
+        """Obtiene la hoja de sprites por nombre."""
         return self.sprite_sheets.get(name)
     
     def get_sprite_frame(self, sheet_name: str, col: int, row: int) -> Optional[pygame.Surface]:
-        """Obtiene un frame específico de una sprite sheet"""
+        """Atajo: devuelve un frame de una hoja si existe."""
         spritesheet = self.get_spritesheet(sheet_name)
         if spritesheet:
             return spritesheet.get_frame(col, row)
         return None
     
     def get_sprite_row(self, sheet_name: str, row: int) -> list:
-        """Obtiene toda una fila de frames de una sprite sheet"""
+        """Atajo: devuelve todos los frames de una fila."""
         spritesheet = self.get_spritesheet(sheet_name)
         if spritesheet:
             return spritesheet.get_row(row)
         return []
     
     def get_animation_frames(self, sheet_name: str, start_col: int, end_col: int, row: int) -> list:
-        """Obtiene un rango de frames para animación de una sprite sheet"""
+        """Atajo: devuelve un rango de frames para animar."""
         spritesheet = self.get_spritesheet(sheet_name)
         if spritesheet:
             return spritesheet.get_animation_frames(start_col, end_col, row)
         return []
-    
+
+    # ===== SONIDOS  =====
     def load_sound(self, name: str, path: str) -> bool:
-        """Carga un sonido y lo almacena con el nombre dado"""
+        """Carga un efecto de sonido y lo registra con 'name'."""
         try:
             if os.path.exists(path):
                 sound = pygame.mixer.Sound(path)
@@ -143,25 +148,24 @@ class ResourceManager:
             return False
     
     def get_sound(self, name: str) -> Optional[pygame.mixer.Sound]:
-        """Obtiene un sonido por su nombre"""
+        """Obtiene un sonido por nombre (o None)."""
         return self.sounds.get(name)
     
     def play_sound(self, name: str) -> bool:
-        """Reproduce un sonido"""
+        """Reproduce un sonido si está cargado."""
         sound = self.get_sound(name)
         if sound:
             sound.play()
             return True
         return False
-    
-    # ===== MÉTODOS PARA MÚSICA  =====
+
+    # ===== MUSICA =====
     def load_music(self, name: str, path: str) -> bool:
-        #Carga una pista de música y la almacena con el nombre dado
+        """Registra la ruta de una pista para reproducirla luego."""
         try:
             if os.path.exists(path):
                 self.music_tracks[name] = path
-                # Mantener compatibilidad: establecer music_loaded al último cargado
-                self.music_loaded = name
+                self.music_loaded = name  # recuerda la ultima
                 print(f"Música '{name}' registrada: {path}")
                 return True
             else:
@@ -172,7 +176,8 @@ class ResourceManager:
             return False
     
     def play_music(self, name: str = None, loops: int = -1, volume: float = None, fade_ms: int = 0):
-        """Reproduce una música específica por nombre"""
+        """Reproduce una pista por nombre (con loops, volumen y fade opcionales)."""
+        # Respeta el switch global de música.
         if not getattr(self, 'music_enabled', True):
             print("Música desactivada - no se reproducirá")
             return False
@@ -180,21 +185,22 @@ class ResourceManager:
         if volume is None:
             volume = getattr(self, 'music_volume', 0.7)
             
-        # Compatibilidad: si no se especifica nombre, usar el último cargado
+        # si no se pasa nombre, usa la actual o la úutima cargada.
         if name is None:
-            if hasattr(self, 'current_music_track') and self.current_music_track:
+            if getattr(self, 'current_music_track', None):
                 name = self.current_music_track
             elif self.music_loaded:
                 name = self.music_loaded
                 
         if name and name in self.music_tracks:
             try:
-                # Solo cambiar música si es diferente a la actual
                 current_track = getattr(self, 'current_music_track', None)
+
+                # Solo recarga si es diferente o no hay música sonando.
                 if current_track != name or not pygame.mixer.music.get_busy():
                     path = self.music_tracks[name]
                     
-                    # Detener música actual si hay fade
+                    # Si hay fade de salida, aplicarlo antes de cargar la nueva.
                     if pygame.mixer.music.get_busy() and fade_ms > 0:
                         pygame.mixer.music.fadeout(fade_ms)
                         pygame.time.wait(fade_ms)
@@ -203,18 +209,17 @@ class ResourceManager:
                     pygame.mixer.music.set_volume(volume)
                     pygame.mixer.music.play(loops)
                     self.current_music_track = name
-                    
                     print(f"Reproduciendo música: {name}")
                     return True
                 else:
-                    # Solo ajustar volumen si es la misma música
+                    # Si es la misma pista, solo ajusta el volumen.
                     pygame.mixer.music.set_volume(volume)
                     return True
             except Exception as e:
                 print(f"Error reproduciendo música {name}: {e}")
                 return False
         elif name is None and self.music_tracks:
-            # Reproducir cualquier música disponible si no se especifica
+            # Sin nombre: reproduce la primera disponible.
             first_track = list(self.music_tracks.keys())[0]
             return self.play_music(first_track, loops, volume, fade_ms)
         else:
@@ -222,29 +227,28 @@ class ResourceManager:
             return False
     
     def switch_music(self, name: str, fade_out_ms: int = 1000, fade_in_ms: int = 1000):
-        """Cambia de una música a otra con efectos de fade"""
+        """Cambia a otra pista aplicando un fade-out corto antes."""
         if name in self.music_tracks:
             if pygame.mixer.music.get_busy():
                 pygame.mixer.music.fadeout(fade_out_ms)
                 pygame.time.wait(fade_out_ms)
-            
+            # Nota: el fade-in lo maneja play_music con volumen inicial si se quiere.
             self.play_music(name)
     
     def stop_music(self, fade_ms: int = 0):
-        """Detiene la música"""
+        """Detiene la música (con fade opcional)."""
         if fade_ms > 0:
             pygame.mixer.music.fadeout(fade_ms)
         else:
             pygame.mixer.music.stop()
-        if hasattr(self, 'current_music_track'):
-            self.current_music_track = None
+        self.current_music_track = None
     
     def pause_music(self):
-        """Pausa la música"""
+        """Pausa la reproducción actual."""
         pygame.mixer.music.pause()
     
     def unpause_music(self):
-        """Reanuda la música"""
+        """Reanuda la reproducción si la música está habilitada."""
         if getattr(self, 'music_enabled', True):
             pygame.mixer.music.unpause()
             print("Música reanudada")
@@ -252,28 +256,28 @@ class ResourceManager:
             print("Música desactivada - no se puede reanudar")
     
     def set_music_volume(self, volume: float):
-        """Establece el volumen de la música (0.0 - 1.0)"""
+        """Fija el volumen global de música (0.0–1.0)."""
         self.music_volume = max(0.0, min(1.0, volume))
         pygame.mixer.music.set_volume(self.music_volume)
     
     def get_music_volume(self) -> float:
-        """Obtiene el volumen actual de la música"""
+        """Devuelve el volumen actual de música."""
         return getattr(self, 'music_volume', 0.7)
     
     def is_music_playing(self) -> bool:
-        """Verifica si se está reproduciendo música"""
+        """Indica si hay música sonando."""
         return pygame.mixer.music.get_busy()
     
     def get_current_music(self) -> Optional[str]:
-        """Obtiene el nombre de la música actual"""
+        """Nombre de la pista actual (o None)."""
         return getattr(self, 'current_music_track', None)
     
     def get_available_music(self) -> list:
-        """Obtiene lista de músicas disponibles"""
+        """Lista de nombres de pistas registradas."""
         return list(self.music_tracks.keys())
     
     def enable_music(self, enabled: bool):
-        """Habilita o deshabilita la música"""
+        """Activa/desactiva música globalmente (detiene si se desactiva)."""
         self.music_enabled = enabled
         if not enabled:
             self.stop_music()
@@ -281,13 +285,13 @@ class ResourceManager:
         else:
             print("Música activada globalmente")
     
-    # ===== MÉTODOS PARA FUENTES =====
+    # ===== FUENTES =====
     def get_font(self, name: str) -> Optional[pygame.font.Font]:
-        """Obtiene una fuente por su nombre"""
+        """Obtiene una fuente por nombre (o None)."""
         return self.fonts.get(name)
     
     def load_font(self, name: str, path: str, size: int) -> bool:
-        """Carga una fuente personalizada"""
+        """Carga una fuente TTF/OTF; si falta, usa una por defecto del sistema."""
         try:
             if os.path.exists(path):
                 font = pygame.font.Font(path, size)
@@ -295,24 +299,22 @@ class ResourceManager:
                 return True
             else:
                 print(f"Advertencia: No se encontró la fuente en {path}")
-                # Usar fuente por defecto
                 self.fonts[name] = pygame.font.Font(None, size)
                 return False
         except Exception as e:
             print(f"Error cargando fuente {path}: {e}")
-            # Usar fuente por defecto
             self.fonts[name] = pygame.font.Font(None, size)
             return False
     
-    # ===== MÉTODOS UTILITARIOS =====
+    # ===== UTILITARIOS =====
     def create_fallback_image(self, size: tuple, color: tuple) -> pygame.Surface:
-        """Crea una imagen de respaldo"""
+        """Crea una imagen sólida (placeholder o fondos simples)."""
         surface = pygame.Surface(size)
         surface.fill(color)
         return surface
     
     def get_resource_info(self) -> Dict[str, int]:
-        """Obtiene información sobre los recursos cargados"""
+        """Resumen de recursos cargados (para logs o debug rápido)."""
         return {
             "images": len(self.images),
             "sounds": len(self.sounds),
@@ -324,7 +326,7 @@ class ResourceManager:
         }
     
     def cleanup(self):
-        """Limpia todos los recursos cargados"""
+        """Limpia todo y detiene música (para salir del juego ordenado)."""
         self.images.clear()
         self.sounds.clear()
         self.fonts.clear()

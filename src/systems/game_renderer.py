@@ -5,8 +5,7 @@ from src.entities.Car import Car
 from src.entities.Player import Player
 
 class GameRenderer:
-    """Maneja todo el sistema de renderizado del juego"""
-    
+    """Maneja todo el sistema de renderizado del juego"""  
     def __init__(self, screen: pygame.Surface, resource_manager):
         self.screen = screen
         self.resource_manager = resource_manager
@@ -15,7 +14,7 @@ class GameRenderer:
         self._init_background_system()
     
     def _init_background_system(self):
-        """Inicializa el sistema de fondo con parallax"""
+        """Carga las capas del fondo con diferentes velocidades(parallax)."""
         self.bg_layers = []
         background_configs = [
             ("bg_sky", 0),      # Fondo estático
@@ -41,6 +40,8 @@ class GameRenderer:
         """Actualiza el sistema de renderizado"""
         self.world_scroll_x += self.world_scroll_speed * delta_time
     
+        # ---------------- FONDOS ----------------
+
     def draw_background(self, camera_x: float):
         """Dibuja el fondo con efecto parallax"""
         for layer in self.bg_layers:
@@ -48,18 +49,20 @@ class GameRenderer:
             parallax_factor = layer["parallax_factor"]
             layer_width = layer["width"]
             
+            # Calcula cuanto se tiene que correr la capa
             total_offset_x = (self.world_scroll_x * parallax_factor + 
                              camera_x * parallax_factor * 0.1)
             offset_x = -(total_offset_x % layer_width)
             
-            # Dibujar múltiples copias para scroll infinito
+            # Dibujar multiples copias para scroll infinito
             positions = [offset_x - layer_width, offset_x]
             if offset_x > -layer_width:
                 positions.append(offset_x + layer_width)
             
             for pos in positions:
                 self.screen.blit(image, (pos, 0))
-    
+
+     # ---------------- PISO ----------------
     def draw_floor(self):
         """Dibuja el piso del juego"""
         floor_height = PANTALLA_ALTO - PISO_POS_Y
@@ -67,7 +70,7 @@ class GameRenderer:
         pygame.draw.rect(self.screen, COLOR_FONDO, floor_rect)
         pygame.draw.line(self.screen, COLOR_LINEA_PISO, 
                         (0, PISO_POS_Y), (PANTALLA_ANCHO, PISO_POS_Y), 3)
-    
+     # ---------------- JUGADOR ----------------
     def draw_player(self, player: Player, camera_x: float):
         """Dibuja el jugador con efectos visuales"""
         screen_x = player.rect.x - camera_x
@@ -106,6 +109,7 @@ class GameRenderer:
         rect = pygame.Rect(screen_x, screen_y, player.rect.width, player.rect.height)
         pygame.draw.rect(self.screen, color, rect)
     
+        # ---------------- AUTOS ----------------
     def draw_cars(self, cars: List[Car], camera_x: float):
         """Dibuja todos los autos visibles"""
         for car in cars:
@@ -115,7 +119,7 @@ class GameRenderer:
     
     def _is_car_visible(self, screen_x: float, car_width: int) -> bool:
         """Verifica si un auto está visible en pantalla"""
-        # Margen más generoso para evitar parpadeos
+        # Margen mas generoso para evitar parpadeos
         margin = 100
         return -margin <= screen_x <= PANTALLA_ANCHO + margin
     
@@ -124,10 +128,12 @@ class GameRenderer:
         if car.current_sprite:
             self.screen.blit(car.current_sprite, (screen_x, car.rect.y))
         else:
-            # Rectángulo de respaldo
+            # Rectangulo de respaldo
             rect = pygame.Rect(screen_x, car.rect.y, car.rect.width, car.rect.height)
             pygame.draw.rect(self.screen, (0, 0, 255), rect)
     
+        # ---------------- PANTALLAS DE ESTADO ----------------
+
     def draw_game_over_screen(self):
         """Dibuja la pantalla de game over"""
         self._draw_overlay((0, 0, 0), 128)
@@ -161,6 +167,7 @@ class GameRenderer:
             self._draw_centered_text("Presiona [ESCAPE] para volver al menú", 
                                    font_normal, COLOR_BLANCO, PANTALLA_ALTO // 2 - 20)
     
+        # ---------------- FUNCIONES AUXILIARES ----------------
     def _draw_overlay(self, color: tuple, alpha: int):
         """Dibuja una superposición semitransparente"""
         overlay = pygame.Surface((PANTALLA_ANCHO, PANTALLA_ALTO))

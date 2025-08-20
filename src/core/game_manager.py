@@ -6,7 +6,9 @@ from src.core.scene_manager import SceneManager
 from src.screens.menu_screen import MenuScreen
 
 class GameManager:
-    """Gestor principal del juego"""
+    """Gestor principal del juego se encarga de inicializar,
+    cargar recursos, manejar escenas y controlar el bucle.
+    """
     def __init__(self):
         # Configurar pantalla
         self.screen = pygame.display.set_mode((ANCHO_PANTALLA, ALTO_PANTALLA))
@@ -28,18 +30,15 @@ class GameManager:
 
     def _load_initial_resources(self):
         """Carga los recursos iniciales del juego"""
-        # Imagenes normales
+        # Imágenes estáticas
         self.resource_manager.load_image("uaibot", "Assets/Imagenes/UAIBOT.png")
         self.resource_manager.load_image("auto", "Assets/Imagenes/auto.png")
-        
-        
         self.resource_manager.load_image("bg_sky", "Assets/Imagenes/bg_sky.png")
         self.resource_manager.load_image("bg_mid", "Assets/Imagenes/bg_mid.png")
         self.resource_manager.load_image("bg_front", "Assets/Imagenes/bg_front.png")
         
-        # Sprite sheets para personajes (si existen)
+        # Sprite sheets (animaciones de personajes/vehículos)
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
-        
         self.resource_manager.load_spritesheet("Auto_azul", "Assets/Sprites/Auto-azul.png", 126, 86)
         
         # Sonidos
@@ -53,7 +52,7 @@ class GameManager:
         self.resource_manager.load_music("menu", "Assets/Music/Music-menu.mp3")
         self.resource_manager.load_music("game_music", "Assets/Music/Game-music.mp3")
         
-        # Mostrar información de recursos cargados
+        # Debug: mostrar cantidad de recursos cargados
         info = self.resource_manager.get_resource_info()
         print(f"Recursos cargados: {info}")
     
