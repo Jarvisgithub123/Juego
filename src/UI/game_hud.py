@@ -41,7 +41,7 @@ class GameHUD:
             screen.blit(txt_surface, rect)
         
     def _draw_energy_bar(self, screen, current_energy, max_energy):
-        """Dibuja la barra de energía en la parte superior derecha"""
+        """Dibuja la barra de energia en la parte superior derecha"""
         percentage = (current_energy / max_energy) * 100
         
         # Configuracion de la barra
@@ -53,7 +53,7 @@ class GameHUD:
         # Dibujar fondo de la barra
         pygame.draw.rect(screen, COLOR_BARRA_FONDO, (bar_x, bar_y, bar_width, bar_height))
         
-        # Calcular ancho segun energía restante
+        # Calcular ancho segun energia restante
         energy_width = int((current_energy / max_energy) * bar_width)
         
         if percentage > 60:
@@ -63,14 +63,14 @@ class GameHUD:
         else:
             energy_color = COLOR_ROJO
         
-        # Dibujar barra de energía
+        # Dibujar barra de energia
         if energy_width > 0:
             pygame.draw.rect(screen, energy_color, (bar_x, bar_y, energy_width, bar_height))
         pygame.draw.rect(screen, COLOR_NEGRO, (bar_x, bar_y, bar_width, bar_height), 2)
         
         font_hud = self.resource_manager.get_font('hud')
         if font_hud:
-            energy_text = font_hud.render(f"Energía: {percentage:.0f}%", True, COLOR_NEGRO)
+            energy_text = font_hud.render(f"Energia: {percentage:.0f}%", True, COLOR_NEGRO)
             screen.blit(energy_text, (bar_x, bar_y - 25))
     
     def _draw_km_counter(self, screen, km_remaining):

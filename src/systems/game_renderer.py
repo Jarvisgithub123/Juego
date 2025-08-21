@@ -17,7 +17,7 @@ class GameRenderer:
         """Carga las capas del fondo con diferentes velocidades(parallax)."""
         self.bg_layers = []
         background_configs = [
-            ("bg_sky", 0),      # Fondo estático
+            ("bg_sky", 0),      # Fondo estatico
             ("bg_mid", 2),    # Capa media
             ("bg_front", 3.6)     # Capa frontal
         ]
@@ -104,7 +104,7 @@ class GameRenderer:
                 self.screen.blit(trail_surface, trail_rect)
     
     def _draw_player_fallback(self, player: Player, screen_x: float, screen_y: float):
-        """Dibuja rectángulo de respaldo para el jugador"""
+        """Dibuja rectangulo de respaldo para el jugador"""
         color = COLOR_AMARILLO if player.is_dashing else (0, 100, 255)
         rect = pygame.Rect(screen_x, screen_y, player.rect.width, player.rect.height)
         pygame.draw.rect(self.screen, color, rect)
@@ -118,7 +118,7 @@ class GameRenderer:
                 self._draw_single_car(car, screen_x)
     
     def _is_car_visible(self, screen_x: float, car_width: int) -> bool:
-        """Verifica si un auto está visible en pantalla"""
+        """Verifica si un auto esta visible en pantalla"""
         # Margen mas generoso para evitar parpadeos
         margin = 100
         return -margin <= screen_x <= PANTALLA_ANCHO + margin
@@ -147,7 +147,7 @@ class GameRenderer:
         if font_normal:
             self._draw_centered_text("Presiona [ENTER] o [ESPACIO] para reiniciar", 
                                    font_normal, COLOR_VERDE, PANTALLA_ALTO // 2 - 50)
-            self._draw_centered_text("Presiona [ESCAPE] para volver al menú", 
+            self._draw_centered_text("Presiona [ESCAPE] para volver al menu", 
                                    font_normal, COLOR_BLANCO, PANTALLA_ALTO // 2 - 20)
     
     def draw_victory_screen(self):
@@ -164,12 +164,12 @@ class GameRenderer:
             self._draw_centered_text("¡El paquete fue entregado con éxito!", 
                                    font_normal, COLOR_TEXTO_VICTORIA, 
                                    PANTALLA_ALTO // 2 - 50)
-            self._draw_centered_text("Presiona [ESCAPE] para volver al menú", 
+            self._draw_centered_text("Presiona [ESCAPE] para volver al menu", 
                                    font_normal, COLOR_BLANCO, PANTALLA_ALTO // 2 - 20)
     
         # ---------------- FUNCIONES AUXILIARES ----------------
     def _draw_overlay(self, color: tuple, alpha: int):
-        """Dibuja una superposición semitransparente"""
+        """Dibuja una superposicion semitransparente"""
         overlay = pygame.Surface((PANTALLA_ANCHO, PANTALLA_ALTO))
         overlay.set_alpha(alpha)
         overlay.fill(color)

@@ -10,6 +10,12 @@ class MenuScreen(Scene):
         super().__init__(screen, resource_manager)
         self.sound_enabled = True
         self.buttons = []
+        
+        # Variables para animacion de fondo
+        self.background_timer = 0.0
+        self.animation_speed = 0.5  
+        self.current_background = 0  
+        
         self._create_buttons()
     
     def on_enter(self):
@@ -17,13 +23,16 @@ class MenuScreen(Scene):
         self.resource_manager.play_music("menu", volume=0.5)
     
     def _create_buttons(self):
-        """Crea los botones del menu"""
+        """Crea los botones del menu - POSICIONADOS A LA DERECHA"""
         button_width = 250
         button_height = 75
         spacing = 30
         total_height = 3 * button_height + 2 * spacing
         start_y = (ALTO_PANTALLA - total_height) // 2 + 60
-        start_x = ANCHO_PANTALLA - button_width - 480
+        
+        # POSICIoN CORREGIDA: Posicionar botones a la derecha
+        margin_from_right = 150  # Margen desde el borde derecho
+        start_x = button_width - margin_from_right  # Formula correcta
         
         self.buttons = [
             Button("Jugar", start_x, start_y, button_width, button_height, 
@@ -57,27 +66,45 @@ class MenuScreen(Scene):
     
     def update(self, dt):
         """Actualiza el menu"""
+        # Actualizar botones
         for button in self.buttons:
             button.update(dt)
+        
+        # ACTUALIZAR ANIMACIoN DE FONDO
+        self.background_timer += dt
+        if self.background_timer >= self.animation_speed:
+            self.background_timer = 0.0
+            self.current_background = 1 - self.current_background  # Alternar entre 0 y 1
     
     def draw(self):
-        """Dibuja el menu"""
-        self.screen.fill(COLOR_FONDO_BASE)
+        """Dibuja el menu con fondo animado"""
+        # DIBUJAR FONDO ANIMADO
+        background_name = f"menu_background{self.current_background + 1}"
+        background_image = self.resource_manager.get_image(background_name)
         
-        # Título
+        if background_image:
+            # Escalar la imagen al tamaño de la pantalla
+            scaled_background = pygame.transform.scale(background_image, (ANCHO_PANTALLA, ALTO_PANTALLA))
+            self.screen.blit(scaled_background, (0, 0))
+
+        else:
+            # Si no hay imagen, usar color de fondo por defecto
+            self.screen.fill(COLOR_FONDO_BASE)
+        
+        # Titulo - posicionado a la izquierda para balancear con botones a la derecha
         font_titulo = self.resource_manager.get_font('titulo')
         if font_titulo:
-            title_surface = font_titulo.render("Go UAIBOT", True, COLOR_TEXTO_EN_FONDO)
-            title_rect = title_surface.get_rect(center=(ANCHO_PANTALLA // 2, 120))
+            title_surface = font_titulo.render("Go UAIBOT", True, COLOR_TITULO)
+            title_rect = title_surface.get_rect(center=(ANCHO_PANTALLA // 5, 120))
             self.screen.blit(title_surface, title_rect)
         
-        # Subtítulo
-        font_subtitulo = self.resource_manager.get_font('subtitulo')
-        if font_subtitulo:
-            subtitle_surface = font_subtitulo.render(":)", True, COLOR_TEXTO_SUTIL_EN_FONDO)
-            subtitle_rect = subtitle_surface.get_rect(center=(ANCHO_PANTALLA // 2, 180))
-            self.screen.blit(subtitle_surface, subtitle_rect)
+        # Informacion de animacion (opcional - puedes quitarla)
+        font_pequeña = self.resource_manager.get_font('pequeña')
+        if font_pequeña:
+            anim_info = f"Fondo: {self.current_background + 1}/2"
+            anim_surface = font_pequeña.render(anim_info, True, COLOR_TEXTO_SUTIL_EN_FONDO)
+            self.screen.blit(anim_surface, (10, ALTO_PANTALLA - 30))
         
-        # Botones
+        # Botones (ya posicionados a la derecha)
         for button in self.buttons:
             button.draw(self.screen)

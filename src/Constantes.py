@@ -11,8 +11,8 @@ FPS = 60               # Frames por segundo objetivo
 
 # Colores de interfaz y fondo
 COLOR_FONDO_BASE = (10, 0, 30)           # Azul-purpura muy oscuro para fondo
-COLOR_PRIMARIO = (50, 130, 90)           # Verde principal
-COLOR_SECUNDARIO = (80, 160, 120)        # Verde mas claro
+COLOR_PRIMARIO = (99, 155, 255) 
+COLOR_SECUNDARIO = (205, 13, 137)        # Verde mas claro
 COLOR_FONDO = (198, 118, 118)            # Color del piso del juego
 
 # Colores de texto
@@ -20,6 +20,7 @@ COLOR_TEXTO_EN_FONDO = (220, 230, 240)     # Gris/azul para texto principal
 COLOR_TEXTO_SUTIL_EN_FONDO = (150, 160, 170)  # Gris/azul sutil
 COLOR_TEXTO_EN_BOTON = (245, 250, 245)     # Blanco para botones
 COLOR_TEXTO_VICTORIA = (0, 255, 0)         # Verde brillante para victoria
+COLOR_TITULO = (99, 155, 255)                
 
 # Colores basicos
 COLOR_BLANCO = (255, 255, 255)

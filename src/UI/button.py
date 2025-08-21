@@ -6,7 +6,7 @@ class Button:
     
     def __init__(self, text: str, x: int, y: int, width: int, height: int, 
                  resource_manager, action=None):   
-        """Inicializa el botón con tamaño, posición, colores, efectos y acción"""
+        """Inicializa el boton con tamaño, posicion, colores, efectos y accion"""
 
         self.text = text
         self.rect = pygame.Rect(x, y, width, height)
@@ -42,7 +42,7 @@ class Button:
     
     def update(self, dt: float):
         """Actualiza el estado del boton"""
-        # --- Comprobar si el mouse está sobre el botón ---
+        # --- Comprobar si el mouse esta sobre el boton ---
         mouse_pos = pygame.mouse.get_pos()
         is_hovering = self.rect.collidepoint(mouse_pos)
         

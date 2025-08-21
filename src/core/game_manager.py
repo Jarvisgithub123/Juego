@@ -30,16 +30,19 @@ class GameManager:
 
     def _load_initial_resources(self):
         """Carga los recursos iniciales del juego"""
-        # Imágenes estáticas
+        # Imagenes estaticas
+        self.resource_manager.load_image("menu_background1","Assets/Imagenes/menubackground1.png")
+        self.resource_manager.load_image("menu_background2","Assets/Imagenes/menubackground2.png")
         self.resource_manager.load_image("uaibot", "Assets/Imagenes/UAIBOT.png")
         self.resource_manager.load_image("auto", "Assets/Imagenes/auto.png")
         self.resource_manager.load_image("bg_sky", "Assets/Imagenes/bg_sky.png")
         self.resource_manager.load_image("bg_mid", "Assets/Imagenes/bg_mid.png")
         self.resource_manager.load_image("bg_front", "Assets/Imagenes/bg_front.png")
         
-        # Sprite sheets (animaciones de personajes/vehículos)
+        # Sprite sheets (animaciones de personajes/vehiculos)
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
         self.resource_manager.load_spritesheet("Auto_azul", "Assets/Sprites/Auto-azul.png", 126, 86)
+        
         
         # Sonidos
         self.resource_manager.load_sound("boton_hover", "Assets/Music/mixkit-arcade-game-jump-coin-216.mp3")
@@ -48,7 +51,7 @@ class GameManager:
         self.resource_manager.load_sound("game_over", "Assets/Music/Game-over.mp3")
         self.resource_manager.load_sound("victoria", "Assets/Music/Win.mp3")
         
-        # Música
+        # Musica
         self.resource_manager.load_music("menu", "Assets/Music/Music-menu.mp3")
         self.resource_manager.load_music("game_music", "Assets/Music/Game-music.mp3")
         
@@ -66,7 +69,7 @@ class GameManager:
                 self.scene_manager.handle_event(event)
     
     def update(self, dt):
-        """Actualiza la lógica del juego"""
+        """Actualiza la logica del juego"""
         self.scene_manager.update(dt)
     
     def draw(self):

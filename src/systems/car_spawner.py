@@ -5,15 +5,15 @@ from src.Constantes import *
 from src.entities.Car import Car
 
 class CarSpawner:
-    """Maneja la generación y limpieza de autos enemigos"""
+    """Maneja la generacion y limpieza de autos enemigos"""
     
-    # Constantes de configuración
+    # Constantes de configuracion
     MIN_SPAWN_INTERVAL = 2.5
     MAX_SPAWN_INTERVAL = 5.0
     MIN_CAR_DISTANCE = 320
     MAX_VISIBLE_CARS = 2
     MIN_SPAWN_DISTANCE_FROM_PLAYER = 400
-    CAR_CLEANUP_MARGIN = 500  # Aumentado para dar más margen
+    CAR_CLEANUP_MARGIN = 500  # Aumentado para dar mas margen
     
     def __init__(self, resource_manager):
         self.resource_manager = resource_manager
@@ -56,7 +56,7 @@ class CarSpawner:
                 self._safe_from_player(spawn_x, player_x))
     
     def _calculate_spawn_position(self, camera_x: float) -> int:
-        """Calcula donde aparecerá el próximo auto"""
+        """Calcula donde aparecera el proximo auto"""
         return camera_x + PANTALLA_ANCHO + random.randint(200, 500)
     
     def _has_safe_distance(self, spawn_x: int) -> bool:
@@ -66,7 +66,7 @@ class CarSpawner:
     
     def _not_too_many_visible(self, camera_x: float) -> bool:
         """Verifica que no haya demasiados autos visibles"""
-        # Margen más generoso para contar autos visibles
+        # Margen mas generoso para contar autos visibles
         margin = 150  # Aumentado desde 100
         visible_count = sum(1 for car in self.cars 
                            if -margin <= car.rect.x - camera_x <= PANTALLA_ANCHO + margin)
@@ -77,7 +77,7 @@ class CarSpawner:
         return spawn_x - player_x >= self.MIN_SPAWN_DISTANCE_FROM_PLAYER
     
     def _spawn_car(self, camera_x: float):
-        """Crea un nuevo auto en posición segura"""
+        """Crea un nuevo auto en posicion segura"""
         spawn_x = self._calculate_spawn_position(camera_x)
         speed = self._generate_car_speed()
         new_car = Car(spawn_x, PISO_POS_Y - 86, self.resource_manager, speed=speed)
@@ -95,14 +95,14 @@ class CarSpawner:
         self.next_spawn_time = random.uniform(self.MIN_SPAWN_INTERVAL, self.MAX_SPAWN_INTERVAL)
     
     def _adjust_spawn_timer_for_retry(self):
-        """Ajusta timer para reintentar spawn más rápido"""
+        """Ajusta timer para reintentar spawn mas rapido"""
         retry_delay = random.uniform(0.5, 1.0)
         self.spawn_timer = max(0, self.next_spawn_time - retry_delay)
     
     def _cleanup_distant_cars(self, camera_x: float):
         """Elimina autos lejanos para liberar memoria"""
-        # Los autos se eliminan cuando están completamente fuera del borde izquierdo
-        # con un margen generoso para evitar eliminación prematura
+        # Los autos se eliminan cuando estan completamente fuera del borde izquierdo
+        # con un margen generoso para evitar eliminacion prematura
         cleanup_threshold = camera_x - self.CAR_CLEANUP_MARGIN
         cars_before = len(self.cars)
         self.cars = [car for car in self.cars if car.rect.right > cleanup_threshold]

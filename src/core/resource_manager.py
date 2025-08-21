@@ -31,7 +31,7 @@ class SpriteSheet:
 
 
 class ResourceManager:
-    """Gestor central de recursos: imágenes, sonidos, fuentes, música y sprites."""
+    """Gestor central de recursos: imagenes, sonidos, fuentes, musica y sprites."""
     def __init__(self):
         # Colecciones por tipo de recurso (acceso por nombre/clave).
         self.images: Dict[str, pygame.Surface] = {}
@@ -39,7 +39,7 @@ class ResourceManager:
         self.fonts: Dict[str, pygame.font.Font] = {}
         self.sprite_sheets: Dict[str, SpriteSheet] = {}
         
-        # Sistema de música .
+        # Sistema de musica .
         self.music_loaded = None          # ultima pista registrada
         self.music_tracks: Dict[str, str] = {}
         self.current_music_track = None
@@ -50,15 +50,15 @@ class ResourceManager:
         self._load_default_fonts()
     
     def _load_default_fonts(self):
-        """Fuentes base para títulos, botones, HUD, etc."""
-        self.fonts['titulo'] = pygame.font.Font(None, 90)
-        self.fonts['subtitulo'] = pygame.font.Font(None, 40)
-        self.fonts['boton'] = pygame.font.Font(None, 55)
-        self.fonts['pequena'] = pygame.font.Font(None, 32)
-        self.fonts['hud'] = pygame.font.SysFont(None, 32)
-        self.fonts['instrucciones'] = pygame.font.SysFont(None, 36)
+        """Fuentes base para titulos, botones, HUD, etc."""
+        self.fonts['titulo'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 90)
+        self.fonts['subtitulo'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 40)
+        self.fonts['boton'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 55)
+        self.fonts['pequena'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 32)
+        self.fonts['hud'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 32)
+        self.fonts['instrucciones'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 36)
 
-    # ===== IMÁGENES =====
+    # ===== IMaGENES =====
     def load_image(self, name: str, path: str, convert_alpha: bool = True) -> bool:
         """Carga imagen desde disco y la registra con 'name' ."""
         try:
@@ -68,7 +68,7 @@ class ResourceManager:
                 self.images[name] = image
                 return True
             else:
-                print(f"Advertencia: No se encontró la imagen en {path}")
+                print(f"Advertencia: No se encontro la imagen en {path}")
                 return False
         except Exception as e:
             print(f"Error cargando imagen {path}: {e}")
@@ -95,7 +95,7 @@ class ResourceManager:
                 print(f"Sprite sheet '{name}' cargado exitosamente: {self.sprite_sheets[name].columns}x{self.sprite_sheets[name].rows} frames")
                 return True
             else:
-                print(f"Advertencia: No se encontró el sprite sheet en {path}")
+                print(f"Advertencia: No se encontro el sprite sheet en {path}")
                 placeholder = pygame.Surface((frame_width, frame_height))
                 placeholder.fill((255, 0, 255))  # magenta = recurso faltante
                 self.sprite_sheets[name] = SpriteSheet(placeholder, frame_width, frame_height)
@@ -141,7 +141,7 @@ class ResourceManager:
                 self.sounds[name] = sound
                 return True
             else:
-                print(f"Advertencia: No se encontró el sonido en {path}")
+                print(f"Advertencia: No se encontro el sonido en {path}")
                 return False
         except Exception as e:
             print(f"Error cargando sonido {path}: {e}")
@@ -152,7 +152,7 @@ class ResourceManager:
         return self.sounds.get(name)
     
     def play_sound(self, name: str) -> bool:
-        """Reproduce un sonido si está cargado."""
+        """Reproduce un sonido si esta cargado."""
         sound = self.get_sound(name)
         if sound:
             sound.play()
@@ -166,26 +166,26 @@ class ResourceManager:
             if os.path.exists(path):
                 self.music_tracks[name] = path
                 self.music_loaded = name  # recuerda la ultima
-                print(f"Música '{name}' registrada: {path}")
+                print(f"Musica '{name}' registrada: {path}")
                 return True
             else:
-                print(f"Advertencia: No se encontró la música en {path}")
+                print(f"Advertencia: No se encontro la musica en {path}")
                 return False
         except Exception as e:
-            print(f"Error registrando música {path}: {e}")
+            print(f"Error registrando musica {path}: {e}")
             return False
     
     def play_music(self, name: str = None, loops: int = -1, volume: float = None, fade_ms: int = 0):
         """Reproduce una pista por nombre (con loops, volumen y fade opcionales)."""
-        # Respeta el switch global de música.
+        # Respeta el switch global de musica.
         if not getattr(self, 'music_enabled', True):
-            print("Música desactivada - no se reproducirá")
+            print("Musica desactivada - no se reproducira")
             return False
             
         if volume is None:
             volume = getattr(self, 'music_volume', 0.7)
             
-        # si no se pasa nombre, usa la actual o la úutima cargada.
+        # si no se pasa nombre, usa la actual o la uutima cargada.
         if name is None:
             if getattr(self, 'current_music_track', None):
                 name = self.current_music_track
@@ -196,7 +196,7 @@ class ResourceManager:
             try:
                 current_track = getattr(self, 'current_music_track', None)
 
-                # Solo recarga si es diferente o no hay música sonando.
+                # Solo recarga si es diferente o no hay musica sonando.
                 if current_track != name or not pygame.mixer.music.get_busy():
                     path = self.music_tracks[name]
                     
@@ -209,21 +209,21 @@ class ResourceManager:
                     pygame.mixer.music.set_volume(volume)
                     pygame.mixer.music.play(loops)
                     self.current_music_track = name
-                    print(f"Reproduciendo música: {name}")
+                    print(f"Reproduciendo musica: {name}")
                     return True
                 else:
                     # Si es la misma pista, solo ajusta el volumen.
                     pygame.mixer.music.set_volume(volume)
                     return True
             except Exception as e:
-                print(f"Error reproduciendo música {name}: {e}")
+                print(f"Error reproduciendo musica {name}: {e}")
                 return False
         elif name is None and self.music_tracks:
             # Sin nombre: reproduce la primera disponible.
             first_track = list(self.music_tracks.keys())[0]
             return self.play_music(first_track, loops, volume, fade_ms)
         else:
-            print(f"Música '{name}' no encontrada. Disponibles: {list(self.music_tracks.keys())}")
+            print(f"Musica '{name}' no encontrada. Disponibles: {list(self.music_tracks.keys())}")
             return False
     
     def switch_music(self, name: str, fade_out_ms: int = 1000, fade_in_ms: int = 1000):
@@ -236,7 +236,7 @@ class ResourceManager:
             self.play_music(name)
     
     def stop_music(self, fade_ms: int = 0):
-        """Detiene la música (con fade opcional)."""
+        """Detiene la musica (con fade opcional)."""
         if fade_ms > 0:
             pygame.mixer.music.fadeout(fade_ms)
         else:
@@ -244,28 +244,28 @@ class ResourceManager:
         self.current_music_track = None
     
     def pause_music(self):
-        """Pausa la reproducción actual."""
+        """Pausa la reproduccion actual."""
         pygame.mixer.music.pause()
     
     def unpause_music(self):
-        """Reanuda la reproducción si la música está habilitada."""
+        """Reanuda la reproduccion si la musica esta habilitada."""
         if getattr(self, 'music_enabled', True):
             pygame.mixer.music.unpause()
-            print("Música reanudada")
+            print("Musica reanudada")
         else:
-            print("Música desactivada - no se puede reanudar")
+            print("Musica desactivada - no se puede reanudar")
     
     def set_music_volume(self, volume: float):
-        """Fija el volumen global de música (0.0–1.0)."""
+        """Fija el volumen global de musica (0.0–1.0)."""
         self.music_volume = max(0.0, min(1.0, volume))
         pygame.mixer.music.set_volume(self.music_volume)
     
     def get_music_volume(self) -> float:
-        """Devuelve el volumen actual de música."""
+        """Devuelve el volumen actual de musica."""
         return getattr(self, 'music_volume', 0.7)
     
     def is_music_playing(self) -> bool:
-        """Indica si hay música sonando."""
+        """Indica si hay musica sonando."""
         return pygame.mixer.music.get_busy()
     
     def get_current_music(self) -> Optional[str]:
@@ -277,13 +277,13 @@ class ResourceManager:
         return list(self.music_tracks.keys())
     
     def enable_music(self, enabled: bool):
-        """Activa/desactiva música globalmente (detiene si se desactiva)."""
+        """Activa/desactiva musica globalmente (detiene si se desactiva)."""
         self.music_enabled = enabled
         if not enabled:
             self.stop_music()
-            print("Música desactivada globalmente")
+            print("Musica desactivada globalmente")
         else:
-            print("Música activada globalmente")
+            print("Musica activada globalmente")
     
     # ===== FUENTES =====
     def get_font(self, name: str) -> Optional[pygame.font.Font]:
@@ -298,7 +298,7 @@ class ResourceManager:
                 self.fonts[name] = font
                 return True
             else:
-                print(f"Advertencia: No se encontró la fuente en {path}")
+                print(f"Advertencia: No se encontro la fuente en {path}")
                 self.fonts[name] = pygame.font.Font(None, size)
                 return False
         except Exception as e:
@@ -306,15 +306,14 @@ class ResourceManager:
             self.fonts[name] = pygame.font.Font(None, size)
             return False
     
-    # ===== UTILITARIOS =====
     def create_fallback_image(self, size: tuple, color: tuple) -> pygame.Surface:
-        """Crea una imagen sólida (placeholder o fondos simples)."""
+        """Crea una imagen solida (placeholder o fondos simples)."""
         surface = pygame.Surface(size)
         surface.fill(color)
         return surface
     
     def get_resource_info(self) -> Dict[str, int]:
-        """Resumen de recursos cargados (para logs o debug rápido)."""
+        """Resumen de recursos cargados (para logs o debug rapido)."""
         return {
             "images": len(self.images),
             "sounds": len(self.sounds),
@@ -326,7 +325,7 @@ class ResourceManager:
         }
     
     def cleanup(self):
-        """Limpia todo y detiene música (para salir del juego ordenado)."""
+        """Limpia todo y detiene musica (para salir del juego ordenado)."""
         self.images.clear()
         self.sounds.clear()
         self.fonts.clear()

@@ -59,7 +59,7 @@ class GameScreen(Scene):
         """Para que no se reinicie al entrar en pausa"""
         if self.pause:
             return
-        """Actualiza toda la lógica del juego"""
+        """Actualiza toda la logica del juego"""
         if not self.game_over and not self.victory:
             self._update_game_systems(delta_time)
             self._update_entities(delta_time)
@@ -72,7 +72,7 @@ class GameScreen(Scene):
         self.renderer.update(delta_time)
     
     def _update_camera(self, delta_time: float):
-        """Actualiza la cámara para seguir al jugador suavemente"""
+        """Actualiza la camara para seguir al jugador suavemente"""
         target_x = max(0, self.player.rect.x - 150)
         diff = target_x - self.camera.x
         if abs(diff) > 15:
@@ -107,8 +107,8 @@ class GameScreen(Scene):
         self.resource_manager.play_sound("victoria")
     
     def _update_time_and_distance(self, delta_time: float):
-        """Actualiza tiempo de energía y distancia recorrida"""
-        # Solo consumir energía si no está haciendo dash
+        """Actualiza tiempo de energia y distancia recorrida"""
+        # Solo consumir energia si no esta haciendo dash
         if not self.player.is_dashing:
             self.energy_remaining -= delta_time
         
@@ -117,7 +117,7 @@ class GameScreen(Scene):
         self.kilometers_remaining = max(0, KILOMETROS_OBJETIVO - km_traveled)
     
     def _consume_energy(self, energy_amount: float) -> bool:
-        """Consume energía si hay suficiente disponible"""
+        """Consume energia si hay suficiente disponible"""
         if self.energy_remaining >= energy_amount:
             self.energy_remaining -= energy_amount
             return True
@@ -131,7 +131,7 @@ class GameScreen(Scene):
     def on_exit(self):
         """Se ejecuta al salir de la pantalla del juego"""
         # Detener todos los sonidos que puedan estar reproduciéndose
-        pygame.mixer.stop()  # Detiene todos los sonidos (no la música)
+        pygame.mixer.stop()  # Detiene todos los sonidos (no la musica)
         print("Sonidos detenidos al salir del juego")
     
     def _restart_game(self):
@@ -141,7 +141,7 @@ class GameScreen(Scene):
         self.scene_manager.change_scene(GameScreen)
     
     def _return_to_menu(self):
-        """Regresa al menú principal"""
+        """Regresa al menu principal"""
         pygame.mixer.stop()
         from src.screens.menu_screen import MenuScreen
         self.scene_manager.change_scene(MenuScreen)
