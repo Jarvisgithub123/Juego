@@ -56,7 +56,7 @@ class SettingsScreen(Scene):
             if current_music:
                 self.resource_manager.unpause_music()
             else:
-                # Si no hay musica reproduciéndose, iniciar la musica del menu
+                # Si no hay musica reproduciendose, iniciar la musica del menu
                 self.resource_manager.play_music("menu")
         
         # Actualizar texto del boton
@@ -130,7 +130,7 @@ class SettingsScreen(Scene):
             title_rect = title_surface.get_rect(center=(ANCHO_PANTALLA // 5, 120))
             self.screen.blit(title_surface, title_rect)
         
-        # Ayuda - también a la izquierda
+        # Ayuda - tambien a la izquierda
         font_pequeña = self.resource_manager.get_font('pequeña')
         if font_pequeña:
             help_surface = font_pequeña.render("Presiona ESC para volver", True, COLOR_TEXTO_SUTIL_EN_FONDO)

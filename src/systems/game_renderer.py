@@ -161,7 +161,7 @@ class GameRenderer:
             self._draw_centered_text("¡VICTORIA!", font_large, COLOR_TEXTO_VICTORIA, 
                                    PANTALLA_ALTO // 2 - 100)
         if font_normal:
-            self._draw_centered_text("¡El paquete fue entregado con éxito!", 
+            self._draw_centered_text("¡El paquete fue entregado con exito!", 
                                    font_normal, COLOR_TEXTO_VICTORIA, 
                                    PANTALLA_ALTO // 2 - 50)
             self._draw_centered_text("Presiona [ESCAPE] para volver al menu", 

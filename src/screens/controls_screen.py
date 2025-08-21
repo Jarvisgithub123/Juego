@@ -26,7 +26,7 @@ class ControlsScreen(Scene):
         # Obtener fuentes
         font_titulo_controles = self.resource_manager.get_font('subtitulo')
         font_controles = self.resource_manager.get_font('boton')
-        font_descripcion = self.resource_manager.get_font('pequena')
+        font_descripcion = self.resource_manager.get_font('pequeña')
         
         # Posicion base para los controles
         start_x = ANCHO_PANTALLA // 2
@@ -138,7 +138,7 @@ class ControlsScreen(Scene):
             self.screen.blit(surface, rect)
         
         # Ayuda
-        font_pequeña = self.resource_manager.get_font('pequena')
+        font_pequeña = self.resource_manager.get_font('pequeña')
         if font_pequeña:
             help_surface = font_pequeña.render("Presiona ESC para volver", True, COLOR_TEXTO_SUTIL_EN_FONDO)
             help_rect = help_surface.get_rect(center=(ANCHO_PANTALLA // 2, ALTO_PANTALLA - 40))

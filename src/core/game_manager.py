@@ -33,8 +33,6 @@ class GameManager:
         # Imagenes estaticas
         self.resource_manager.load_image("menu_background1","Assets/Imagenes/menubackground1.png")
         self.resource_manager.load_image("menu_background2","Assets/Imagenes/menubackground2.png")
-        self.resource_manager.load_image("uaibot", "Assets/Imagenes/UAIBOT.png")
-        self.resource_manager.load_image("auto", "Assets/Imagenes/auto.png")
         self.resource_manager.load_image("bg_sky", "Assets/Imagenes/bg_sky.png")
         self.resource_manager.load_image("bg_mid", "Assets/Imagenes/bg_mid.png")
         self.resource_manager.load_image("bg_front", "Assets/Imagenes/bg_front.png")
@@ -42,7 +40,7 @@ class GameManager:
         # Sprite sheets (animaciones de personajes/vehiculos)
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
         self.resource_manager.load_spritesheet("Auto_azul", "Assets/Sprites/Auto-azul.png", 126, 86)
-        
+        self.resource_manager.load_spritesheet("Auto_rojo", "Assets/Sprites/Auto-rojo.png", 126, 86)
         
         # Sonidos
         self.resource_manager.load_sound("boton_hover", "Assets/Music/mixkit-arcade-game-jump-coin-216.mp3")

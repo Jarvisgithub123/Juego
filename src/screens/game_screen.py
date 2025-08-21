@@ -132,7 +132,7 @@ class GameScreen(Scene):
     
     def on_exit(self):
         """Se ejecuta al salir de la pantalla del juego"""
-        # Detener todos los sonidos que puedan estar reproduciéndose
+        # Detener todos los sonidos que puedan estar reproduciendose
         pygame.mixer.stop()  # Detiene todos los sonidos (no la musica)
         print("Sonidos detenidos al salir del juego")
     

@@ -54,8 +54,8 @@ DECREMENTO_KM_POR_SEGUNDO = 0.03       # Velocidad de avance en km/s
 
 # Velocidades de elementos
 VELOCIDAD_FONDO = 4              # Velocidad del scroll de fondo
-VELOCIDAD_AUTO_BASE = 15         # Velocidad base de los autos enemigos
-VELOCIDAD_AUTO_VARIACION = 3     # Variacion maxima de velocidad de autos
+VELOCIDAD_AUTO_BASE = 13         # Velocidad base de los autos enemigos
+VELOCIDAD_AUTO_VARIACION = 1    # Variacion maxima de velocidad de autos
 
 
 # RUTAS DE RECURSOS (DEPRECADO - USAR RESOURCE_MANAGER)

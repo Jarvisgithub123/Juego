@@ -5,15 +5,7 @@ from src.Constantes import *
 from src.entities.Car import Car
 
 class CarSpawner:
-    """Maneja la generacion y limpieza de autos enemigos"""
-    
-    # Constantes de configuracion
-    MIN_SPAWN_INTERVAL = 2.5
-    MAX_SPAWN_INTERVAL = 5.0
-    MIN_CAR_DISTANCE = 320
-    MAX_VISIBLE_CARS = 2
-    MIN_SPAWN_DISTANCE_FROM_PLAYER = 400
-    CAR_CLEANUP_MARGIN = 500  # Aumentado para dar mas margen
+    """Sistema de spawn simplificado pero más variado"""
     
     def __init__(self, resource_manager):
         self.resource_manager = resource_manager
@@ -23,94 +15,87 @@ class CarSpawner:
         self._spawn_initial_car()
     
     def _spawn_initial_car(self):
-        """Genera el primer auto para que aparezca inmediatamente"""
+        """Genera el primer auto"""
         first_car = Car(PANTALLA_ANCHO, PISO_POS_Y - 86, 
-                       self.resource_manager, speed=VELOCIDAD_AUTO_BASE)
+                       self.resource_manager, speed=self._generate_car_speed())
         self.cars.append(first_car)
     
     def update(self, delta_time: float, camera_x: float, player_x: float):
-        """Actualiza el sistema de spawn de autos"""
-        self._update_spawn_timer(delta_time)
-        self._try_spawn_car(camera_x, player_x)
-        self._cleanup_distant_cars(camera_x)
-        self._update_cars(delta_time)
-    
-    def _update_spawn_timer(self, delta_time: float):
-        """Actualiza el timer de spawn"""
+        """Actualiza el sistema de spawn"""
         self.spawn_timer += delta_time
-    
-    def _try_spawn_car(self, camera_x: float, player_x: float):
-        """Intenta spawnear un nuevo auto si es posible"""
+        
         if self.spawn_timer >= self.next_spawn_time:
             if self._can_spawn_car(camera_x, player_x):
-                self._spawn_car(camera_x)
+                # Decidir si spawner 1 o 2 autos
+                num_cars = self._decide_spawn_count()
+                self._spawn_cars(camera_x, num_cars)
                 self._reset_spawn_timer()
-            else:
-                self._adjust_spawn_timer_for_retry()
+        
+        self._cleanup_cars(camera_x)
+        self._update_cars(delta_time)
+    
+    def _decide_spawn_count(self) -> int:
+        """Decide cuántos autos spawner (1 o 2)"""
+        return random.choices([1, 2], weights=[40, 60], k=1)[0]
     
     def _can_spawn_car(self, camera_x: float, player_x: float) -> bool:
-        """Verifica si se puede spawnear un auto sin ser injusto"""
-        spawn_x = self._calculate_spawn_position(camera_x)
-        return (self._has_safe_distance(spawn_x) and 
-                self._not_too_many_visible(camera_x) and 
-                self._safe_from_player(spawn_x, player_x))
+        """Verifica si se puede spawner"""
+        spawn_x = camera_x + PANTALLA_ANCHO + 300
+        
+        # No más de 4 autos visibles
+        visible_cars = sum(1 for car in self.cars 
+                          if car.rect.x - camera_x > -200 and car.rect.x - camera_x < PANTALLA_ANCHO + 200)
+        
+        return (visible_cars < 4 and
+                spawn_x - player_x >= 500 and
+                self._safe_distance_from_other_cars(spawn_x))
     
-    def _calculate_spawn_position(self, camera_x: float) -> int:
-        """Calcula donde aparecera el proximo auto"""
-        return camera_x + PANTALLA_ANCHO + random.randint(200, 500)
+    def _safe_distance_from_other_cars(self, spawn_x: int) -> bool:
+        """Verifica distancia mínima con otros autos"""
+        for car in self.cars:
+            if abs(car.rect.x - spawn_x) < 250:
+                return False
+        return True
     
-    def _has_safe_distance(self, spawn_x: int) -> bool:
-        """Verifica distancia segura entre autos"""
-        return all(abs(car.rect.x - spawn_x) >= self.MIN_CAR_DISTANCE 
-                  for car in self.cars)
-    
-    def _not_too_many_visible(self, camera_x: float) -> bool:
-        """Verifica que no haya demasiados autos visibles"""
-        # Margen mas generoso para contar autos visibles
-        margin = 150  # Aumentado desde 100
-        visible_count = sum(1 for car in self.cars 
-                           if -margin <= car.rect.x - camera_x <= PANTALLA_ANCHO + margin)
-        return visible_count < self.MAX_VISIBLE_CARS
-    
-    def _safe_from_player(self, spawn_x: int, player_x: float) -> bool:
-        """Verifica distancia segura del jugador"""
-        return spawn_x - player_x >= self.MIN_SPAWN_DISTANCE_FROM_PLAYER
-    
-    def _spawn_car(self, camera_x: float):
-        """Crea un nuevo auto en posicion segura"""
-        spawn_x = self._calculate_spawn_position(camera_x)
-        speed = self._generate_car_speed()
-        new_car = Car(spawn_x, PISO_POS_Y - 86, self.resource_manager, speed=speed)
-        self.cars.append(new_car)
+    def _spawn_cars(self, camera_x: float, num_cars: int):
+        """Spawner 1 o 2 autos con diferentes configuraciones"""
+        base_x = camera_x + PANTALLA_ANCHO + random.randint(300, 500)
+        
+        if num_cars == 1:
+            speed = self._generate_car_speed()
+            new_car = Car(base_x, PISO_POS_Y - 86, self.resource_manager, speed=speed)
+            self.cars.append(new_car)
+        
+        elif num_cars == 2:
+            fast_speed = random.randint(18, 22)
+            fast_car = Car(base_x, PISO_POS_Y - 86, self.resource_manager, speed=fast_speed)
+            self.cars.append(fast_car)
+            # Spawner un auto lento
+            slow_speed = random.randint(8, 12)
+            gap = random.randint(300, 500)
+            slow_car = Car(base_x + gap, PISO_POS_Y - 86, self.resource_manager, speed=slow_speed)
+            self.cars.append(slow_car)
     
     def _generate_car_speed(self) -> int:
-        """Genera velocidad balanceada para el auto"""
-        variation = min(VELOCIDAD_AUTO_VARIACION, 3)
-        speed = VELOCIDAD_AUTO_BASE + random.randint(-variation, variation)
-        return max(6, min(speed, VELOCIDAD_AUTO_BASE + 4))
+        """Genera velocidad más variada para un solo auto"""
+        speed_type = random.choices(['lento', 'normal', 'rapido'], weights=[30, 40, 30], k=1)[0]
+        
+        if speed_type == 'lento':
+            return random.randint(8, 12)
+        elif speed_type == 'normal':
+            return random.randint(13, 17)
+        else:  # rápido
+            return random.randint(18, 22)
     
     def _reset_spawn_timer(self):
-        """Reinicia el timer con nuevo intervalo aleatorio"""
+        """Reinicia el timer con nuevo intervalo"""
         self.spawn_timer = 0
-        self.next_spawn_time = random.uniform(self.MIN_SPAWN_INTERVAL, self.MAX_SPAWN_INTERVAL)
+        self.next_spawn_time = random.uniform(3.0, 6.0)
     
-    def _adjust_spawn_timer_for_retry(self):
-        """Ajusta timer para reintentar spawn mas rapido"""
-        retry_delay = random.uniform(0.5, 1.0)
-        self.spawn_timer = max(0, self.next_spawn_time - retry_delay)
-    
-    def _cleanup_distant_cars(self, camera_x: float):
-        """Elimina autos lejanos para liberar memoria"""
-        # Los autos se eliminan cuando estan completamente fuera del borde izquierdo
-        # con un margen generoso para evitar eliminacion prematura
-        cleanup_threshold = camera_x - self.CAR_CLEANUP_MARGIN
-        cars_before = len(self.cars)
+    def _cleanup_cars(self, camera_x: float):
+        """Elimina autos que están muy atrás"""
+        cleanup_threshold = camera_x - 600
         self.cars = [car for car in self.cars if car.rect.right > cleanup_threshold]
-        
-        # Debug opcional: mostrar cuando se eliminan autos
-        cars_removed = cars_before - len(self.cars)
-        if cars_removed > 0:
-            print(f"DEBUG: Eliminados {cars_removed} autos. Threshold: {cleanup_threshold}")
     
     def _update_cars(self, delta_time: float):
         """Actualiza todos los autos"""
@@ -118,7 +103,7 @@ class CarSpawner:
             car.update(delta_time)
     
     def check_collisions(self, player_rect: pygame.Rect) -> bool:
-        """Verifica colisiones entre jugador y autos"""
+        """Verifica colisiones"""
         player_hitbox = player_rect.inflate(-8, -8)
         return any(player_hitbox.colliderect(car.rect.inflate(-5, -20)) 
                   for car in self.cars)
