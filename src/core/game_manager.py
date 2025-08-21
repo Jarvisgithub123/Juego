@@ -39,8 +39,8 @@ class GameManager:
         
         # Sprite sheets (animaciones de personajes/vehiculos)
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
-        self.resource_manager.load_spritesheet("Auto_azul", "Assets/Sprites/Auto-azul.png", 126, 86)
-        self.resource_manager.load_spritesheet("Auto_rojo", "Assets/Sprites/Auto-rojo.png", 126, 86)
+        self.resource_manager.load_spritesheet("Auto_azul", "Assets/Sprites/Autos/Auto-azul.png", 126, 86)
+        self.resource_manager.load_spritesheet("Auto_rojo", "Assets/Sprites/Autos/Auto-rojo.png", 126, 86)
         
         # Sonidos
         self.resource_manager.load_sound("boton_hover", "Assets/Music/mixkit-arcade-game-jump-coin-216.mp3")
