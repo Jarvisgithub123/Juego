@@ -15,9 +15,9 @@ class GameHUD:
         self.instructions = []
         if font_instrucciones:
             textos = [
-                ("Presiona 'Espacio' para saltar", (20, 60)),
-                ("Presiona 'Z' para dashear", (20,  90)),
-                ("Presiona 'P' para pausar",(20,  120)),
+                ("Presiona 'Espacio' para saltar", (20, 80)),
+                ("Presiona 'Z' para dashear", (20,  130)),
+                ("Presiona 'P' para pausar",(20,  180)),
             ]
             
             for texto, pos in textos:

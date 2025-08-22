@@ -76,6 +76,23 @@ class MenuScreen(Scene):
             self.background_timer = 0.0
             self.current_background = 1 - self.current_background  # Alternar entre 0 y 1
     
+    def _draw_bordered_text(self, text: str, font: pygame.font.Font, pos: tuple, 
+                           text_color: tuple, border_color: tuple, border_size: int = 4):
+        """Dibuja texto con borde"""
+        x, y = pos
+        # Dibujar el borde
+        for dx, dy in [(dx, dy) for dx in range(-border_size, border_size + 1) 
+                                for dy in range(-border_size, border_size + 1)
+                                if dx*dx + dy*dy <= border_size*border_size]:
+            text_surface = font.render(text, True, border_color)
+            text_rect = text_surface.get_rect(center=(x + dx, y + dy))
+            self.screen.blit(text_surface, text_rect)
+        
+        # Dibujar el texto principal
+        text_surface = font.render(text, True, text_color)
+        text_rect = text_surface.get_rect(center=(x, y))
+        self.screen.blit(text_surface, text_rect)
+
     def draw(self):
         """Dibuja el menu con fondo animado"""
         # DIBUJAR FONDO ANIMADO
@@ -91,12 +108,17 @@ class MenuScreen(Scene):
             # Si no hay imagen, usar color de fondo por defecto
             self.screen.fill(COLOR_FONDO_BASE)
         
-        # Titulo - posicionado a la izquierda para balancear con botones a la derecha
+        # Titulo con borde
         font_titulo = self.resource_manager.get_font('titulo')
         if font_titulo:
-            title_surface = font_titulo.render("Go UAIBOT", True, COLOR_TITULO)
-            title_rect = title_surface.get_rect(center=(ANCHO_PANTALLA // 5, 120))
-            self.screen.blit(title_surface, title_rect)
+            self._draw_bordered_text(
+                "Go UAIBOT",
+                font_titulo,
+                (ANCHO_PANTALLA // 5, 120),
+                COLOR_TITULO,
+                (0, 0, 0),  # Color del borde (negro)
+                3  # Grosor del borde
+            )
         
         # Informacion de animacion (opcional - puedes quitarla)
         font_pequeña = self.resource_manager.get_font('pequeña')

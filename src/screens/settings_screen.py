@@ -41,7 +41,22 @@ class SettingsScreen(Scene):
                    start_x, start_y + 2 * (button_height + spacing),
                    button_width, button_height, self.resource_manager, self._return_to_menu)
         ]
-    
+    def _draw_bordered_text(self, text: str, font: pygame.font.Font, pos: tuple, 
+                           text_color: tuple, border_color: tuple, border_size: int = 4):
+        """Dibuja texto con borde"""
+        x, y = pos
+        # Dibujar el borde
+        for dx, dy in [(dx, dy) for dx in range(-border_size, border_size + 1) 
+                                for dy in range(-border_size, border_size + 1)
+                                if dx*dx + dy*dy <= border_size*border_size]:
+            text_surface = font.render(text, True, border_color)
+            text_rect = text_surface.get_rect(center=(x + dx, y + dy))
+            self.screen.blit(text_surface, text_rect)
+        
+        # Dibujar el texto principal
+        text_surface = font.render(text, True, text_color)
+        text_rect = text_surface.get_rect(center=(x, y))
+        self.screen.blit(text_surface, text_rect)
     def _toggle_sound(self):
         """Alterna el sonido"""
         current_state = getattr(self.resource_manager, 'music_enabled', True)
@@ -126,9 +141,14 @@ class SettingsScreen(Scene):
         # Titulo - posicionado a la izquierda para balancear
         font_titulo = self.resource_manager.get_font('titulo')
         if font_titulo:
-            title_surface = font_titulo.render("Opciones", True, COLOR_TITULO)
-            title_rect = title_surface.get_rect(center=(ANCHO_PANTALLA // 5, 120))
-            self.screen.blit(title_surface, title_rect)
+            self._draw_bordered_text(
+                "Opciones",
+                font_titulo,
+                (ANCHO_PANTALLA // 5, 120),
+                COLOR_TITULO,
+                (0, 0, 0),  # Color del borde (negro)
+                3  # Grosor del borde
+            )
         
         # Ayuda - tambien a la izquierda
         font_pequeña = self.resource_manager.get_font('pequeña')
