@@ -1,0 +1,62 @@
+import pygame
+from typing import List, Optional
+from src.Constantes import *
+import random
+
+# Constantes para lAS PILAS
+DEFAULT_PILAS_WIDTH = 60
+DEFAULT_PILAS_HEIGHT = 60
+ENERGIA_PILA = 10 
+
+
+class pilas(pygame.sprite.Sprite):
+    def __init__(self, resource_manager, *groups, width: int = DEFAULT_PILAS_WIDTH, height: int = DEFAULT_PILAS_HEIGHT):
+        super().__init__(*groups)
+        
+        # Cargar imagen directamente en lugar de usar spritesheet
+        pila_image = resource_manager.get_image("pila")
+        if pila_image:
+            self.image = pygame.transform.scale(pila_image, (width, height))
+
+    
+                
+        self.rect = self.image.get_rect()
+        
+        self.rect.x = PANTALLA_ANCHO + width
+        self.rect.y = PISO_POS_Y - 200
+        
+        # Estado de la pila
+        self.collected = False
+        self.speed = 3
+        
+
+    
+    def update(self):
+        """Actualiza la posición de la pila"""
+        if not self.collected:
+            self.rect.x -= self.speed
+            
+            if self.rect.x % 100 == 0:  # Solo imprimir cada 100 píxeles
+                print(f"Pila moviéndose: pos=({self.rect.x}, {self.rect.y})")
+    
+    def collect(self, robot):
+        """ Método para recolectar la pila y dar energía al robot
+        
+        Args:
+            robot: El robot que recolecta la pila
+        """
+        if not self.collected:
+            energia_anterior = robot.energia if hasattr(robot, 'energia') else 0
+            
+            # Aumentar la energía del robot sin exceder su máximo
+            if hasattr(robot, 'energia_maxima'):
+                nueva_energia = min(robot.energia + ENERGIA_PILA, robot.energia_maxima)
+                robot.energia = nueva_energia
+                print(f"Energía del robot: {energia_anterior} -> {nueva_energia}")
+            
+            self.collected = True
+            print(f"¡Pila recolectada! +{ENERGIA_PILA} segundos de energía")
+    
+    def is_active(self) -> bool:
+        """Verifica si la pila sigue activa (no recolectada y en pantalla)"""
+        return not self.collected

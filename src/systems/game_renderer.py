@@ -3,6 +3,7 @@ from typing import List
 from src.Constantes import *
 from src.entities.Car import Car
 from src.entities.Player import Player
+from src.entities.Pilas import pilas
 
 class GameRenderer:
     """Maneja todo el sistema de renderizado del juego"""  
@@ -117,6 +118,8 @@ class GameRenderer:
             if self._is_car_visible(screen_x, car.rect.width):
                 self._draw_single_car(car, screen_x)
     
+    
+    
     def _is_car_visible(self, screen_x: float, car_width: int) -> bool:
         """Verifica si un auto esta visible en pantalla"""
         # Margen mas generoso para evitar parpadeos
@@ -132,7 +135,23 @@ class GameRenderer:
             rect = pygame.Rect(screen_x, car.rect.y, car.rect.width, car.rect.height)
             pygame.draw.rect(self.screen, (0, 0, 255), rect)
     
-        # ---------------- PANTALLAS DE ESTADO ----------------
+    
+    # ---------------- PILAS ----------------
+    
+    def draw_pilas(self, pilas: List[pilas], camera_x: float):
+        """Dibuja las pilas en la pantalla"""
+        for pila in pilas:
+            screen_x = pila.rect.x - camera_x
+            
+            # Solo dibujar si está en pantalla
+            if -pila.rect.width <= screen_x <= PANTALLA_ANCHO:
+                # Dibujar la pila
+                self.screen.blit(pila.image, (screen_x, pila.rect.y))
+                
+    
+    
+    
+    # ---------------- PANTALLAS DE ESTADO ----------------
 
     def draw_game_over_screen(self):
         """Dibuja la pantalla de game over"""

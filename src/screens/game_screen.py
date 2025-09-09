@@ -5,6 +5,7 @@ from src.entities.Player import Player
 from src.UI.game_hud import GameHUD
 from src.core.Camera import Camera
 from src.systems.car_spawner import CarSpawner
+from src.systems.Pilas_spawner import pilaSpawner
 from src.systems.game_renderer import GameRenderer
 
 class GameScreen(Scene):
@@ -17,6 +18,7 @@ class GameScreen(Scene):
         self.camera = Camera(PANTALLA_ANCHO, PANTALLA_ALTO)
         self.player = Player(100, PISO_POS_Y - 60, GRAVEDAD, resource_manager)
         self.car_spawner = CarSpawner(resource_manager)
+        self.pila_spawner = pilaSpawner(resource_manager)
         self.renderer = GameRenderer(screen, resource_manager)
         self.hud = GameHUD(resource_manager)
         
@@ -64,7 +66,7 @@ class GameScreen(Scene):
             self._update_game_systems(delta_time)
             self._update_entities(delta_time)
             self._check_game_conditions()
-    
+            
     def _update_game_systems(self, delta_time: float):
         """Actualiza sistemas del juego"""
         self._update_time_and_distance(delta_time)
@@ -82,6 +84,16 @@ class GameScreen(Scene):
         """Actualiza entidades del juego"""
         self.player.update(delta_time)
         self.car_spawner.update(delta_time, self.camera.x, self.player.rect.x)
+        self.pila_spawner.update(delta_time, self.camera.x, self.player.rect.x, self._consume_energy)
+        
+        pila_recolectada = self.pila_spawner.check_collisions(self.player.rect)
+        if pila_recolectada:
+            # Aumentar energía del jugador (máximo 10 segundos adicionales)
+            energia_adicional = 10.0
+            self.energy_remaining = min(self.energy_remaining + energia_adicional, DURACION_ENERGIA)
+            pila_recolectada.collect(self.player)
+            print(f"¡Pila recolectada! Energía actual: {self.energy_remaining:.1f}s")
+        
     
     def _check_game_conditions(self):
         """Verifica condiciones de fin de juego"""
@@ -154,6 +166,7 @@ class GameScreen(Scene):
         self.renderer.draw_floor()
         self.renderer.draw_player(self.player, self.camera.x)
         self.renderer.draw_cars(self.car_spawner.get_cars(), self.camera.x)
+        self.renderer.draw_pilas(self.pila_spawner.get_pilas(), self.camera.x)
         
         # Dibujar UI
         if not self.game_over and not self.victory:

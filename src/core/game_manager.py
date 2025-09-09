@@ -36,6 +36,7 @@ class GameManager:
         self.resource_manager.load_image("bg_sky", "Assets/Imagenes/bg_sky.png")
         self.resource_manager.load_image("bg_mid", "Assets/Imagenes/bg_mid.png")
         self.resource_manager.load_image("bg_front", "Assets/Imagenes/bg_front.png")
+        self.resource_manager.load_image("pila", "Assets/Imagenes/MONSTER.png")
         
         # Sprite sheets (animaciones de personajes/vehiculos)
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
