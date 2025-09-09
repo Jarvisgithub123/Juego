@@ -30,7 +30,7 @@ class GameManager:
 
     def _load_initial_resources(self):
         """Carga los recursos iniciales del juego"""
-        # Imagenes estaticas
+        # imagenes estaticas
         self.resource_manager.load_image("menu_background1","Assets/Imagenes/menubackground1.png")
         self.resource_manager.load_image("menu_background2","Assets/Imagenes/menubackground2.png")
         self.resource_manager.load_image("bg_sky", "Assets/Imagenes/bg_sky.png")
@@ -38,19 +38,29 @@ class GameManager:
         self.resource_manager.load_image("bg_front", "Assets/Imagenes/bg_front.png")
         self.resource_manager.load_image("pila", "Assets/Imagenes/MONSTER.png")
         
-        # Sprite sheets (animaciones de personajes/vehiculos)
+        # PERSONAJES 
+        # UIAbot: tiene spritesheet con animación
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
+        
+        # otros personajes: por ahora imagenes estáticas 
+        self.resource_manager.load_image("UAIBOTA_walk", "Assets/Sprites/UAIBOTA.png")
+        self.resource_manager.load_image("UAIBOTINA_walk", "Assets/Sprites/UAIBOTINA.png")
+        self.resource_manager.load_image("UAIBOTINO_walk", "Assets/Sprites/UAIBOTINO.png")
+        
+        
+        # spritesheets de autos
         self.resource_manager.load_spritesheet("Auto_azul", "Assets/Sprites/Autos/Auto-azul.png", 126, 86)
         self.resource_manager.load_spritesheet("Auto_rojo", "Assets/Sprites/Autos/Auto-rojo.png", 126, 86)
         
-        # Sonidos
+        # sonidos
         self.resource_manager.load_sound("boton_hover", "Assets/Music/mixkit-arcade-game-jump-coin-216.mp3")
         self.resource_manager.load_sound("salto", "Assets/Music/Jump.mp3")
         self.resource_manager.load_sound("dash", "Assets/Music/dash.mp3")
         self.resource_manager.load_sound("game_over", "Assets/Music/Game-over.mp3")
         self.resource_manager.load_sound("victoria", "Assets/Music/Win.mp3")
+        self.resource_manager.load_sound("cambio_personaje", "Assets/Music/cambio_personaje.mp3")
         
-        # Musica
+        # musica
         self.resource_manager.load_music("menu", "Assets/Music/Music-menu.mp3")
         self.resource_manager.load_music("game_music", "Assets/Music/Game-music.mp3")
         
@@ -64,9 +74,9 @@ class GameManager:
             if event.type == pygame.QUIT:
                 self.running = False
             else:
-                # Pasar eventos a la escena actual
+                # Pasar todos los eventos a la escena actual
                 self.scene_manager.handle_event(event)
-    
+
     def update(self, dt):
         """Actualiza la logica del juego"""
         self.scene_manager.update(dt)

@@ -1,5 +1,5 @@
 import pygame
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Dict
 from src.Constantes import *
 
 #TODO: Añadir animaciones: Dash
@@ -33,6 +33,14 @@ class Player:
         self.original_position_x = initial_x
         self.original_position_y = initial_y
         
+        # Sistema de personajes - CORREGIDO
+        self.personajes = ["UIAbot", "UAIBOTA", "UAIBOTINA", "UAIBOTINO"]
+        self.personaje_actual = 0
+        self.on_ground = True  # Usar nombre más estándar
+        
+        # Variable para detectar tecla C presionada (evitar spam)
+        self.c_key_pressed = False
+
         # Variables de fisica y movimiento
         self._init_physics(gravity)
         
@@ -46,7 +54,7 @@ class Player:
         self._load_animation_frames()
         self.current_sprite = None
         self._update_sprite()
-        
+    
     def _init_physics(self, gravity: float):
         """Inicializa las variables de fisica del jugador"""
         self.velocity_y = 0
@@ -60,6 +68,7 @@ class Player:
         self.animation_timer = 0
         self.animation_speed = 0.08
         self.animation_frames: List[pygame.Surface] = []
+        self.has_animation = False  # flag para saber si tiene animación o imagen estática
     
     def _init_dash_system(self):
         """Inicializa el sistema de dash del jugador"""
@@ -70,26 +79,37 @@ class Player:
         self.dash_cooldown = DASH_COOLDOWN_SECONDS
         self.dash_cooldown_timer = 0
         
-        # Sistema de retorno a posicion original
+        # sistema de retorno a posicion original
         self.return_to_origin_speed = RETURN_TO_ORIGIN_SPEED
         self.max_distance_from_origin = MAX_DISTANCE_FROM_ORIGIN
         
     def _load_animation_frames(self):
-        """Carga los frames de animacion del jugador desde el spritesheet"""
-        spritesheet = self.resource_manager.get_spritesheet("UIAbot_walk")
+        """Carga los frames de animación directamente desde resource_manager"""
+        current_character_name = self.personajes[self.personaje_actual]
+        spritesheet_name = f"{current_character_name}_walk"
+        
+        # intentar cargar spritesheet con animación
+        spritesheet = self.resource_manager.get_spritesheet(spritesheet_name)
         
         if spritesheet:
-            self.animation_frames = self.resource_manager.get_animation_frames(
-                "UIAbot_walk", 0, 4, 0
-            )
-        
-        # Si no hay frames disponibles, crear placeholder
-        if not self.animation_frames:
-            placeholder = self.resource_manager.create_fallback_image(
-                (32, 32), (0, 100, 255)
-            )
-            self.animation_frames = [placeholder]
-    
+            # si es q tiene la  animación
+            frames = self.resource_manager.get_animation_frames(spritesheet_name, 0, 5, 0)
+            self.animation_frames = frames
+            self.has_animation = True
+        else:
+            # intenta cargar  la imagen estática
+            character_image = self.resource_manager.get_image(spritesheet_name)
+            if character_image:
+                scaled_image = pygame.transform.scale(character_image, (64, 86))
+                self.animation_frames = [scaled_image]
+                self.has_animation = False
+            else:
+                # crear placeholder si no se encuentra la imagen
+                placeholder = pygame.Surface((64, 86))
+                placeholder.fill((255, 0, 255))  # Magenta para debug
+                self.animation_frames = [placeholder]
+                self.has_animation = False
+
     def jump(self):
         """Hace saltar al jugador si esta en el suelo"""
         if self.on_ground:
@@ -127,20 +147,55 @@ class Player:
     def can_dash(self) -> bool:
         """Verifica si el jugador puede hacer dash (metodo publico)"""
         return self._can_perform_dash()
+    
+    def handle_character_change_input(self, keys_pressed: dict):
+        """
+        Maneja la entrada para cambio de personaje
         
-    def update(self, delta_time: float = 1/60):
+        Args:
+            keys_pressed: Diccionario con las teclas presionadas
+        """
+        if keys_pressed[pygame.K_c]:
+            if not self.c_key_pressed and self.on_ground:
+                self.change_character()
+            self.c_key_pressed = True
+        else:
+            self.c_key_pressed = False
+        
+    def update(self, delta_time: float = 1/60, keys_pressed = None):    
         """
         Actualiza la fisica y animacion del jugador
         
         Args:
             delta_time: Tiempo transcurrido desde el ultimo frame
+            keys_pressed: Diccionario con las teclas presionadas (opcional)
         """
         self._update_cooldowns(delta_time)
         self._update_dash_movement(delta_time)
         self._update_return_to_origin(delta_time)
         self._update_vertical_physics(delta_time)
         self._update_animation_if_grounded(delta_time)
+        
+        if keys_pressed:
+            self.handle_character_change_input(keys_pressed)
     
+
+    def change_character(self):
+        """Cambia el personaje del jugador cargando directamente desde resource_manager"""
+        self.personaje_actual = (self.personaje_actual + 1) % len(self.personajes)
+        
+        self.current_sprite = None
+        self._load_animation_frames()
+        
+        self.animation_frame = 0
+        self._update_sprite()
+        
+        self.resource_manager.play_sound("cambio_personaje")
+
+    def get_current_character(self):
+        """Retorna el nombre del personaje actual"""
+        return self.personajes[self.personaje_actual]
+        
     def _update_cooldowns(self, delta_time: float):
         """Actualiza los timers de cooldown"""
         if self.dash_cooldown_timer > 0:
@@ -150,7 +205,6 @@ class Player:
         """Maneja el movimiento durante el dash"""
         if self.is_dashing:
             self.dash_timer -= delta_time
-            # Mover al jugador hacia adelante durante el dash
             self.rect.x += self.dash_speed
             
             if self.dash_timer <= 0:
@@ -161,28 +215,23 @@ class Player:
         if not self.is_dashing:
             distance_from_origin = self.rect.x - self.original_position_x
             
-            # Solo retornar si se alejo demasiado de la posicion original
             if abs(distance_from_origin) > POSITION_TOLERANCE:
                 self._move_towards_origin(distance_from_origin)
     
     def _move_towards_origin(self, distance_from_origin: float):
         """Mueve al jugador gradualmente hacia su posicion original"""
         if distance_from_origin > 0:
-            # Esta muy a la derecha, mover hacia la izquierda
             return_speed = min(self.return_to_origin_speed, distance_from_origin)
             self.rect.x -= return_speed
         else:
-            # Esta muy a la izquierda, mover hacia la derecha
             return_speed = min(self.return_to_origin_speed, abs(distance_from_origin))
             self.rect.x += return_speed
     
     def _update_vertical_physics(self, delta_time: float):
         """Actualiza la fisica vertical (gravedad y colision con suelo)"""
-        # Aplicar gravedad
         self.velocity_y += self.gravity
         self.rect.y += self.velocity_y
         
-        # Verificar colision con el suelo
         if self.rect.y >= self.original_position_y:
             self._land_on_ground()
     
@@ -198,16 +247,35 @@ class Player:
             self._update_animation(delta_time)
     
     def _update_sprite(self):
-        """Actualiza el sprite actual basado en el frame de animacion"""
-        if self.animation_frames:
-            frame_index = int(self.animation_frame) % len(self.animation_frames)
-            self.current_sprite = self.animation_frames[frame_index]
+        """Actualiza el sprite actual"""
+        if self.animation_frames and len(self.animation_frames) > 0:
+            if self.has_animation:
+                frame_index = int(self.animation_frame) % len(self.animation_frames)
+                self.current_sprite = self.animation_frames[frame_index]
+            else:
+                self.current_sprite = self.animation_frames[0]
+        else:
+            self.current_sprite = pygame.Surface((64, 86))
+            self.current_sprite.fill((255, 0, 255))  # rosa para debug
     
     def _update_animation(self, delta_time: float):
-        """Actualiza el frame de animacion actual"""
-        self.animation_timer += delta_time
-        
-        if self.animation_timer >= self.animation_speed:
-            self.animation_timer = 0
-            self.animation_frame = (self.animation_frame + 1) % len(self.animation_frames)
-            self._update_sprite()
+        """Actualiza el frame de animación solo si tiene animación"""
+        if self.has_animation and len(self.animation_frames) > 1:
+            self.animation_timer += delta_time
+            
+            if self.animation_timer >= self.animation_speed:
+                self.animation_timer = 0
+                self.animation_frame = (self.animation_frame + 1) % len(self.animation_frames)
+                self._update_sprite()
+        else:
+            if not self.current_sprite and self.animation_frames:
+                self._update_sprite()
+            elif self.animation_frames and len(self.animation_frames) == 1:
+                expected_sprite = self.animation_frames[0]
+                if self.current_sprite != expected_sprite:
+                    self._update_sprite()
+                elif not self.current_sprite:
+                    self._update_sprite()
+            
+            if not self.current_sprite and self.animation_frames:
+                self.current_sprite = self.animation_frames[0]

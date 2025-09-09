@@ -43,8 +43,8 @@ class GameScreen(Scene):
                 self.player.jump()
             elif event.key == pygame.K_z and not self.pause:
                 self.player.dash(self._consume_energy)
-            if event.key == pygame.K_p: 
-                self.pause= not self.pause 
+            elif event.key == pygame.K_p: 
+                self.pause = not self.pause 
             elif self.pause: 
                 if event.key == pygame.K_ESCAPE:
                     self._return_to_menu()
@@ -82,7 +82,8 @@ class GameScreen(Scene):
     
     def _update_entities(self, delta_time: float):
         """Actualiza entidades del juego"""
-        self.player.update(delta_time)
+        keys = pygame.key.get_pressed()
+        self.player.update(delta_time, keys)
         self.car_spawner.update(delta_time, self.camera.x, self.player.rect.x)
         self.pila_spawner.update(delta_time, self.camera.x, self.player.rect.x, self._consume_energy)
         
@@ -139,7 +140,6 @@ class GameScreen(Scene):
     
     def on_enter(self):
         """Se ejecuta al entrar en la pantalla del juego"""
-        
         self.resource_manager.play_music("game_music", volume=0.6)
     
     def on_exit(self):
@@ -192,6 +192,4 @@ class GameScreen(Scene):
             font_small = pygame.font.SysFont(None, 36)
             text2 = font_small.render("Presiona P para continuar o ESC para volver al menu", True, (200, 200, 200))
             rect2 = text2.get_rect(center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 + 60))
-
-
             self.screen.blit(text2, rect2)
