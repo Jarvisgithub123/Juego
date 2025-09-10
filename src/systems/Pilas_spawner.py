@@ -10,7 +10,7 @@ class pilaSpawner:
         self.resource_manager = resource_manager
         self.spawn_timer = 0.0
         self.pilas: List[pilas] = []
-        self.next_spawn_time = 5.0  # Empezar con 5 segundos 
+        self.next_spawn_time = 5.0  # Generar una pila cada 5 segundos
         print("PilaSpawner inicializado")
     
     def update(self, dt: float, camera_x: float, player_x: float, player_rect: pygame.Rect,energy_callback=None):
@@ -31,9 +31,9 @@ class pilaSpawner:
         # Generar pilas cada 5 segundos
         if self.spawn_timer >= self.next_spawn_time:
             
-            # Calcular posición inicial para cada pila
+            # Difentes alturas para las pilas
             spawn_x = camera_x + PANTALLA_ANCHO + 100 # Siempre fuera de pantalla a la derecha
-            spawn_y = random.randint(PISO_POS_Y - 150, PISO_POS_Y - 100)  # Se genera en diferentes alturas aleatoriamente
+            spawn_y = random.randint(PISO_POS_Y - 400, PISO_POS_Y - 100)  # Se genera en diferentes alturas aleatoriamente
             
             new_pila = pilas(self.resource_manager)
             new_pila.rect.x = spawn_x

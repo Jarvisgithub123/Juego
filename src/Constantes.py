@@ -50,12 +50,13 @@ DASH_ENERGIA_COSTO = 1         # Costo en energia por cada dash
 # Sistema de energia y objetivos
 DURACION_ENERGIA = 60                 # Segundos totales de energia
 KILOMETROS_OBJETIVO = 1.0          # Kilometros que debe recorrer UAIBOT
-DECREMENTO_KM_POR_SEGUNDO = 0.03       # Velocidad de avance en km/s
+DECREMENTO_KM_POR_SEGUNDO = 0.9      # Velocidad de avance en km/s
 
 # Velocidades de elementos
 VELOCIDAD_FONDO = 4              # Velocidad del scroll de fondo
 VELOCIDAD_AUTO_BASE = 13         # Velocidad base de los autos enemigos
 VELOCIDAD_AUTO_VARIACION = 1    # Variacion maxima de velocidad de autos
+
 
 
 # RUTAS DE RECURSOS (DEPRECADO - USAR RESOURCE_MANAGER)

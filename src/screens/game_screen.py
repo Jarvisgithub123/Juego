@@ -53,7 +53,7 @@ class GameScreen(Scene):
     def _handle_endgame_events(self, event: pygame.event.Event):
         """Maneja eventos en pantallas de fin de juego"""
         if event.type == pygame.KEYDOWN:
-            if event.key in [pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE]:
+            if event.key in [pygame.K_r]:
                 self._restart_game()
             elif event.key == pygame.K_ESCAPE:
                 self._return_to_menu()
@@ -198,6 +198,6 @@ class GameScreen(Scene):
             self.screen.blit(text, rect)
 
             font_small = pygame.font.SysFont(None, 36)
-            text2 = font_small.render("Presiona P para continuar o ESC para volver al menu", True, (200, 200, 200))
+            text2 = font_small.render("Presiona R para continuar o ESC para volver al menu", True, (200, 200, 200))
             rect2 = text2.get_rect(center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 + 60))
             self.screen.blit(text2, rect2)
