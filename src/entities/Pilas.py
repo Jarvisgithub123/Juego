@@ -1,12 +1,12 @@
 import pygame
 from typing import List, Optional
 from src.Constantes import *
-import random
+
 
 # Constantes para lAS PILAS
-DEFAULT_PILAS_WIDTH = 60
-DEFAULT_PILAS_HEIGHT = 60
-ENERGIA_PILA = 10 
+DEFAULT_PILAS_WIDTH = 80
+DEFAULT_PILAS_HEIGHT = 80
+
 
 
 class pilas(pygame.sprite.Sprite):
@@ -22,8 +22,6 @@ class pilas(pygame.sprite.Sprite):
                 
         self.rect = self.image.get_rect()
         
-        self.rect.x = PANTALLA_ANCHO + width
-        self.rect.y = PISO_POS_Y - 200
         
         # Estado de la pila
         self.collected = False
@@ -35,9 +33,7 @@ class pilas(pygame.sprite.Sprite):
         """Actualiza la posición de la pila"""
         if not self.collected:
             self.rect.x -= self.speed
-            
-            if self.rect.x % 100 == 0:  # Solo imprimir cada 100 píxeles
-                print(f"Pila moviéndose: pos=({self.rect.x}, {self.rect.y})")
+        
     
     def collect(self, robot):
         """ Método para recolectar la pila y dar energía al robot

@@ -67,3 +67,5 @@ RUTA_ARCHIVO_FONDO = "Assets\\Imagenes\\ciudad.jpg"  # Ruta legacy del fondo
 DEBUG_MODE = False              # Activar modo debug
 SHOW_HITBOXES = False          # Mostrar hitboxes de colision
 ENABLE_CONSOLE_LOGS = True     # Habilitar logs en consola
+
+ENERGIA_PILA = 10 

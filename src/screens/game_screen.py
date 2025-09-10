@@ -28,6 +28,7 @@ class GameScreen(Scene):
         self.victory = False
         self.energy_remaining = DURACION_ENERGIA
         self.kilometers_remaining = KILOMETROS_OBJETIVO
+        self.time = 0.0
     
     def handle_event(self, event: pygame.event.Event):
         """Maneja los eventos de entrada del usuario"""
@@ -85,16 +86,17 @@ class GameScreen(Scene):
         keys = pygame.key.get_pressed()
         self.player.update(delta_time, keys)
         self.car_spawner.update(delta_time, self.camera.x, self.player.rect.x)
-        self.pila_spawner.update(delta_time, self.camera.x, self.player.rect.x, self._consume_energy)
+        self.pila_spawner.update(delta_time, self.camera.x, self.player.rect.x, self.player.rect,self.agregar_energia)
         
-        pila_recolectada = self.pila_spawner.check_collisions(self.player.rect)
-        if pila_recolectada:
-            # Aumentar energía del jugador (máximo 10 segundos adicionales)
-            energia_adicional = 10.0
-            self.energy_remaining = min(self.energy_remaining + energia_adicional, DURACION_ENERGIA)
-            pila_recolectada.collect(self.player)
-            print(f"¡Pila recolectada! Energía actual: {self.energy_remaining:.1f}s")
+
+       
+            
         
+    
+    def agregar_energia(self, cantidad):
+        """Agrega energía a los robots sin pasar su maximo"""
+        self.energy_remaining = min(self.energy_remaining + cantidad, DURACION_ENERGIA)
+
     
     def _check_game_conditions(self):
         """Verifica condiciones de fin de juego"""
@@ -127,8 +129,14 @@ class GameScreen(Scene):
         if not self.player.is_dashing:
             self.energy_remaining -= delta_time
         
+        if not self.player.is_dashing:
+            self.time += delta_time 
+            
+        if self.player.is_dashing:
+            self.time += delta_time + DECREMENTO_KM_POR_SEGUNDO
+        
         # Calcular distancia basada en tiempo transcurrido
-        km_traveled = (DURACION_ENERGIA - self.energy_remaining) * DECREMENTO_KM_POR_SEGUNDO
+        km_traveled = self.time * DECREMENTO_KM_POR_SEGUNDO
         self.kilometers_remaining = max(0, KILOMETROS_OBJETIVO - km_traveled)
     
     def _consume_energy(self, energy_amount: float) -> bool:
