@@ -165,10 +165,15 @@ class GameRenderer:
             self._draw_centered_text("JUEGO TERMINADO", font_large, COLOR_ROJO, 
                                    PANTALLA_ALTO // 2 - 100)
         if font_normal:
-            self._draw_centered_text("Presiona [R] para reiniciar", 
-                                   font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 - 50)
             self._draw_centered_text("Presiona [ESCAPE] para volver al menu", 
-                                   font_normal, COLOR_BLANCO, PANTALLA_ALTO // 2 - 20)
+                                   font_normal, COLOR_BLANCO, PANTALLA_ALTO // 2 - 50)
+            reiniciar_rect = self._draw_centered_text("Presiona [R] para reiniciar el juego", 
+                                font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 + 20)
+            bg_rect = reiniciar_rect.inflate(20, 10)  # Hacer el fondo un poco más grande
+            pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)  # Color gris
+            
+            self._draw_centered_text("Presiona [R] para reiniciar el juego", 
+                                font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 + 20)
     
     def draw_victory_screen(self):
         """Dibuja la pantalla de victoria"""
@@ -191,9 +196,9 @@ class GameRenderer:
             reiniciar_rect = self._draw_centered_text("Presiona [R] para reiniciar el juego", 
                                 font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 + 20)
             bg_rect = reiniciar_rect.inflate(20, 10)  # Hacer el fondo un poco más grande
-            pygame.draw.rect(self.screen, (90, 80, 80), bg_rect)  # Color gris
+            pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)  # Color gris
             
-            reiniciar_rect = self._draw_centered_text("Presiona [R] para reiniciar el juego", 
+            self._draw_centered_text("Presiona [R] para reiniciar el juego", 
                                 font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 + 20)
         
         # ---------------- FUNCIONES AUXILIARES ----------------
