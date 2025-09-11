@@ -4,7 +4,7 @@ from src.Constantes import *
 from src.entities.Car import Car
 from src.entities.Player import Player
 from src.entities.Pilas import pilas
-
+import random
 class GameRenderer:
     """Maneja todo el sistema de renderizado del juego"""  
     def __init__(self, screen: pygame.Surface, resource_manager):
@@ -12,6 +12,7 @@ class GameRenderer:
         self.resource_manager = resource_manager
         self.world_scroll_x = 0
         self.world_scroll_speed = 30
+        self.color_reiniciar = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255) #Color aleatorio para el texto de reiniciar la partida
         self._init_background_system()
     
     def _init_background_system(self):
@@ -164,10 +165,15 @@ class GameRenderer:
             self._draw_centered_text("JUEGO TERMINADO", font_large, COLOR_ROJO, 
                                    PANTALLA_ALTO // 2 - 100)
         if font_normal:
-            self._draw_centered_text("Presiona [ENTER] o [ESPACIO] para reiniciar", 
-                                   font_normal, COLOR_VERDE, PANTALLA_ALTO // 2 - 50)
             self._draw_centered_text("Presiona [ESCAPE] para volver al menu", 
-                                   font_normal, COLOR_BLANCO, PANTALLA_ALTO // 2 - 20)
+                                   font_normal, COLOR_BLANCO, PANTALLA_ALTO // 2 - 50)
+            reiniciar_rect = self._draw_centered_text("Presiona [R] para reiniciar el juego", 
+                                font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 + 20)
+            bg_rect = reiniciar_rect.inflate(20, 10)  # Hacer el fondo un poco más grande
+            pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)  # Color gris
+            
+            self._draw_centered_text("Presiona [R] para reiniciar el juego", 
+                                font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 + 20)
     
     def draw_victory_screen(self):
         """Dibuja la pantalla de victoria"""
@@ -185,7 +191,16 @@ class GameRenderer:
                                    PANTALLA_ALTO // 2 - 50)
             self._draw_centered_text("Presiona [ESCAPE] para volver al menu", 
                                    font_normal, COLOR_BLANCO, PANTALLA_ALTO // 2 - 20)
-    
+            
+            # Primero dibujamos el fondo gris
+            reiniciar_rect = self._draw_centered_text("Presiona [R] para reiniciar el juego", 
+                                font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 + 20)
+            bg_rect = reiniciar_rect.inflate(20, 10)  # Hacer el fondo un poco más grande
+            pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)  # Color gris
+            
+            self._draw_centered_text("Presiona [R] para reiniciar el juego", 
+                                font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 + 20)
+        
         # ---------------- FUNCIONES AUXILIARES ----------------
     def _draw_overlay(self, color: tuple, alpha: int):
         """Dibuja una superposicion semitransparente"""
@@ -199,4 +214,7 @@ class GameRenderer:
         """Dibuja texto centrado horizontalmente"""
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect(center=(PANTALLA_ANCHO // 2, y_position))
+
+        
         self.screen.blit(text_surface, text_rect)
+        return text_rect

@@ -10,10 +10,10 @@ class pilaSpawner:
         self.resource_manager = resource_manager
         self.spawn_timer = 0.0
         self.pilas: List[pilas] = []
-        self.next_spawn_time = 5.0  # Empezar con 5 segundos como solicita el usuario
+        self.next_spawn_time = 5.0  # Generar una pila cada 5 segundos
         print("PilaSpawner inicializado")
     
-    def update(self, dt: float, camera_x: float, player_x: float, energy_callback=None):
+    def update(self, dt: float, camera_x: float, player_x: float, player_rect: pygame.Rect,energy_callback=None):
         """Actualiza el spawner y genera nuevas pilas cada 5 segundos
         
         Args:
@@ -24,15 +24,16 @@ class pilaSpawner:
         """
         self.spawn_timer += dt
         
-        # Actualizar pilas existentes
+        # Actualizar pilas
         for pila in self.pilas:
             pila.update()
         
-        # Generar nueva pila cuando sea tiempo
+        # Generar pilas cada 5 segundos
         if self.spawn_timer >= self.next_spawn_time:
-            # Calcular posición inicial para la nueva pila
-            spawn_x = camera_x + PANTALLA_ANCHO + 100  # Usar camera_x en lugar de player_x
-            spawn_y = random.randint(PISO_POS_Y - 300, PISO_POS_Y - 100)  # Altura aleatoria
+            
+            # Difentes alturas para las pilas
+            spawn_x = camera_x + PANTALLA_ANCHO + 100 # Siempre fuera de pantalla a la derecha
+            spawn_y = random.randint(PISO_POS_Y - 400, PISO_POS_Y - 100)  # Se genera en diferentes alturas aleatoriamente
             
             new_pila = pilas(self.resource_manager)
             new_pila.rect.x = spawn_x
@@ -52,9 +53,13 @@ class pilaSpawner:
             else:
                 print(f"Pila eliminada: collected={pila.collected}, pos={pila.rect.x}")
         
+        
         self.pilas = pilas_activas
+        
+        self.check_collisions(player_rect, energy_callback)
     
-    def check_collisions(self, player_rect: pygame.Rect) -> pilas:
+    
+    def check_collisions(self, player_rect: pygame.Rect, energy_callback) -> pilas:
         """Verifica colisiones entre el jugador y las pilas
         
         Args:
@@ -65,9 +70,16 @@ class pilaSpawner:
         """
         for pila in self.pilas:
             if not pila.collected and player_rect.colliderect(pila.rect):
+                
+                if energy_callback:
+                    energy_callback(ENERGIA_PILA)
+                
+                pila.collect(None)
+                
                 print(f"¡Pila recolectada en posición ({pila.rect.x}, {pila.rect.y})!")
-                return pila
-        return None
+                break
+                
+    
     
     def get_pilas(self) -> List[pilas]:
         """Devuelve la lista de pilas activas"""

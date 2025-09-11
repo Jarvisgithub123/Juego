@@ -43,19 +43,20 @@ GRAVEDAD = 1                    # Fuerza de gravedad aplicada al jugador
 PISO_POS_Y = 650               # Posicion Y del piso donde aterriza el jugador
 
 # Configuracion de dash del jugador
-DASH_ENERGIA_COSTO = 1         # Costo en energia por cada dash
+DASH_ENERGIA_COSTO = 0.03         # Costo en energia por cada dash
 
 # MECANICAS DE JUEGO
 
 # Sistema de energia y objetivos
 DURACION_ENERGIA = 60                 # Segundos totales de energia
 KILOMETROS_OBJETIVO = 1.0          # Kilometros que debe recorrer UAIBOT
-DECREMENTO_KM_POR_SEGUNDO = 0.03       # Velocidad de avance en km/s
+DECREMENTO_KM_POR_SEGUNDO = 0.03      # Velocidad de avance en km/s
 
 # Velocidades de elementos
 VELOCIDAD_FONDO = 4              # Velocidad del scroll de fondo
 VELOCIDAD_AUTO_BASE = 13         # Velocidad base de los autos enemigos
 VELOCIDAD_AUTO_VARIACION = 1    # Variacion maxima de velocidad de autos
+
 
 
 # RUTAS DE RECURSOS (DEPRECADO - USAR RESOURCE_MANAGER)
@@ -67,3 +68,5 @@ RUTA_ARCHIVO_FONDO = "Assets\\Imagenes\\ciudad.jpg"  # Ruta legacy del fondo
 DEBUG_MODE = False              # Activar modo debug
 SHOW_HITBOXES = False          # Mostrar hitboxes de colision
 ENABLE_CONSOLE_LOGS = True     # Habilitar logs en consola
+
+ENERGIA_PILA = 10 
