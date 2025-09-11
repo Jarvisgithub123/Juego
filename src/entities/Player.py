@@ -6,10 +6,7 @@ from src.Constantes import *
 #TODO: Añadir particulas
 
 # Constantes de movimiento del jugador
-JUMP_STRENGTH = -17
-DASH_SPEED = 15
-DASH_DURATION_SECONDS = 0.2
-DASH_COOLDOWN_SECONDS = 0.5
+
 RETURN_TO_ORIGIN_SPEED = 5.0
 MAX_DISTANCE_FROM_ORIGIN = 200
 POSITION_TOLERANCE = 10 
@@ -17,7 +14,7 @@ POSITION_TOLERANCE = 10
 class Player:
     """Jugador UAIBOT que puede saltar y hacer dash para esquivar autos"""
     
-    def __init__(self, initial_x: int, initial_y: int, gravity: float, resource_manager):
+    def __init__(self, initial_x: int, initial_y: int, gravity: float, resource_manager, initial_character: str = 'uaibot'):
         """
         Args:
             initial_x: Posicion inicial X
@@ -33,10 +30,31 @@ class Player:
         self.original_position_x = initial_x
         self.original_position_y = initial_y
         
-        # Sistema de personajes - CORREGIDO
+        # Sistema de personajes 
         self.personajes = ["UIAbot", "UAIBOTA", "UAIBOTINA", "UAIBOTINO"]
-        self.personaje_actual = 0
-        self.on_ground = True  # Usar nombre más estándar
+        self.stats = {
+        "UIAbot": {  
+            "jump_strength": -19, "dash_speed": 12, "dash_duration": 0.18, "dash_cooldown": 0.5},
+        "UAIBOTA": {  
+            "jump_strength": -21, "dash_speed": 10, "dash_duration": 0.3, "dash_cooldown": 1.5},
+        "UAIBOTINA": {  
+            "jump_strength": -17, "dash_speed": 15, "dash_duration": 0.2, "dash_cooldown": 0.4},
+        "UAIBOTINO": {  
+            "jump_strength": -17, "dash_speed": 14, "dash_duration": 0.2, "dash_cooldown": 0.45}
+    }
+
+        # Establecer el personaje inicial basado en la selección
+        self.personaje_actual = 0  # default
+
+        # Buscar el índice del personaje seleccionado (sin importar mayúsculas/minúsculas)
+        initial_character_upper = initial_character.upper()
+        for i, personaje in enumerate(self.personajes):
+            if personaje.upper() == initial_character_upper:
+                self.personaje_actual = i
+                break
+
+        print(f"Player iniciado con personaje: {self.personajes[self.personaje_actual]} (índice: {self.personaje_actual})")
+        self.on_ground = True  
         
         # Variable para detectar tecla C presionada (evitar spam)
         self.c_key_pressed = False
@@ -59,8 +77,10 @@ class Player:
         """Inicializa las variables de fisica del jugador"""
         self.velocity_y = 0
         self.gravity = gravity
-        self.jump_strength = JUMP_STRENGTH
         self.on_ground = True
+        current_character = self.personajes[self.personaje_actual]
+        self.jump_strength = self.stats[current_character]["jump_strength"]
+
         
     def _init_animation_system(self):
         """Inicializa el sistema de animacion del sprite"""
@@ -72,11 +92,14 @@ class Player:
     
     def _init_dash_system(self):
         """Inicializa el sistema de dash del jugador"""
-        self.dash_speed = DASH_SPEED
-        self.dash_duration = DASH_DURATION_SECONDS
+        current_character = self.personajes[self.personaje_actual]
+        stats = self.stats[current_character]
+
+        self.dash_speed = stats["dash_speed"]
+        self.dash_duration = stats["dash_duration"]
         self.dash_timer = 0
         self.is_dashing = False
-        self.dash_cooldown = DASH_COOLDOWN_SECONDS
+        self.dash_cooldown = stats["dash_cooldown"]
         self.dash_cooldown_timer = 0
         
         # sistema de retorno a posicion original
@@ -87,6 +110,9 @@ class Player:
         """Carga los frames de animación directamente desde resource_manager"""
         current_character_name = self.personajes[self.personaje_actual]
         spritesheet_name = f"{current_character_name}_walk"
+
+
+        print(f"Cargando animacion para personaje: {current_character_name}")
         
         # intentar cargar spritesheet con animación
         spritesheet = self.resource_manager.get_spritesheet(spritesheet_name)
@@ -183,7 +209,15 @@ class Player:
     def change_character(self):
         """Cambia el personaje del jugador cargando directamente desde resource_manager"""
         self.personaje_actual = (self.personaje_actual + 1) % len(self.personajes)
-        
+        current_character = self.personajes[self.personaje_actual]
+        stats = self.stats[current_character]
+
+        # 🔹 actualizar stats de salto y dash
+        self.jump_strength = stats["jump_strength"]
+        self.dash_speed = stats["dash_speed"]
+        self.dash_duration = stats["dash_duration"]
+        self.dash_cooldown = stats["dash_cooldown"]
+    
         self.current_sprite = None
         self._load_animation_frames()
         

@@ -55,6 +55,11 @@ class SceneManager:
             args, kwargs = self.next_scene_args if self.next_scene_args else ((), {})
             self.current_scene = self.next_scene(self.screen, self.resource_manager, *args, **kwargs)
             self.current_scene.scene_manager = self
+            
+            # Pasar referencia al game_manager si existe
+            if hasattr(self, 'game_manager'):
+                self.current_scene.game_manager = self.game_manager
+                
             self.current_scene.on_enter()
             
             # Limpiar el cambio pendiente

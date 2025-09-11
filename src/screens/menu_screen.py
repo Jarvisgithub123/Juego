@@ -45,9 +45,9 @@ class MenuScreen(Scene):
     
     def _start_game(self):
         """Inicia el juego"""
-        from src.screens.game_screen import GameScreen
-        self.resource_manager.stop_music()
-        self.scene_manager.change_scene(GameScreen)
+        from src.screens.character_screen import CharacterScreen
+        self.scene_manager.change_scene(CharacterScreen)
+
     
     def _show_settings(self):
         """Muestra las opciones"""

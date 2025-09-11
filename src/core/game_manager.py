@@ -26,7 +26,14 @@ class GameManager:
         self.scene_manager.change_scene(MenuScreen)
         
         self.running = True
-        
+        # Sistema de datos compartidos entre escenas
+        self.shared_data = {
+            'selected_character': 'uaibot'  # personaje por defecto
+        }
+
+        # Conectar el scene_manager con el game_manager
+        self.scene_manager.game_manager = self
+                
 
     def _load_initial_resources(self):
         """Carga los recursos iniciales del juego"""
@@ -37,6 +44,9 @@ class GameManager:
         self.resource_manager.load_image("bg_mid", "Assets/Imagenes/bg_mid.png")
         self.resource_manager.load_image("bg_front", "Assets/Imagenes/bg_front.png")
         self.resource_manager.load_image("pila", "Assets/Imagenes/MONSTER.png")
+        self.resource_manager.load_image("cartel", "Assets/Imagenes/billboard.png")
+        self.resource_manager.load_image("personaje1", "Assets/Imagenes/prueba.png")
+        self.resource_manager.load_image("personaje2", "Assets/Imagenes/personaje2.png")
         
         # PERSONAJES 
         # UIAbot: tiene spritesheet con animación

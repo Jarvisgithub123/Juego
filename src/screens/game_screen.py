@@ -16,12 +16,19 @@ class GameScreen(Scene):
         
         # Sistemas principales
         self.camera = Camera(PANTALLA_ANCHO, PANTALLA_ALTO)
-        self.player = Player(100, PISO_POS_Y - 60, GRAVEDAD, resource_manager)
         self.car_spawner = CarSpawner(resource_manager)
         self.pila_spawner = pilaSpawner(resource_manager)
         self.renderer = GameRenderer(screen, resource_manager)
         self.hud = GameHUD(resource_manager)
         
+        selected_character = 'uaibot'  # personaje por defecto
+        if hasattr(self, 'game_manager') and self.game_manager:
+            selected_character = self.game_manager.shared_data.get('selected_character', 'uaibot')
+            print(f"Personaje seleccionado desde datos compartidos: {selected_character}")
+
+        # Pasar el personaje seleccionado al constructor del Player
+        self.player = Player(100, PISO_POS_Y - 60, GRAVEDAD, resource_manager, selected_character)
+
         # Estado del juego
         self.pause = False
         self.game_over = False
