@@ -11,12 +11,11 @@ class CharacterScreen(Scene):
         self.selected_character = None
         self.buttons = []
         
-        # Medidas originales del cartel
+        # edidas originales del cartel
         original_width, original_height = 1057, 706
         scale_x = ANCHO_PANTALLA / original_width
         scale_y = ALTO_PANTALLA / original_height
 
-        # Área original del billboard (para 1057x706)
         original_area = pygame.Rect(225, 160, 575, 260)
         self.billboard_area = pygame.Rect(
             int(original_area.x * scale_x),
@@ -34,7 +33,7 @@ class CharacterScreen(Scene):
         ]
         self.current_index = 0
 
-        # Procesar primer personaje
+        # primer personaje
         self._update_current_character()
         self._create_buttons()
     
@@ -80,7 +79,7 @@ class CharacterScreen(Scene):
                    button_width, button_height, self.resource_manager, self._go_back)
         ]
 
-        # Botones de flechas (carrusel)
+        # Botones de flechas 
         arrow_size = 60
         arrow_y = self.billboard_area.centery - arrow_size // 2
         left_x = self.billboard_area.left - arrow_size - 20
@@ -106,7 +105,7 @@ class CharacterScreen(Scene):
     def _select_character(self):
         """Confirma la selección del personaje y guarda la elección"""
         if self.selected_character:
-            # Guardar el personaje seleccionado en datos compartidos
+            # Guardar el personaje 
             if hasattr(self, 'game_manager') and self.game_manager:
                 self.game_manager.shared_data['selected_character'] = self.selected_character
                 print(f"Personaje seleccionado guardado: {self.selected_character}")
@@ -153,7 +152,7 @@ class CharacterScreen(Scene):
     
     def draw(self):
         """Dibuja la pantalla de selección de personaje"""
-        # Fondo (billboard escalado a pantalla completa)
+        # Fondo 
         billboard_image = self.resource_manager.get_image("cartel")
         if billboard_image:
             scaled_billboard = pygame.transform.scale(billboard_image, (ANCHO_PANTALLA, ALTO_PANTALLA))

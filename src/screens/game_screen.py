@@ -26,7 +26,6 @@ class GameScreen(Scene):
             selected_character = self.game_manager.shared_data.get('selected_character', 'uaibot')
             print(f"Personaje seleccionado desde datos compartidos: {selected_character}")
 
-        # Pasar el personaje seleccionado al constructor del Player
         self.player = Player(100, PISO_POS_Y - 60, GRAVEDAD, resource_manager, selected_character)
 
         # Estado del juego

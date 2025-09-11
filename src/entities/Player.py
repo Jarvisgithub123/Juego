@@ -43,10 +43,8 @@ class Player:
             "jump_strength": -17, "dash_speed": 14, "dash_duration": 0.2, "dash_cooldown": 0.45}
     }
 
-        # Establecer el personaje inicial basado en la selección
-        self.personaje_actual = 0  # default
+        self.personaje_actual = 0  
 
-        # Buscar el índice del personaje seleccionado (sin importar mayúsculas/minúsculas)
         initial_character_upper = initial_character.upper()
         for i, personaje in enumerate(self.personajes):
             if personaje.upper() == initial_character_upper:

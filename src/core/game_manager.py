@@ -26,7 +26,6 @@ class GameManager:
         self.scene_manager.change_scene(MenuScreen)
         
         self.running = True
-        # Sistema de datos compartidos entre escenas
         self.shared_data = {
             'selected_character': 'uaibot'  # personaje por defecto
         }
