@@ -32,7 +32,8 @@ class GameScreen(Scene):
         self.pause = False
         self.game_over = False
         self.victory = False
-        self.energy_remaining = DURACION_ENERGIA
+        self.energy_remaining = self.player.obtener_autonomia()
+        self.energia_maxima = self.player.obtener_autonomia_maxima()
         self.kilometers_remaining = KILOMETROS_OBJETIVO
         self.time = 0.0
     
@@ -101,7 +102,7 @@ class GameScreen(Scene):
     
     def agregar_energia(self, cantidad):
         """Agrega energía a los robots sin pasar su maximo"""
-        self.energy_remaining = min(self.energy_remaining + cantidad, DURACION_ENERGIA)
+        self.energy_remaining = min(self.energy_remaining + cantidad, self.energia_maxima)
 
     
     def _check_game_conditions(self):
@@ -185,7 +186,7 @@ class GameScreen(Scene):
         # Dibujar UI
         if not self.game_over and not self.victory:
             self.hud.draw(self.screen, self.energy_remaining, 
-                         DURACION_ENERGIA, self.kilometers_remaining)
+                         self.energia_maxima, self.kilometers_remaining)
         
         # Dibujar pantallas de fin de juego
         if self.game_over:

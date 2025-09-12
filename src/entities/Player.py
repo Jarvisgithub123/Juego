@@ -34,16 +34,16 @@ class Player:
         self.personajes = ["UIAbot", "UAIBOTA", "UAIBOTINA", "UAIBOTINO"]
         self.stats = {
         "UIAbot": {  
-            "jump_strength": -19, "dash_speed": 12, "dash_duration": 0.18, "dash_cooldown": 0.5},
+            "jump_strength": -19, "dash_speed": 12, "dash_duration": 0.18, "dash_cooldown": 0.5, "autonomia": 20},
         "UAIBOTA": {  
-            "jump_strength": -21, "dash_speed": 10, "dash_duration": 0.3, "dash_cooldown": 1.5},
+            "jump_strength": -21, "dash_speed": 10, "dash_duration": 0.3, "dash_cooldown": 1.5, "autonomia":10},
         "UAIBOTINA": {  
-            "jump_strength": -17, "dash_speed": 15, "dash_duration": 0.2, "dash_cooldown": 0.4},
+            "jump_strength": -17, "dash_speed": 15, "dash_duration": 0.2, "dash_cooldown": 0.4, "autonomia": 30},
         "UAIBOTINO": {  
-            "jump_strength": -17, "dash_speed": 14, "dash_duration": 0.2, "dash_cooldown": 0.45}
+            "jump_strength": -17, "dash_speed": 14, "dash_duration": 0.2, "dash_cooldown": 0.45, "autonomia": 30}
     }
 
-        self.personaje_actual = 0  
+        
 
         initial_character_upper = initial_character.upper()
         for i, personaje in enumerate(self.personajes):
@@ -70,6 +70,18 @@ class Player:
         self._load_animation_frames()
         self.current_sprite = None
         self._update_sprite()
+    
+    def obtener_autonomia(self) -> int:
+        """Retorna la autonomia del personaje seleccionado en el momento"""
+        pj_actual = self.personajes[self.personaje_actual]
+        return self.stats[pj_actual]["autonomia"]
+
+    def obtener_autonomia_maxima(self) -> int:
+        """Retorna la autonomia maxima de todos los personajes"""
+        max_autonomia = max(stats["autonomia"] for stats in self.stats.values())
+        return max_autonomia
+    
+    
     
     def _init_physics(self, gravity: float):
         """Inicializa las variables de fisica del jugador"""

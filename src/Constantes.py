@@ -43,12 +43,12 @@ GRAVEDAD = 1                    # Fuerza de gravedad aplicada al jugador
 PISO_POS_Y = 650               # Posicion Y del piso donde aterriza el jugador
 
 # Configuracion de dash del jugador
-DASH_ENERGIA_COSTO = 0.03         # Costo en energia por cada dash
+DASH_ENERGIA_COSTO = 2         # Costo en energia por cada dash
 
 # MECANICAS DE JUEGO
 
 # Sistema de energia y objetivos
-DURACION_ENERGIA = 60                 # Segundos totales de energia
+DURACION_ENERGIA = 20               # Segundos totales de energia
 KILOMETROS_OBJETIVO = 1.0          # Kilometros que debe recorrer UAIBOT
 DECREMENTO_KM_POR_SEGUNDO = 0.03      # Velocidad de avance en km/s
 
