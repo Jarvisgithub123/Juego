@@ -6,8 +6,9 @@ from src.UI.button import Button
 class MenuScreen(Scene):
     """Pantalla del menu principal"""
     
-    def __init__(self, screen, resource_manager):
-        super().__init__(screen, resource_manager)
+    def __init__(self, screen, resource_manager, scene_manager):
+        super().__init__(screen, resource_manager,scene_manager)
+        self.scene_manager = scene_manager
         self.sound_enabled = True
         self.buttons = []
         
@@ -45,14 +46,16 @@ class MenuScreen(Scene):
     
     def _start_game(self):
         """Inicia el juego"""
-        from src.screens.character_screen import CharacterScreen
-        self.scene_manager.change_scene(CharacterScreen)
+        if self.scene_manager:
+            from src.screens.character_screen import CharacterScreen
+            self.scene_manager.change_scene(CharacterScreen)
 
     
     def _show_settings(self):
         """Muestra las opciones"""
-        from src.screens.settings_screen import SettingsScreen
-        self.scene_manager.change_scene(SettingsScreen)
+        if self.scene_manager:
+            from src.screens.settings_screen import SettingsScreen
+            self.scene_manager.change_scene(SettingsScreen)
     
     def _quit_game(self):
         """Sale del juego"""
@@ -119,13 +122,6 @@ class MenuScreen(Scene):
                 (0, 0, 0),  # Color del borde (negro)
                 3  # Grosor del borde
             )
-        
-        # Informacion de animacion (opcional - puedes quitarla)
-        font_pequeña = self.resource_manager.get_font('pequeña')
-        if font_pequeña:
-            anim_info = f"Fondo: {self.current_background + 1}/2"
-            anim_surface = font_pequeña.render(anim_info, True, COLOR_TEXTO_SUTIL_EN_FONDO)
-            self.screen.blit(anim_surface, (10, ALTO_PANTALLA - 30))
         
         # Botones (ya posicionados a la derecha)
         for button in self.buttons:

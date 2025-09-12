@@ -6,8 +6,8 @@ from src.UI.button import Button
 class CharacterScreen(Scene):
     """Pantalla de selección de personaje con carrusel manual"""
     
-    def __init__(self, screen, resource_manager):
-        super().__init__(screen, resource_manager)
+    def __init__(self, screen, resource_manager,scene_manager):
+        super().__init__(screen, resource_manager,scene_manager)
         self.selected_character = None
         self.buttons = []
         
@@ -26,7 +26,7 @@ class CharacterScreen(Scene):
 
         # Lista de personajes disponibles (puedes añadir más)
         self.characters = [
-            ("UAIbot", self.resource_manager.get_image("personaje1")),
+            ("UIAbot", self.resource_manager.get_image("personaje1")),
             ("UAIBOTA", self.resource_manager.get_image("UAIBOTA_walk")),
             ("UAIBOTINA", self.resource_manager.get_image("personaje2")),
             ("UAIBOTINO", self.resource_manager.get_image("UAIBOTINO_walk")),
@@ -55,7 +55,7 @@ class CharacterScreen(Scene):
 
             self.character_scaled = pygame.transform.smoothscale(image, (new_width, new_height))
             self.character_rect = self.character_scaled.get_rect(center=self.billboard_area.center)
-            self.selected_character = name.lower()
+            self.selected_character = name  
         else:
             self.character_scaled = None
             self.character_rect = None
@@ -105,10 +105,16 @@ class CharacterScreen(Scene):
     def _select_character(self):
         """Confirma la selección del personaje y guarda la elección"""
         if self.selected_character:
-            # Guardar el personaje 
-            if hasattr(self, 'game_manager') and self.game_manager:
-                self.game_manager.shared_data['selected_character'] = self.selected_character
-                print(f"Personaje seleccionado guardado: {self.selected_character}")
+            try:
+                if hasattr(self.scene_manager, 'game_manager') and self.scene_manager.game_manager:
+                    if not hasattr(self.scene_manager.game_manager, 'shared_data'):
+                        self.scene_manager.game_manager.shared_data = {}
+                    self.scene_manager.game_manager.shared_data['selected_character'] = self.selected_character
+                    print(f"Personaje seleccionado guardado: {self.selected_character}")
+                else:
+                    print("Warning: No se pudo acceder a game_manager")
+            except Exception as e:
+                print(f"Error al guardar personaje seleccionado: {e}")
             
             from src.screens.game_screen import GameScreen
             self.resource_manager.stop_music()
