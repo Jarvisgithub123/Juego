@@ -5,6 +5,7 @@ from src.entities.Car import Car
 from src.entities.Player import Player
 from src.entities.Pilas import pilas
 import random
+
 class GameRenderer:
     """Maneja todo el sistema de renderizado del juego"""  
     def __init__(self, screen: pygame.Surface, resource_manager):
@@ -12,69 +13,111 @@ class GameRenderer:
         self.resource_manager = resource_manager
         self.world_scroll_x = 0
         self.world_scroll_speed = 30
-        self.color_reiniciar = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255) #Color aleatorio para el texto de reiniciar la partida
+        self.color_reiniciar = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+        
+        # Cache para superficies escaladas
+        self.scaled_backgrounds = {}
+        self.cached_text_surfaces = {}
+        
         self._init_background_system()
+        self._prerender_static_texts()
     
     def _init_background_system(self):
-        """Carga las capas del fondo con diferentes velocidades(parallax)."""
+        """Carga las capas del fondo con diferentes velocidades (parallax)"""
         self.bg_layers = []
         background_configs = [
             ("bg_sky", 0),      # Fondo estatico
-            ("bg_mid", 2),    # Capa media
-            ("bg_front", 3.6)     # Capa frontal
+            ("bg_mid", 2),      # Capa media
+            ("bg_front", 3.6)   # Capa frontal
         ]
         
         for layer_name, parallax_factor in background_configs:
-            image = self.resource_manager.get_image(layer_name)
-            if image:
-                scaled_image = pygame.transform.scale(image, (PANTALLA_ANCHO, PANTALLA_ALTO))
-            else:
-                scaled_image = pygame.Surface((PANTALLA_ANCHO, PANTALLA_ALTO))
-                scaled_image.fill((30, 30, 30))
+            # Verificar si ya tenemos la imagen escalada en cache
+            if layer_name not in self.scaled_backgrounds:
+                image = self.resource_manager.get_image(layer_name)
+                if image:
+                    #guardar en cache
+                    scaled_image = pygame.transform.scale(image, (PANTALLA_ANCHO, PANTALLA_ALTO))
+                    scaled_image = scaled_image.convert_alpha()  # Optimizar blitting
+                else:
+                    scaled_image = pygame.Surface((PANTALLA_ANCHO, PANTALLA_ALTO))
+                    scaled_image.fill((30, 30, 30))
+                    scaled_image = scaled_image.convert()
+                
+                self.scaled_backgrounds[layer_name] = scaled_image
             
             self.bg_layers.append({
-                "image": scaled_image,
+                "image": self.scaled_backgrounds[layer_name],
                 "parallax_factor": parallax_factor,
-                "width": scaled_image.get_width()
+                "width": self.scaled_backgrounds[layer_name].get_width()
             })
+    
+    def _prerender_static_texts(self):
+        """Pre-renderiza textos que no cambian durante el juego"""
+        font_large = self.resource_manager.get_font('titulo')
+        font_normal = self.resource_manager.get_font('pequeña')
+        
+        if font_large:
+            # Textos de game over
+            self.cached_text_surfaces['game_over'] = font_large.render(
+                "JUEGO TERMINADO", True, COLOR_ROJO
+            )
+            self.cached_text_surfaces['victory'] = font_large.render(
+                "¡VICTORIA!", True, COLOR_TEXTO_VICTORIA
+            )
+        
+        if font_normal:
+            # Textos de instrucciones
+            self.cached_text_surfaces['escape_menu'] = font_normal.render(
+                "Presiona [ESCAPE] para volver al menu", True, COLOR_BLANCO
+            )
+            self.cached_text_surfaces['victory_msg'] = font_normal.render(
+                "¡El paquete fue entregado con exito!", True, COLOR_TEXTO_VICTORIA
+            )
+            # Texto de reiniciar (con color aleatorio)
+            self.cached_text_surfaces['restart'] = font_normal.render(
+                "Presiona [R] para reiniciar el juego", True, self.color_reiniciar
+            )
     
     def update(self, delta_time: float):
         """Actualiza el sistema de renderizado"""
         self.world_scroll_x += self.world_scroll_speed * delta_time
     
-        # ---------------- FONDOS ----------------
-
     def draw_background(self, camera_x: float):
-        """Dibuja el fondo con efecto parallax"""
+        """fondo con parallax"""
         for layer in self.bg_layers:
             image = layer["image"]
             parallax_factor = layer["parallax_factor"]
             layer_width = layer["width"]
-            
-            # Calcula cuanto se tiene que correr la capa
+            # Calcular offset solo una vez
             total_offset_x = (self.world_scroll_x * parallax_factor + 
-                             camera_x * parallax_factor * 0.1)
+                            camera_x * parallax_factor * 0.1)
             offset_x = -(total_offset_x % layer_width)
             
-            # Dibujar multiples copias para scroll infinito
-            positions = [offset_x - layer_width, offset_x]
-            if offset_x > -layer_width:
-                positions.append(offset_x + layer_width)
+            # Solo dibujar las copias que realmente son visibles
+            positions_to_draw = []
+            # Verificar qué posiciones necesitamos dibujar
+            test_positions = [offset_x - layer_width, offset_x, offset_x + layer_width]
             
-            for pos in positions:
+            for pos in test_positions:
+                # Solo agregar si esta parcial o completamente visible
+                if pos + layer_width > 0 and pos < PANTALLA_ANCHO:
+                    positions_to_draw.append(pos)
+            # Dibujar solo las posiciones necesarias
+            for pos in positions_to_draw:
                 self.screen.blit(image, (pos, 0))
-
-     # ---------------- PISO ----------------
+    
     def draw_floor(self):
         """Dibuja el piso del juego"""
+        # Usar una superficie cacheada para el piso si es posible
         floor_height = PANTALLA_ALTO - PISO_POS_Y
         floor_rect = pygame.Rect(0, PISO_POS_Y, PANTALLA_ANCHO, floor_height)
         pygame.draw.rect(self.screen, COLOR_FONDO, floor_rect)
         pygame.draw.line(self.screen, COLOR_LINEA_PISO, 
                         (0, PISO_POS_Y), (PANTALLA_ANCHO, PISO_POS_Y), 3)
-     # ---------------- JUGADOR ----------------
+    
     def draw_player(self, player: Player, camera_x: float):
-        """Dibuja el jugador con efectos visuales"""
+        """Dibuja el jugador con efectos visuales """
         screen_x = player.rect.x - camera_x
         screen_y = player.rect.y
         
@@ -85,33 +128,48 @@ class GameRenderer:
     
     def _draw_player_sprite(self, player: Player, screen_x: float, screen_y: float):
         """Dibuja el sprite del jugador"""
-        sprite_rect = player.current_sprite.get_rect()
-        sprite_rect.center = (screen_x + player.rect.width // 2, 
-                             screen_y + player.rect.height // 2)
+        # Reutilizar rect existente en lugar de crear uno nuevo para mejor performance
+        player.current_sprite_rect = getattr(player, 'current_sprite_rect', None)
+        if player.current_sprite_rect is None:
+            player.current_sprite_rect = player.current_sprite.get_rect()
+        
+        player.current_sprite_rect.center = (screen_x + player.rect.width // 2, 
+                                           screen_y + player.rect.height // 2)
         
         if player.is_dashing:
-            self._draw_dash_trail(player.current_sprite, sprite_rect)
+            self._draw_dash_trail(player.current_sprite, player.current_sprite_rect)
         
-        self.screen.blit(player.current_sprite, sprite_rect)
+        self.screen.blit(player.current_sprite, player.current_sprite_rect)
     
     def _draw_dash_trail(self, sprite: pygame.Surface, sprite_rect: pygame.Rect):
         """Dibuja la estela del dash"""
-        trail_surface = sprite.copy()
-        trail_surface.set_alpha(150)
+        # Cache de la superficie de estela
+        if not hasattr(self, 'trail_surface') or self.trail_surface_sprite != sprite:
+            self.trail_surface = sprite.copy()
+            self.trail_surface.set_alpha(150)
+            self.trail_surface_sprite = sprite
+        
+        # Reutilizar rect para la estela
+        if not hasattr(self, 'trail_rect'):
+            self.trail_rect = sprite_rect.copy()
         
         for i in range(3):
-            trail_rect = sprite_rect.copy()
-            trail_rect.x -= i * 10
-            if trail_rect.right >= 0:
-                self.screen.blit(trail_surface, trail_rect)
+            self.trail_rect.x = sprite_rect.x - i * 10
+            self.trail_rect.y = sprite_rect.y
+            if self.trail_rect.right >= 0:
+                self.screen.blit(self.trail_surface, self.trail_rect)
     
     def _draw_player_fallback(self, player: Player, screen_x: float, screen_y: float):
         """Dibuja rectangulo de respaldo para el jugador"""
         color = COLOR_AMARILLO if player.is_dashing else (0, 100, 255)
-        rect = pygame.Rect(screen_x, screen_y, player.rect.width, player.rect.height)
-        pygame.draw.rect(self.screen, color, rect)
+        # Reutilizar rect existente
+        if not hasattr(self, 'fallback_rect'):
+            self.fallback_rect = pygame.Rect(0, 0, player.rect.width, player.rect.height)
+        
+        self.fallback_rect.x = screen_x
+        self.fallback_rect.y = screen_y
+        pygame.draw.rect(self.screen, color, self.fallback_rect)
     
-        # ---------------- AUTOS ----------------
     def draw_cars(self, cars: List[Car], camera_x: float):
         """Dibuja todos los autos visibles"""
         for car in cars:
@@ -119,25 +177,23 @@ class GameRenderer:
             if self._is_car_visible(screen_x, car.rect.width):
                 self._draw_single_car(car, screen_x)
     
-    
-    
     def _is_car_visible(self, screen_x: float, car_width: int) -> bool:
         """Verifica si un auto esta visible en pantalla"""
-        # Margen mas generoso para evitar parpadeos
         margin = 100
         return -margin <= screen_x <= PANTALLA_ANCHO + margin
     
     def _draw_single_car(self, car: Car, screen_x: float):
         """Dibuja un auto individual"""
         if car.current_sprite:
+            # Usar posición directa en lugar de crear rect
             self.screen.blit(car.current_sprite, (screen_x, car.rect.y))
         else:
-            # Rectangulo de respaldo
-            rect = pygame.Rect(screen_x, car.rect.y, car.rect.width, car.rect.height)
-            pygame.draw.rect(self.screen, (0, 0, 255), rect)
-    
-    
-    # ---------------- PILAS ----------------
+            # Rectangulo de respaldo - reutilizar rect
+            if not hasattr(car, 'fallback_rect'):
+                car.fallback_rect = pygame.Rect(0, 0, car.rect.width, car.rect.height)
+            car.fallback_rect.x = screen_x
+            car.fallback_rect.y = car.rect.y
+            pygame.draw.rect(self.screen, (0, 0, 255), car.fallback_rect)
     
     def draw_pilas(self, pilas: List[pilas], camera_x: float):
         """Dibuja las pilas en la pantalla"""
@@ -146,75 +202,81 @@ class GameRenderer:
             
             # Solo dibujar si está en pantalla
             if -pila.rect.width <= screen_x <= PANTALLA_ANCHO:
-                # Dibujar la pila
                 self.screen.blit(pila.image, (screen_x, pila.rect.y))
-                
     
-    
-    
-    # ---------------- PANTALLAS DE ESTADO ----------------
-
     def draw_game_over_screen(self):
         """Dibuja la pantalla de game over"""
         self._draw_overlay((0, 0, 0), 128)
         
-        font_large = self.resource_manager.get_font('titulo')
-        font_normal = self.resource_manager.get_font('pequeña')
+        # Usar textos pre-renderizados
+        if 'game_over' in self.cached_text_surfaces:
+            text_rect = self.cached_text_surfaces['game_over'].get_rect(
+                center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 - 100)
+            )
+            self.screen.blit(self.cached_text_surfaces['game_over'], text_rect)
         
-        if font_large:
-            self._draw_centered_text("JUEGO TERMINADO", font_large, COLOR_ROJO, 
-                                   PANTALLA_ALTO // 2 - 100)
-        if font_normal:
-            self._draw_centered_text("Presiona [ESCAPE] para volver al menu", 
-                                   font_normal, COLOR_BLANCO, PANTALLA_ALTO // 2 - 50)
-            reiniciar_rect = self._draw_centered_text("Presiona [R] para reiniciar el juego", 
-                                font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 + 20)
-            bg_rect = reiniciar_rect.inflate(20, 10)  # Hacer el fondo un poco más grande
-            pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)  # Color gris
-            
-            self._draw_centered_text("Presiona [R] para reiniciar el juego", 
-                                font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 + 20)
+        if 'escape_menu' in self.cached_text_surfaces:
+            text_rect = self.cached_text_surfaces['escape_menu'].get_rect(
+                center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 - 50)
+            )
+            self.screen.blit(self.cached_text_surfaces['escape_menu'], text_rect)
+        
+        if 'restart' in self.cached_text_surfaces:
+            # Dibujar fondo para el texto de reiniciar
+            restart_rect = self.cached_text_surfaces['restart'].get_rect(
+                center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 + 20)
+            )
+            bg_rect = restart_rect.inflate(20, 10)
+            pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)
+            self.screen.blit(self.cached_text_surfaces['restart'], restart_rect)
     
     def draw_victory_screen(self):
         """Dibuja la pantalla de victoria"""
         self._draw_overlay((0, 50, 0), 128)
         
-        font_large = self.resource_manager.get_font('titulo')
-        font_normal = self.resource_manager.get_font('pequeña')
+        # Usar textos pre-renderizados
+        if 'victory' in self.cached_text_surfaces:
+            text_rect = self.cached_text_surfaces['victory'].get_rect(
+                center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 - 100)
+            )
+            self.screen.blit(self.cached_text_surfaces['victory'], text_rect)
         
-        if font_large:
-            self._draw_centered_text("¡VICTORIA!", font_large, COLOR_TEXTO_VICTORIA, 
-                                   PANTALLA_ALTO // 2 - 100)
-        if font_normal:
-            self._draw_centered_text("¡El paquete fue entregado con exito!", 
-                                   font_normal, COLOR_TEXTO_VICTORIA, 
-                                   PANTALLA_ALTO // 2 - 50)
-            self._draw_centered_text("Presiona [ESCAPE] para volver al menu", 
-                                   font_normal, COLOR_BLANCO, PANTALLA_ALTO // 2 - 20)
-            
-            # Primero dibujamos el fondo gris
-            reiniciar_rect = self._draw_centered_text("Presiona [R] para reiniciar el juego", 
-                                font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 + 20)
-            bg_rect = reiniciar_rect.inflate(20, 10)  # Hacer el fondo un poco más grande
-            pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)  # Color gris
-            
-            self._draw_centered_text("Presiona [R] para reiniciar el juego", 
-                                font_normal, self.color_reiniciar, PANTALLA_ALTO // 2 + 20)
+        if 'victory_msg' in self.cached_text_surfaces:
+            text_rect = self.cached_text_surfaces['victory_msg'].get_rect(
+                center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 - 50)
+            )
+            self.screen.blit(self.cached_text_surfaces['victory_msg'], text_rect)
         
-        # ---------------- FUNCIONES AUXILIARES ----------------
+        if 'escape_menu' in self.cached_text_surfaces:
+            text_rect = self.cached_text_surfaces['escape_menu'].get_rect(
+                center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 - 20)
+            )
+            self.screen.blit(self.cached_text_surfaces['escape_menu'], text_rect)
+        
+        if 'restart' in self.cached_text_surfaces:
+            restart_rect = self.cached_text_surfaces['restart'].get_rect(
+                center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 + 20)
+            )
+            bg_rect = restart_rect.inflate(20, 10)
+            pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)
+            self.screen.blit(self.cached_text_surfaces['restart'], restart_rect)
+    
     def _draw_overlay(self, color: tuple, alpha: int):
-        """Dibuja una superposicion semitransparente"""
-        overlay = pygame.Surface((PANTALLA_ANCHO, PANTALLA_ALTO))
-        overlay.set_alpha(alpha)
-        overlay.fill(color)
-        self.screen.blit(overlay, (0, 0))
+        # Cache de overlay
+        overlay_key = f"{color}_{alpha}"
+        if overlay_key not in self.cached_text_surfaces:
+            overlay = pygame.Surface((PANTALLA_ANCHO, PANTALLA_ALTO))
+            overlay.set_alpha(alpha)
+            overlay.fill(color)
+            overlay = overlay.convert_alpha()
+            self.cached_text_surfaces[overlay_key] = overlay
+        
+        self.screen.blit(self.cached_text_surfaces[overlay_key], (0, 0))
     
     def _draw_centered_text(self, text: str, font: pygame.font.Font, 
                            color: tuple, y_position: int):
         """Dibuja texto centrado horizontalmente"""
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect(center=(PANTALLA_ANCHO // 2, y_position))
-
-        
         self.screen.blit(text_surface, text_rect)
         return text_rect

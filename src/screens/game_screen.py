@@ -113,7 +113,7 @@ class GameScreen(Scene):
         
     
     def agregar_energia(self, cantidad):
-        """Agrega energía a los robots sin pasar su maximo"""
+        """Agrega energia a los robots sin pasar su maximo"""
         self.energy_remaining = min(self.energy_remaining + cantidad, DURACION_ENERGIA)
 
     

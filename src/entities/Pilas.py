@@ -25,7 +25,7 @@ class pilas(pygame.sprite.Sprite):
         
         # Estado de la pila
         self.collected = False
-        self.speed = 3
+        self.speed = 8
         
 
     
@@ -36,7 +36,7 @@ class pilas(pygame.sprite.Sprite):
         
     
     def collect(self, robot):
-        """ Método para recolectar la pila y dar energía al robot
+        """ Método para recolectar la pila y dar energia al robot
         
         Args:
             robot: El robot que recolecta la pila
@@ -44,14 +44,14 @@ class pilas(pygame.sprite.Sprite):
         if not self.collected:
             energia_anterior = robot.energia if hasattr(robot, 'energia') else 0
             
-            # Aumentar la energía del robot sin exceder su máximo
+            # Aumentar la energia del robot sin exceder su máximo
             if hasattr(robot, 'energia_maxima'):
                 nueva_energia = min(robot.energia + ENERGIA_PILA, robot.energia_maxima)
                 robot.energia = nueva_energia
-                print(f"Energía del robot: {energia_anterior} -> {nueva_energia}")
+                print(f"Energia del robot: {energia_anterior} -> {nueva_energia}")
             
             self.collected = True
-            print(f"¡Pila recolectada! +{ENERGIA_PILA} segundos de energía")
+            print(f"¡Pila recolectada! +{ENERGIA_PILA} segundos de energia")
     
     def is_active(self) -> bool:
         """Verifica si la pila sigue activa (no recolectada y en pantalla)"""

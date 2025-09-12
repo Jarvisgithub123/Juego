@@ -5,13 +5,18 @@ from src.Constantes import *
 from src.entities.Car import Car
 
 class CarSpawner:
-    """Sistema de spawn simplificado pero más variado"""
+    """Sistema de spawn simplificado pero más variado """
     
     def __init__(self, resource_manager):
         self.resource_manager = resource_manager
         self.cars: List[Car] = []
         self.spawn_timer = 0.0
         self.next_spawn_time = 2.0
+        
+        #Pre-crear rectángulos para colisiones
+        self.player_hitbox = pygame.Rect(0, 0, 0, 0)
+        self.car_hitbox = pygame.Rect(0, 0, 0, 0)
+        
         self._spawn_initial_car()
     
     def _spawn_initial_car(self):
@@ -26,7 +31,6 @@ class CarSpawner:
         
         if self.spawn_timer >= self.next_spawn_time:
             if self._can_spawn_car(camera_x, player_x):
-                # Decidir si spawner 1 o 2 autos
                 num_cars = self._decide_spawn_count()
                 self._spawn_cars(camera_x, num_cars)
                 self._reset_spawn_timer()
@@ -51,7 +55,7 @@ class CarSpawner:
                 self._safe_distance_from_other_cars(spawn_x))
     
     def _safe_distance_from_other_cars(self, spawn_x: int) -> bool:
-        """Verifica distancia mínima con otros autos"""
+        """Verifica distancia minima con otros autos"""
         for car in self.cars:
             if abs(car.rect.x - spawn_x) < 250:
                 return False
@@ -70,7 +74,6 @@ class CarSpawner:
             fast_speed = random.randint(18, 22)
             fast_car = Car(base_x, PISO_POS_Y - 86, self.resource_manager, speed=fast_speed)
             self.cars.append(fast_car)
-            # Spawner un auto lento
             slow_speed = random.randint(8, 12)
             gap = random.randint(300, 500)
             slow_car = Car(base_x + gap, PISO_POS_Y - 86, self.resource_manager, speed=slow_speed)
@@ -103,10 +106,30 @@ class CarSpawner:
             car.update(delta_time)
     
     def check_collisions(self, player_rect: pygame.Rect) -> bool:
-        """Verifica colisiones"""
-        player_hitbox = player_rect.inflate(-8, -8)
-        return any(player_hitbox.colliderect(car.rect.inflate(-5, -20)) 
-                  for car in self.cars)
+        """Colisiones"""
+        # Pre-calcular hitbox del jugador
+        player_left = player_rect.x + 4
+        player_top = player_rect.y + 4
+        player_right = player_left + player_rect.width - 8
+        player_bottom = player_top + player_rect.height - 8
+        
+        for car in self.cars:
+            # Verificación rápida de distancia antes de calcular hitbox
+            if abs(car.rect.x - player_rect.x) > 150:
+                continue  # Skip si están muy lejos
+            
+            # Hitbox del auto
+            car_left = car.rect.x + 2
+            car_top = car.rect.y + 10
+            car_right = car_left + car.rect.width - 5
+            car_bottom = car_top + car.rect.height - 20
+            
+            # Colisión manual (más rápido que colliderect)
+            if (player_right > car_left and player_left < car_right and
+                player_bottom > car_top and player_top < car_bottom):
+                return True
+        
+        return False
     
     def get_cars(self) -> List[Car]:
         """Obtiene la lista de autos"""

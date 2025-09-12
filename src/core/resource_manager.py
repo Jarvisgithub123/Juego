@@ -60,15 +60,17 @@ class ResourceManager:
 
     # ===== IMaGENES =====
     def load_image(self, name: str, path: str, convert_alpha: bool = True) -> bool:
-        """Carga imagen desde disco y la registra con 'name' ."""
         try:
             if os.path.exists(path):
                 image = pygame.image.load(path)
-                image = image.convert_alpha() if convert_alpha else image.convert()
+                if convert_alpha:
+                    image = image.convert_alpha()
+                else:
+                    image = image.convert()
                 self.images[name] = image
                 return True
             else:
-                print(f"Advertencia: No se encontro la imagen en {path}")
+                print(f"Advertencia: No se encontró la imagen en {path}")
                 return False
         except Exception as e:
             print(f"Error cargando imagen {path}: {e}")

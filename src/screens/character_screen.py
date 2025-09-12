@@ -68,12 +68,12 @@ class CharacterScreen(Scene):
         spacing = 20
 
         # Botones inferiores
-        total_width = 2 * button_width + spacing
+        total_width = 2 * button_width + spacing + 50
         start_x = (ANCHO_PANTALLA - total_width) // 2
         button_y = ALTO_PANTALLA - 120
 
         self.buttons = [
-            Button("Seleccionar", start_x, button_y, button_width, button_height,
+            Button("Seleccionar", start_x-50, button_y, button_width + 60, button_height+5,
                    self.resource_manager, self._select_character),
             Button("Volver", start_x + button_width + spacing, button_y,
                    button_width, button_height, self.resource_manager, self._go_back)
@@ -170,7 +170,7 @@ class CharacterScreen(Scene):
         if self.character_scaled and self.character_rect:
             self.screen.blit(self.character_scaled, self.character_rect.topleft)
 
-        # Título
+        # Titulo
         font_titulo = self.resource_manager.get_font('titulo')
         if font_titulo:
             self._draw_bordered_text(
