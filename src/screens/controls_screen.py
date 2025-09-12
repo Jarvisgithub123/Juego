@@ -137,13 +137,6 @@ class ControlsScreen(Scene):
         for surface, rect in self.control_elements:
             self.screen.blit(surface, rect)
         
-        # Ayuda
-        font_pequeña = self.resource_manager.get_font('pequeña')
-        if font_pequeña:
-            help_surface = font_pequeña.render("Presiona ESC para volver", True, COLOR_TEXTO_SUTIL_EN_FONDO)
-            help_rect = help_surface.get_rect(center=(ANCHO_PANTALLA // 2, ALTO_PANTALLA - 40))
-            self.screen.blit(help_surface, help_rect)
-        
         # Botones
         for button in self.buttons:
             button.draw(self.screen)

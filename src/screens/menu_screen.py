@@ -120,13 +120,6 @@ class MenuScreen(Scene):
                 3  # Grosor del borde
             )
         
-        # Informacion de animacion (opcional - puedes quitarla)
-        font_pequeña = self.resource_manager.get_font('pequeña')
-        if font_pequeña:
-            anim_info = f"Fondo: {self.current_background + 1}/2"
-            anim_surface = font_pequeña.render(anim_info, True, COLOR_TEXTO_SUTIL_EN_FONDO)
-            self.screen.blit(anim_surface, (10, ALTO_PANTALLA - 30))
-        
         # Botones (ya posicionados a la derecha)
         for button in self.buttons:
             button.draw(self.screen)

@@ -52,10 +52,12 @@ class GameManager:
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
         
         # otros personajes: por ahora imagenes estáticas 
-        self.resource_manager.load_image("UAIBOTA_walk", "Assets/Sprites/UAIBOTA.png")
-        self.resource_manager.load_image("UAIBOTINA_walk", "Assets/Sprites/UAIBOTINA.png")
-        self.resource_manager.load_image("UAIBOTINO_walk", "Assets/Sprites/UAIBOTINO.png")
-        
+        #self.resource_manager.load_image("UAIBOTA_walk", "Assets/Sprites/UAIBOTA.png")
+        #self.resource_manager.load_image("UAIBOTINA_walk", "Assets/Sprites/UAIBOTINA.png")
+        #self.resource_manager.load_image("UAIBOTINO_walk", "Assets/Sprites/UAIBOTINO.png")
+        self.resource_manager.load_spritesheet("UAIBOTA_walk", "Assets/Sprites/Uiabota.png", 64, 86)
+        self.resource_manager.load_spritesheet("UAIBOTINA_walk", "Assets/Sprites/Uiabotina.png", 64, 86)
+        self.resource_manager.load_spritesheet("UAIBOTINO_walk", "Assets/Sprites/Uibotino.png", 64, 86)
         
         # spritesheets de autos
         self.resource_manager.load_spritesheet("Auto_azul", "Assets/Sprites/Autos/Auto-azul.png", 126, 86)

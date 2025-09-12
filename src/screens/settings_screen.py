@@ -156,13 +156,7 @@ class SettingsScreen(Scene):
             help_surface = font_pequeña.render("Presiona ESC para volver", True, COLOR_TEXTO_SUTIL_EN_FONDO)
             help_rect = help_surface.get_rect(center=(ANCHO_PANTALLA // 5, 180))
             self.screen.blit(help_surface, help_rect)
-        
-        # Informacion de la animacion (opcional, para debug)
-        if font_pequeña:
-            anim_info = f"Fondo: {self.current_background + 1}/2"
-            anim_surface = font_pequeña.render(anim_info, True, COLOR_TEXTO_SUTIL_EN_FONDO)
-            self.screen.blit(anim_surface, (10, ALTO_PANTALLA - 30))
-        
+
         # Botones (ya posicionados a la derecha)
         for button in self.buttons:
             button.draw(self.screen)
