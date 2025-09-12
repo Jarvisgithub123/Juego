@@ -6,8 +6,8 @@ from src.UI.button import Button
 class ControlsScreen(Scene):
     """Pantalla que muestra los controles del juego"""
     
-    def __init__(self, screen, resource_manager):
-        super().__init__(screen, resource_manager)
+    def __init__(self, screen, resource_manager, scene_manager):
+        super().__init__(screen, resource_manager, scene_manager)
         self.buttons = []
         
         # Variables para animacion de fondo

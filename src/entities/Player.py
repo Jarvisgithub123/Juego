@@ -14,7 +14,7 @@ POSITION_TOLERANCE = 10
 class Player:
     """Jugador UAIBOT que puede saltar y hacer dash para esquivar autos"""
     
-    def __init__(self, initial_x: int, initial_y: int, gravity: float, resource_manager, initial_character: str = 'uaibot'):
+    def __init__(self, initial_x: int, initial_y: int, gravity: float, resource_manager, initial_character: str = 'UIAbot'):
         """
         Args:
             initial_x: Posicion inicial X
@@ -30,7 +30,6 @@ class Player:
         self.original_position_x = initial_x
         self.original_position_y = initial_y
         
-        # Sistema de personajes 
         self.personajes = ["UIAbot", "UAIBOTA", "UAIBOTINA", "UAIBOTINO"]
         self.stats = {
         "UIAbot": {  
@@ -45,9 +44,8 @@ class Player:
 
         self.personaje_actual = 0  
 
-        initial_character_upper = initial_character.upper()
         for i, personaje in enumerate(self.personajes):
-            if personaje.upper() == initial_character_upper:
+            if personaje == initial_character:  
                 self.personaje_actual = i
                 break
 

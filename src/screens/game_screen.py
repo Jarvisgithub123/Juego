@@ -11,8 +11,10 @@ from src.systems.game_renderer import GameRenderer
 class GameScreen(Scene):
     """Pantalla principal del juego donde UAIBOT corre y esquiva autos"""
     
-    def __init__(self, screen: pygame.Surface, resource_manager):
-        super().__init__(screen, resource_manager)
+    def __init__(self, screen: pygame.Surface, resource_manager, scene_manager):
+        super().__init__(screen, resource_manager,scene_manager)
+        
+        self.scene_manager = scene_manager
         
         # Sistemas principales
         self.camera = Camera(PANTALLA_ANCHO, PANTALLA_ALTO)
@@ -21,11 +23,22 @@ class GameScreen(Scene):
         self.renderer = GameRenderer(screen, resource_manager)
         self.hud = GameHUD(resource_manager)
         
-        selected_character = 'uaibot'  # personaje por defecto
-        if hasattr(self, 'game_manager') and self.game_manager:
-            selected_character = self.game_manager.shared_data.get('selected_character', 'uaibot')
-            print(f"Personaje seleccionado desde datos compartidos: {selected_character}")
+        selected_character = 'UIAbot'  # pj por defecto
+         # Intenta obtener el personaje seleccionado desde shared_data
+        try:
+            if self.scene_manager and hasattr(self.scene_manager, 'game_manager') and self.scene_manager.game_manager:
+                if hasattr(self.scene_manager.game_manager, 'shared_data') and self.scene_manager.game_manager.shared_data:
+                    selected_character = self.scene_manager.game_manager.shared_data.get('selected_character', 'UIAbot')
+                    print(f"Personaje seleccionado : {selected_character}")
+                else:
+                    print("Warning: game_manager no tiene shared_data")
+            else:
+                print("Warning: No se pudo acceder a game_manager")
+        except Exception as e:
+            print(f"Error al acceder a shared_data: {e}")
+            print("Usando personaje por defecto")
 
+        # Crear el player con el personaje correcto
         self.player = Player(100, PISO_POS_Y - 60, GRAVEDAD, resource_manager, selected_character)
 
         # Estado del juego
@@ -92,7 +105,7 @@ class GameScreen(Scene):
         keys = pygame.key.get_pressed()
         self.player.update(delta_time, keys)
         self.car_spawner.update(delta_time, self.camera.x, self.player.rect.x)
-        self.pila_spawner.update(delta_time, self.camera.x, self.player.rect.x, self.player.rect,self.agregar_energia)
+        self.pila_spawner.update(delta_time, self.camera.x, self.player.rect.x, self.player.rect, self.agregar_energia)
         
 
        

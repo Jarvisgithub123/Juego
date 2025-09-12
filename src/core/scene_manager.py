@@ -4,10 +4,10 @@ from typing import Optional, Type
 class Scene:
     """Clase base para todas las escenas del juego"""
     
-    def __init__(self, screen: pygame.Surface, resource_manager):
+    def __init__(self, screen: pygame.Surface, resource_manager, scene_manager):
         self.screen = screen
         self.resource_manager = resource_manager
-        self.scene_manager = None  # Se asigna cuando se cambia la escena
+        self.scene_manager = scene_manager  
     
     def on_enter(self):
         """Se llama cuando se entra a la escena"""
@@ -53,7 +53,7 @@ class SceneManager:
             
             # Crear la nueva escena
             args, kwargs = self.next_scene_args if self.next_scene_args else ((), {})
-            self.current_scene = self.next_scene(self.screen, self.resource_manager, *args, **kwargs)
+            self.current_scene = self.next_scene(self.screen, self.resource_manager, self, *args, **kwargs)
             self.current_scene.scene_manager = self
             
             # Pasar referencia al game_manager si existe

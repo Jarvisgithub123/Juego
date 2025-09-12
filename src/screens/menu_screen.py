@@ -6,8 +6,9 @@ from src.UI.button import Button
 class MenuScreen(Scene):
     """Pantalla del menu principal"""
     
-    def __init__(self, screen, resource_manager):
-        super().__init__(screen, resource_manager)
+    def __init__(self, screen, resource_manager, scene_manager):
+        super().__init__(screen, resource_manager,scene_manager)
+        self.scene_manager = scene_manager
         self.sound_enabled = True
         self.buttons = []
         
@@ -45,14 +46,16 @@ class MenuScreen(Scene):
     
     def _start_game(self):
         """Inicia el juego"""
-        from src.screens.character_screen import CharacterScreen
-        self.scene_manager.change_scene(CharacterScreen)
+        if self.scene_manager:
+            from src.screens.character_screen import CharacterScreen
+            self.scene_manager.change_scene(CharacterScreen)
 
     
     def _show_settings(self):
         """Muestra las opciones"""
-        from src.screens.settings_screen import SettingsScreen
-        self.scene_manager.change_scene(SettingsScreen)
+        if self.scene_manager:
+            from src.screens.settings_screen import SettingsScreen
+            self.scene_manager.change_scene(SettingsScreen)
     
     def _quit_game(self):
         """Sale del juego"""

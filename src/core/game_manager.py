@@ -18,7 +18,7 @@ class GameManager:
         # Inicializar gestores
         self.resource_manager = ResourceManager()
         self.scene_manager = SceneManager(self.screen, self.resource_manager)
-        
+        self.scene_manager.game_manager = self  # Pasa la  referencia al game_manager
         # Cargar recursos iniciales
         self._load_initial_resources()
         
@@ -27,12 +27,8 @@ class GameManager:
         
         self.running = True
         self.shared_data = {
-            'selected_character': 'uaibot'  # personaje por defecto
+            'selected_character': 'UIAbot'  
         }
-
-        # Conectar el scene_manager con el game_manager
-        self.scene_manager.game_manager = self
-                
 
     def _load_initial_resources(self):
         """Carga los recursos iniciales del juego"""
