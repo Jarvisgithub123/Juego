@@ -159,8 +159,7 @@ class GameScreen(Scene):
         self.energy_remaining = min(self.energy_remaining + cantidad, autonomia_maxima_actual)
         self.energias_individuales[personaje_actual]  =  self.energy_remaining 
 
-        print(f"⚡ Energía agregada a {personaje_actual}: +{cantidad}")
-        print(f"🔋 Energía actual {personaje_actual}: {self.energy_remaining}/{autonomia_maxima_actual}")
+      
     
     def _check_game_conditions(self):
         """Verifica condiciones de fin de juego"""
