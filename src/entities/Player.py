@@ -49,7 +49,7 @@ class Player:
                 self.personaje_actual = i
                 break
 
-        print(f"Player iniciado con personaje: {self.personajes[self.personaje_actual]} (índice: {self.personaje_actual})")
+        print(f"Player iniciado con personaje: {self.personajes[self.personaje_actual]} (indice: {self.personaje_actual})")
         self.on_ground = True  
         
         # Variable para detectar tecla C presionada (evitar spam)

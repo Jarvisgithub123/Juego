@@ -24,22 +24,54 @@ class GameHUD:
                 txt_surface = font_instrucciones.render(texto, True, COLOR_BLANCO)
                 rect = txt_surface.get_rect(topleft=pos)
                 self.instructions.append((txt_surface, rect))
-    
-    def draw(self, screen, current_energy, max_energy, km_remaining):
-        """Dibuja todos los elementos del HUD"""
-        self._draw_instructions(screen)
-        self._draw_energy_bar(screen, current_energy, max_energy)
-        self._draw_km_counter(screen, km_remaining)
-    
-    def _draw_instructions(self, screen):
-        """Dibuja todas las instrucciones en pantalla"""
-        for txt_surface, rect in self.instructions:
-            # Dibujar fondo
-            bg = pygame.Rect(rect.left - 5, rect.top - 5,rect.width + 10, rect.height + 10)
-            pygame.draw.rect(screen, COLOR_INSTRUCCION_FONDO, bg)
-            # Dibujar texto
-            screen.blit(txt_surface, rect)
+        self.cached_instruction_texts = {}
+        self.last_energy_text = None
+        self.last_km_text = None
         
+    def draw(self, screen: pygame.Surface, energy_remaining: float, 
+             max_energy: float, km_remaining: float):
+        """Versión optimizada con cache de textos"""
+        
+        # Cache textos de instrucciones (no cambian)
+        if not self.cached_instruction_texts:
+            font = self.resource_manager.get_font('pequeña')
+            if font:
+                self.cached_instruction_texts['space'] = font.render(
+                    "[ESPACIO] Saltar", True, COLOR_BLANCO)
+                self.cached_instruction_texts['z'] = font.render(
+                    "[Z] Dash", True, COLOR_BLANCO)
+                self.cached_instruction_texts['c'] = font.render(
+                    "[C] Cambiar personaje", True, COLOR_BLANCO)
+        
+        # Renderizar textos dinámicos solo si cambiaron
+        font = self.resource_manager.get_font('hud')
+        if font:
+            # Energy text
+            energy_str = f"Energia: {energy_remaining:.1f}s"
+            if self.last_energy_text != energy_str:
+                self.energy_surface = font.render(energy_str, True, COLOR_BLANCO)
+                self.last_energy_text = energy_str
+            
+            # KM text
+            km_str = f"Distancia: {km_remaining:.2f} km"
+            if self.last_km_text != km_str:
+                self.km_surface = font.render(km_str, True, COLOR_BLANCO)
+                self.last_km_text = km_str
+        
+        # Dibujar todo (usando superficies cacheadas)
+        self._draw_energy_bar(screen, energy_remaining, max_energy)
+        screen.blit(self.energy_surface, (20, 20))
+        screen.blit(self.km_surface, (20, 60))
+        self._draw_cached_instructions(screen)
+    
+    def _draw_cached_instructions(self, screen):
+        """Dibuja instrucciones usando cache"""
+        y_start = PANTALLA_ALTO - 120
+        for i, key in enumerate(['space', 'z', 'c']):
+            if key in self.cached_instruction_texts:
+                screen.blit(self.cached_instruction_texts[key], 
+                           (20, y_start + i * 30))
+                
     def _draw_energy_bar(self, screen, current_energy, max_energy):
         """Dibuja la barra de energia en la parte superior derecha"""
         percentage = (current_energy / max_energy) * 100

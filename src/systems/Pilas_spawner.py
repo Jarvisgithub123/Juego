@@ -20,7 +20,7 @@ class pilaSpawner:
             dt: Delta time
             camera_x: Posición X de la cámara
             player_x: Posición X del jugador
-            energy_callback: Función callback para manejar la energía
+            energy_callback: Función callback para manejar la energia
         """
         self.spawn_timer += dt
         
