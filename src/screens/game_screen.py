@@ -41,14 +41,27 @@ class GameScreen(Scene):
         # Crear el player con el personaje correcto
         self.player = Player(100, PISO_POS_Y - 60, GRAVEDAD, resource_manager, selected_character)
 
+        self.energias_individuales = {}
+        self._inicializar_energias_personajes()
+        
+        
         # Estado del juego
         self.pause = False
         self.game_over = False
         self.victory = False
-        self.energy_remaining = self.player.obtener_autonomia()
-        self.energia_maxima = self.player.obtener_autonomia_maxima()
+        self.energy_remaining = self.energias_individuales[self.player.get_current_character()]
+    
+        print(f"Energía inicial {self.player.get_current_character()}: {self.energy_remaining}")
         self.kilometers_remaining = KILOMETROS_OBJETIVO
         self.time = 0.0
+    
+    
+    def _inicializar_energias_personajes(self):
+        """Inicializa las energías individuales de cada personaje con su autonomía máxima"""
+        for personaje in self.player.personajes:
+            autonomia = self.player.stats[personaje]["autonomia"]
+            self.energias_individuales[personaje] = float(autonomia)
+            print(f"Energía inicial {personaje}: {autonomia}")
     
     def handle_event(self, event: pygame.event.Event):
         """Maneja los eventos de entrada del usuario"""
@@ -78,6 +91,18 @@ class GameScreen(Scene):
             elif event.key == pygame.K_ESCAPE:
                 self._return_to_menu()
     
+    def handle_character_change(self):
+        
+        personaje_actual = self.player.get_current_character()
+        self.energy_remaining = self.energias_individuales[personaje_actual] 
+        self.player.obtener_autonomia_maxima()
+        
+        print(f"Cambio a {personaje_actual}")
+        print(f"Energía {personaje_actual}: {self.energy_remaining}")
+
+        
+    
+    
     def update(self, delta_time: float):
         """Para que no se reinicie al entrar en pausa"""
         if self.pause:
@@ -87,6 +112,7 @@ class GameScreen(Scene):
             self._update_game_systems(delta_time)
             self._update_entities(delta_time)
             self._check_game_conditions()
+       
             
     def _update_game_systems(self, delta_time: float):
         """Actualiza sistemas del juego"""
@@ -104,7 +130,18 @@ class GameScreen(Scene):
     def _update_entities(self, delta_time: float):
         """Actualiza entidades del juego"""
         keys = pygame.key.get_pressed()
+        
+        personaje_antes = self.player.get_current_character()   
+        self.energias_individuales[personaje_antes] = self.energy_remaining
+        
         self.player.update(delta_time, keys)
+        
+        personaje_despues = self.player.get_current_character()
+        
+        if personaje_antes != personaje_despues:
+            self.handle_character_change()
+     
+        
         self.car_spawner.update(delta_time, self.camera.x, self.player.rect.x)
         self.pila_spawner.update(delta_time, self.camera.x, self.player.rect.x, self.player.rect, self.agregar_energia)
         
@@ -115,8 +152,15 @@ class GameScreen(Scene):
     
     def agregar_energia(self, cantidad):
         """Agrega energía a los robots sin pasar su maximo"""
-        self.energy_remaining = min(self.energy_remaining + cantidad, self.energia_maxima)
+        personaje_actual = self.player.get_current_character()
+        
+        autonomia_maxima_actual = self.player.obtener_autonomia_maxima()
+       
+        self.energy_remaining = min(self.energy_remaining + cantidad, autonomia_maxima_actual)
+        self.energias_individuales[personaje_actual]  =  self.energy_remaining 
 
+        print(f"⚡ Energía agregada a {personaje_actual}: +{cantidad}")
+        print(f"🔋 Energía actual {personaje_actual}: {self.energy_remaining}/{autonomia_maxima_actual}")
     
     def _check_game_conditions(self):
         """Verifica condiciones de fin de juego"""
@@ -148,6 +192,8 @@ class GameScreen(Scene):
         # Solo consumir energia si no esta haciendo dash
         if not self.player.is_dashing:
             self.energy_remaining -= delta_time
+            self.energia_minima()
+            
         
         if not self.player.is_dashing:
             self.time += delta_time 
@@ -163,8 +209,17 @@ class GameScreen(Scene):
         """Consume energia si hay suficiente disponible"""
         if self.energy_remaining >= energy_amount:
             self.energy_remaining -= energy_amount
+            self.energia_minima()
+            
+            
             return True
         return False
+    
+    def energia_minima(self):
+        """Energia minima 0 para que no se acepten valores negativos"""
+        self.energy_remaining = max(0, self.energy_remaining)
+        personaje_actual = self.player.get_current_character()
+        self.energias_individuales[personaje_actual] = self.energy_remaining
     
     def on_enter(self):
         """Se ejecuta al entrar en la pantalla del juego"""
@@ -198,8 +253,9 @@ class GameScreen(Scene):
         
         # Dibujar UI
         if not self.game_over and not self.victory:
+            autonomia_maxima_actual = self.player.obtener_autonomia_maxima()
             self.hud.draw(self.screen, self.energy_remaining, 
-                         self.energia_maxima, self.kilometers_remaining)
+                         autonomia_maxima_actual, self.kilometers_remaining)
         
         # Dibujar pantallas de fin de juego
         if self.game_over:

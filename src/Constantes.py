@@ -47,8 +47,7 @@ DASH_ENERGIA_COSTO = 2         # Costo en energia por cada dash
 
 # MECANICAS DE JUEGO
 
-# Sistema de energia y objetivos
-DURACION_ENERGIA = 20               # Segundos totales de energia
+# Sistema de energia y objetivos             # Segundos totales de energia
 KILOMETROS_OBJETIVO = 1.0          # Kilometros que debe recorrer UAIBOT
 DECREMENTO_KM_POR_SEGUNDO = 0.03      # Velocidad de avance en km/s
 

@@ -69,15 +69,12 @@ class Player:
         self.current_sprite = None
         self._update_sprite()
     
-    def obtener_autonomia(self) -> int:
-        """Retorna la autonomia del personaje seleccionado en el momento"""
-        pj_actual = self.personajes[self.personaje_actual]
-        return self.stats[pj_actual]["autonomia"]
 
     def obtener_autonomia_maxima(self) -> int:
         """Retorna la autonomia maxima de todos los personajes"""
-        max_autonomia = max(stats["autonomia"] for stats in self.stats.values())
-        return max_autonomia
+        pj_actual = self.get_current_character()
+        return self.stats[pj_actual]["autonomia"]
+        
     
     
     
@@ -220,11 +217,12 @@ class Player:
         current_character = self.personajes[self.personaje_actual]
         stats = self.stats[current_character]
 
-        # 🔹 actualizar stats de salto y dash
+   
         self.jump_strength = stats["jump_strength"]
         self.dash_speed = stats["dash_speed"]
         self.dash_duration = stats["dash_duration"]
         self.dash_cooldown = stats["dash_cooldown"]
+      
     
         self.current_sprite = None
         self._load_animation_frames()
