@@ -29,18 +29,13 @@ def main_with_profiling():
     finally:
         profiler.disable()
         
-        # Mostrar estadisticas en consola
         s = io.StringIO()
         stats = pstats.Stats(profiler, stream=s)
         stats.sort_stats('cumulative')
-        stats.print_stats(30)  # Top 30 funciones más lentas
+        stats.print_stats(30)  
         print(s.getvalue())
-        
         # Guardar estadisticas en archivo
         stats.dump_stats('profile_results.prof')
-        print("\nPerfil guardado en 'profile_results.prof'")
-        print("Para ver el perfil completo, usa: python -m pstats profile_results.prof")
-
 if __name__ == "__main__":
     # Cambiar entre normal y con profiling
     import sys

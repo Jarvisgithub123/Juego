@@ -7,12 +7,15 @@ from src.core.Camera import Camera
 from src.systems.car_spawner import CarSpawner
 from src.systems.Pilas_spawner import pilaSpawner
 from src.systems.game_renderer import GameRenderer
+import csv
+import os
+from datetime import datetime
 
 class GameScreen(Scene):
     """Pantalla principal del juego donde UAIBOT corre y esquiva autos"""
     
     def __init__(self, screen: pygame.Surface, resource_manager, scene_manager):
-        super().__init__(screen, resource_manager,scene_manager)
+        super().__init__(screen, resource_manager, scene_manager)
         
         self.scene_manager = scene_manager
         
@@ -44,6 +47,11 @@ class GameScreen(Scene):
         self.energias_individuales = {}
         self._inicializar_energias_personajes()
         
+        # NUEVO: Sistema de tracking de distancias por personaje
+        self.distancias_personajes = {}
+        self._inicializar_distancias_personajes()
+        self.distancia_total_partida = 0.0  # Distancia total de la partida actual
+        self.ultimo_personaje_activo = self.player.get_current_character()
         
         # Estado del juego
         self.pause = False
@@ -55,6 +63,11 @@ class GameScreen(Scene):
         self.kilometers_remaining = KILOMETROS_OBJETIVO
         self.time = 0.0
     
+    def _inicializar_distancias_personajes(self):
+        """Inicializa el tracking de distancia para cada personaje"""
+        for personaje in self.player.personajes:
+            self.distancias_personajes[personaje] = 0.0
+        print("Distancias de personajes inicializadas:", self.distancias_personajes)
     
     def _inicializar_energias_personajes(self):
         """Inicializa las energías individuales de cada personaje con su autonomía máxima"""
@@ -92,27 +105,43 @@ class GameScreen(Scene):
                 self._return_to_menu()
     
     def handle_character_change(self):
-        
         personaje_actual = self.player.get_current_character()
         self.energy_remaining = self.energias_individuales[personaje_actual] 
         self.player.obtener_autonomia_maxima()
         
         print(f"Cambio a {personaje_actual}")
         print(f"Energía {personaje_actual}: {self.energy_remaining}")
-
         
-    
+        # NUEVO: Actualizar el último personaje activo para el tracking
+        self.ultimo_personaje_activo = personaje_actual
     
     def update(self, delta_time: float):
         """Para que no se reinicie al entrar en pausa"""
         if self.pause:
             return
-        """Actualiza toda la logica del juego"""
+        """Actualiza toda la lógica del juego"""
         if not self.game_over and not self.victory:
             self._update_game_systems(delta_time)
             self._update_entities(delta_time)
             self._check_game_conditions()
+            
+            # NUEVO: Actualizar tracking de distancias
+            self._update_distance_tracking(delta_time)
        
+    def _update_distance_tracking(self, delta_time: float):
+        """Actualiza el tracking de distancia del personaje actual"""
+        personaje_actual = self.player.get_current_character()
+        
+        # Calcular distancia recorrida en este frame
+        if not self.player.is_dashing:
+            distancia_frame = delta_time * DECREMENTO_KM_POR_SEGUNDO
+        else:
+            # Durante el dash se avanza más rápido
+            distancia_frame = delta_time * DECREMENTO_KM_POR_SEGUNDO * 2
+        
+        # Agregar distancia al personaje actual
+        self.distancias_personajes[personaje_actual] += distancia_frame
+        self.distancia_total_partida += distancia_frame
             
     def _update_game_systems(self, delta_time: float):
         """Actualiza sistemas del juego"""
@@ -141,14 +170,8 @@ class GameScreen(Scene):
         if personaje_antes != personaje_despues:
             self.handle_character_change()
      
-        
         self.car_spawner.update(delta_time, self.camera.x, self.player.rect.x)
         self.pila_spawner.update(delta_time, self.camera.x, self.player.rect.x, self.player.rect, self.agregar_energia)
-        
-
-       
-            
-        
     
     def agregar_energia(self, cantidad):
         """Agrega energía a los robots sin pasar su maximo"""
@@ -157,9 +180,7 @@ class GameScreen(Scene):
         autonomia_maxima_actual = self.player.obtener_autonomia_maxima()
        
         self.energy_remaining = min(self.energy_remaining + cantidad, autonomia_maxima_actual)
-        self.energias_individuales[personaje_actual]  =  self.energy_remaining 
-
-      
+        self.energias_individuales[personaje_actual] = self.energy_remaining 
     
     def _check_game_conditions(self):
         """Verifica condiciones de fin de juego"""
@@ -193,13 +214,10 @@ class GameScreen(Scene):
             self.energy_remaining -= delta_time
             self.energia_minima()
             
-        
         if not self.player.is_dashing:
             self.time += delta_time 
-            
         if self.player.is_dashing:
             self.time += delta_time + DECREMENTO_KM_POR_SEGUNDO
-        
         # Calcular distancia basada en tiempo transcurrido
         km_traveled = self.time * DECREMENTO_KM_POR_SEGUNDO
         self.kilometers_remaining = max(0, KILOMETROS_OBJETIVO - km_traveled)
@@ -209,35 +227,91 @@ class GameScreen(Scene):
         if self.energy_remaining >= energy_amount:
             self.energy_remaining -= energy_amount
             self.energia_minima()
-            
-            
             return True
         return False
     
     def energia_minima(self):
-        """Energia minima 0 para que no se acepten valores negativos"""
         self.energy_remaining = max(0, self.energy_remaining)
         personaje_actual = self.player.get_current_character()
         self.energias_individuales[personaje_actual] = self.energy_remaining
     
     def on_enter(self):
-        """Se ejecuta al entrar en la pantalla del juego"""
         self.resource_manager.play_music("game_music", volume=0.6)
     
     def on_exit(self):
-        """Se ejecuta al salir de la pantalla del juego"""
-        # Detener todos los sonidos que puedan estar reproduciendose
-        pygame.mixer.stop()  # Detiene todos los sonidos (no la musica)
+        pygame.mixer.stop()  
         print("Sonidos detenidos al salir del juego")
+    
+    def _save_game_statistics(self):
+        """Guarda las estadísticas de la partida en un archivo CSV"""
+        try:
+            filename = "estadisticas_juego.csv"
+            file_exists = os.path.exists(filename)
+            
+            # Obtener número de partida
+            partida_num = self._get_next_game_number(filename)
+            
+            with open(filename, 'a', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                # Escribir datos de la partida actual
+                if not file_exists:
+                    # Escribir encabezado si el archivo no existía
+                    writer.writerow(["Partida", "Km"])
+                    
+                row = [f"Partida {partida_num}:"]
+                writer.writerow(row)
+                for personaje, distancia in self.distancias_personajes.items():
+                    row = [f"{personaje}:", f"{distancia:.2f} km".replace(".",",")]
+                    writer.writerow(row)
+
+                
+            print(f"Estadísticas guardadas - Partida {partida_num}")
+            print("Distancias por personaje:")
+            for personaje, distancia in self.distancias_personajes.items():
+                print(f"  {personaje}: {distancia:.2f} km")
+                
+        except Exception as e:
+            print(f"Error guardando estadísticas: {e}")
+    def _get_next_game_number(self, filename):
+        """Obtiene el próximo número de partida"""
+        if not os.path.exists(filename):
+            return 1
+            
+        try:
+            with open(filename, 'r', newline='', encoding='utf-8') as csvfile:
+                reader = csv.reader(csvfile)
+                rows = list(reader)
+                last_game_num = 0
+                for row in rows:
+                    if row and row[0].startswith("Partida"):
+                        try:
+                            num = int(row[0].split()[1].replace(":", ""))
+                            if num > last_game_num:
+                                last_game_num = num
+                        except ValueError:
+                            continue
+                return last_game_num + 1
+            
+                
+        except Exception as e:
+            print(f"Error leyendo archivo de estadísticas: {e}")
+            return 1
     
     def _restart_game(self):
         """Reinicia el juego desde el principio"""
+        # NUEVO: Guardar estadísticas antes de reiniciar
+        self._save_game_statistics()
+        
         pygame.mixer.stop()
         from src.screens.game_screen import GameScreen
         self.scene_manager.change_scene(GameScreen)
     
     def _return_to_menu(self):
         """Regresa al menu principal"""
+        # NUEVO: Guardar estadísticas antes de volver al menú
+        if self.game_over or self.victory:
+            self._save_game_statistics()
+            
         pygame.mixer.stop()
         from src.screens.menu_screen import MenuScreen
         self.scene_manager.change_scene(MenuScreen)
@@ -254,7 +328,8 @@ class GameScreen(Scene):
         if not self.game_over and not self.victory:
             autonomia_maxima_actual = self.player.obtener_autonomia_maxima()
             self.hud.draw(self.screen, self.energy_remaining, 
-                         autonomia_maxima_actual, self.kilometers_remaining)
+                         autonomia_maxima_actual, self.kilometers_remaining,
+                         self.distancias_personajes)  # NUEVO: Pasar distancias al HUD
         
         # Dibujar pantallas de fin de juego
         if self.game_over:
