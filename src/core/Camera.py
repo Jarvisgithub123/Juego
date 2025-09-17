@@ -2,11 +2,6 @@ import pygame
 from typing import Tuple
 from src.Constantes import *
 
-# Constantes de la camara
-DEFAULT_PLAYER_SCREEN_X = 100  # Donde aparece el jugador visualmente
-DEFAULT_FOLLOW_SPEED = 8.0
-MINIMUM_DEVIATION_THRESHOLD = 10  # Minimo movimiento antes de seguir
-
 class Camera:
     """Sistema de camara que sigue al jugador suavemente"""
     

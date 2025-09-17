@@ -93,7 +93,7 @@ class Player:
         self.animation_timer = 0
         self.animation_speed = 0.08
         self.animation_frames: List[pygame.Surface] = []
-        self.has_animation = False  # flag para saber si tiene animación o imagen estática
+        self.has_animation = False  # flag para saber si tiene animacion o imagen estatica
     
     def _init_dash_system(self):
         """Inicializa el sistema de dash del jugador"""
@@ -112,23 +112,23 @@ class Player:
         self.max_distance_from_origin = MAX_DISTANCE_FROM_ORIGIN
         
     def _load_animation_frames(self):
-        """Carga los frames de animación directamente desde resource_manager"""
+        """Carga los frames de animacion directamente desde resource_manager"""
         current_character_name = self.personajes[self.personaje_actual]
         spritesheet_name = f"{current_character_name}_walk"
 
 
         print(f"Cargando animacion para personaje: {current_character_name}")
         
-        # intentar cargar spritesheet con animación
+        # intentar cargar spritesheet con animacion
         spritesheet = self.resource_manager.get_spritesheet(spritesheet_name)
         
         if spritesheet:
-            # si es q tiene la  animación
+            # si es q tiene la  animacion
             frames = self.resource_manager.get_animation_frames(spritesheet_name, 0, 5, 0)
             self.animation_frames = frames
             self.has_animation = True
         else:
-            # intenta cargar  la imagen estática
+            # intenta cargar  la imagen estatica
             character_image = self.resource_manager.get_image(spritesheet_name)
             if character_image:
                 scaled_image = pygame.transform.scale(character_image, (64, 86))
@@ -299,7 +299,7 @@ class Player:
             self.current_sprite.fill((255, 0, 255))  # rosa para debug
     
     def _update_animation(self, delta_time: float):
-        """Actualiza el frame de animación solo si tiene animación"""
+        """Actualiza el frame de animacion solo si tiene animacion"""
         if self.has_animation and len(self.animation_frames) > 1:
             self.animation_timer += delta_time
             

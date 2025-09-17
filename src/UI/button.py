@@ -51,7 +51,7 @@ class Button:
         self._text_dirty = False
     
     def handle_event(self, event):
-        """Maneja los eventos del botón"""
+        """Maneja los eventos del boton"""
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 and self.rect.collidepoint(event.pos):
                 if self.callback:
@@ -59,7 +59,7 @@ class Button:
                     self.resource_manager.play_sound("boton_hover")
         
         elif event.type == pygame.MOUSEMOTION:
-            # OPTIMIZACIÓN: Solo cambiar estado si es necesario
+            # OPTIMIZACIoN: Solo cambiar estado si es necesario
             was_hovered = self.is_hovered
             self.is_hovered = self.rect.collidepoint(event.pos)
             
@@ -68,22 +68,22 @@ class Button:
                 self.resource_manager.play_sound("boton_hover")
     
     def update(self, dt):
-        """Actualiza la animación del botón"""
+        """Actualiza la animacion del boton"""
         # Actualizar cache si es necesario
         self._update_text_cache()
         
-        # Animación de escala suave
+        # Animacion de escala suave
         self.target_scale = 1.1 if self.is_hovered else 1.0
         scale_diff = self.target_scale - self.hover_scale
-        self.hover_scale += scale_diff * 8 * dt  # Velocidad de animación
+        self.hover_scale += scale_diff * 8 * dt  # Velocidad de animacion
     
     def draw(self, screen):
-        """Dibuja el botón con texto cacheado"""
-        # Calcular tamaño y posición con escala
+        """Dibuja el boton con texto cacheado"""
+        # Calcular tamaño y posicion con escala
         scaled_width = int(self.rect.width * self.hover_scale)
         scaled_height = int(self.rect.height * self.hover_scale)
         
-        #Reutilizar rect para el botón escalado
+        #Reutilizar rect para el boton escalado
         if not hasattr(self, '_scaled_rect'):
             self._scaled_rect = pygame.Rect(0, 0, 0, 0)
         
@@ -91,7 +91,7 @@ class Button:
         self._scaled_rect.height = scaled_height
         self._scaled_rect.center = self.rect.center
         
-        # Dibujar fondo del botón
+        # Dibujar fondo del boton
         color = COLOR_SECUNDARIO if self.is_hovered else COLOR_PRIMARIO
         pygame.draw.rect(screen, color, self._scaled_rect)
         pygame.draw.rect(screen, COLOR_BLANCO, self._scaled_rect, 2)
@@ -106,6 +106,6 @@ class Button:
         else:
             return  # No hay texto para mostrar
         
-        # Centrar el texto en el botón escalado
+        # Centrar el texto en el boton escalado
         text_rect.center = self._scaled_rect.center
         screen.blit(text_surface, text_rect)

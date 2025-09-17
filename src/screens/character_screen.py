@@ -4,7 +4,7 @@ from src.core.scene_manager import Scene
 from src.UI.button import Button
 
 class CharacterScreen(Scene):
-    """Pantalla de selección de personaje con carrusel manual"""
+    """Pantalla de seleccion de personaje con carrusel manual"""
     
     def __init__(self, screen, resource_manager,scene_manager):
         super().__init__(screen, resource_manager,scene_manager)
@@ -24,7 +24,7 @@ class CharacterScreen(Scene):
             int(original_area.height * scale_y)
         )
 
-        # Lista de personajes disponibles (puedes añadir más)
+        # Lista de personajes disponibles (puedes añadir mas)
         self.characters = [
             ("UIAbot", self.resource_manager.get_image("personaje1")),
             ("UAIBOTA", self.resource_manager.get_image("UAIBOTA_walk")),
@@ -38,7 +38,7 @@ class CharacterScreen(Scene):
         self._create_buttons()
     
     def on_enter(self):
-        """Se ejecuta al entrar en la pantalla de selección"""
+        """Se ejecuta al entrar en la pantalla de seleccion"""
         self.resource_manager.play_music("menu", volume=0.3)
 
     def _update_current_character(self):
@@ -103,7 +103,7 @@ class CharacterScreen(Scene):
         self._update_current_character()
     
     def _select_character(self):
-        """Confirma la selección del personaje y guarda la elección"""
+        """Confirma la seleccion del personaje y guarda la eleccion"""
         if self.selected_character:
             try:
                 if hasattr(self.scene_manager, 'game_manager') and self.scene_manager.game_manager:
@@ -157,7 +157,7 @@ class CharacterScreen(Scene):
         self.screen.blit(text_surface, text_rect)
     
     def draw(self):
-        """Dibuja la pantalla de selección de personaje"""
+        """Dibuja la pantalla de seleccion de personaje"""
         # Fondo 
         billboard_image = self.resource_manager.get_image("cartel")
         if billboard_image:

@@ -84,8 +84,8 @@ class GameRenderer:
         self.world_scroll_x += self.world_scroll_speed * delta_time
     
     def draw_background(self, camera_x: float):
-        """OPTIMIZADO: fondo con parallax - versión mejorada pero funcional"""
-        # Cache para evitar recálculos cuando la cámara no se mueve mucho
+        """OPTIMIZADO: fondo con parallax - version mejorada pero funcional"""
+        # Cache para evitar recalculos cuando la camara no se mueve mucho
         if not hasattr(self, 'last_camera_x'):
             self.last_camera_x = 0
         
@@ -102,7 +102,7 @@ class GameRenderer:
                             camera_x * parallax_factor * 0.1)
             offset_x = -(total_offset_x % layer_width)
             
-            # OPTIMIZACIÓN: Reducir cantidad de blits calculando posiciones exactas
+            # OPTIMIZACIoN: Reducir cantidad de blits calculando posiciones exactas
             positions_needed = []
             
             # Calcular solo las posiciones que realmente necesitamos
@@ -116,7 +116,7 @@ class GameRenderer:
             for pos in positions_needed:
                 self.screen.blit(image, (pos, 0))
         
-        # Actualizar cache de posición de cámara
+        # Actualizar cache de posicion de camara
         if camera_moved:
             self.last_camera_x = camera_x
     
@@ -198,7 +198,7 @@ class GameRenderer:
     def _draw_single_car(self, car: Car, screen_x: float):
         """Dibuja un auto individual"""
         if car.current_sprite:
-            # Usar posición directa en lugar de crear rect
+            # Usar posicion directa en lugar de crear rect
             self.screen.blit(car.current_sprite, (screen_x, car.rect.y))
         else:
             # Rectangulo de respaldo - reutilizar rect
@@ -213,7 +213,7 @@ class GameRenderer:
         for pila in pilas:
             screen_x = pila.rect.x - camera_x
             
-            # Solo dibujar si está en pantalla
+            # Solo dibujar si esta en pantalla
             if -pila.rect.width <= screen_x <= PANTALLA_ANCHO:
                 self.screen.blit(pila.image, (screen_x, pila.rect.y))
     

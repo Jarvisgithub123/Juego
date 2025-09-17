@@ -3,12 +3,6 @@ from typing import List, Optional
 from src.Constantes import *
 
 
-# Constantes para lAS PILAS
-DEFAULT_PILAS_WIDTH = 80
-DEFAULT_PILAS_HEIGHT = 80
-
-
-
 class pilas(pygame.sprite.Sprite):
     def __init__(self, resource_manager, *groups, width: int = DEFAULT_PILAS_WIDTH, height: int = DEFAULT_PILAS_HEIGHT):
         super().__init__(*groups)
@@ -30,7 +24,7 @@ class pilas(pygame.sprite.Sprite):
 
     
     def update(self):
-        """Actualiza la posición de la pila"""
+        """Actualiza la posicion de la pila"""
         if not self.collected:
             self.rect.x -= self.speed
         
@@ -44,7 +38,7 @@ class pilas(pygame.sprite.Sprite):
         if not self.collected:
             energia_anterior = robot.energia if hasattr(robot, 'energia') else 0
             
-            # Aumentar la energia del robot sin exceder su máximo
+            # Aumentar la energia del robot sin exceder su maximo
             if hasattr(robot, 'energia_maxima'):
                 nueva_energia = min(robot.energia + ENERGIA_PILA, robot.energia_maxima)
                 robot.energia = nueva_energia

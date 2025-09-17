@@ -44,10 +44,10 @@ class GameManager:
         self.resource_manager.load_image("personaje2", "Assets/Imagenes/personaje2.png")
         
         # PERSONAJES 
-        # UIAbot: tiene spritesheet con animación
+        # UIAbot: tiene spritesheet con animacion
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
         
-        # otros personajes: por ahora imagenes estáticas 
+        # otros personajes: por ahora imagenes estaticas 
         #self.resource_manager.load_image("UAIBOTA_walk", "Assets/Sprites/UAIBOTA.png")
         #self.resource_manager.load_image("UAIBOTINA_walk", "Assets/Sprites/UAIBOTINA.png")
         #self.resource_manager.load_image("UAIBOTINO_walk", "Assets/Sprites/UAIBOTINO.png")

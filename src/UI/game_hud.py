@@ -28,16 +28,16 @@ class GameHUD:
         self.last_energy_text = None
         self.last_km_text = None
         
-        # Configuración para el panel de distancias
+        # Configuracion para el panel de distancias
         self.distances_panel_width = 300
         self.distances_panel_height = 150
         
-        # Cache para superficies de texto (optimización)
+        # Cache para superficies de texto (optimizacion)
         self.cached_text = {}
         
     def draw(self, screen: pygame.Surface, energy_remaining: float, 
              max_energy: float, km_remaining: float, distancias_personajes: dict = None):
-        """Versión optimizada con cache de textos"""
+        """Version optimizada con cache de textos"""
         
         # Cache textos de instrucciones (no cambian)
         if not self.cached_instruction_texts:
@@ -50,7 +50,7 @@ class GameHUD:
                 self.cached_instruction_texts['c'] = font.render(
                     "[C] Cambiar personaje", True, COLOR_BLANCO)
         
-        # Renderizar textos dinámicos solo si cambiaron
+        # Renderizar textos dinamicos solo si cambiaron
         font = self.resource_manager.get_font('hud')
         if font:
             # Energy text
@@ -82,7 +82,7 @@ class GameHUD:
                            (20, y_start + i * 30))
                 
     def _draw_distances_panel(self, screen: pygame.Surface, distancias_personajes: dict):
-        # Configuración del panel
+        # Configuracion del panel
         panel_width = 280
         panel_height = 180
         panel_x = PANTALLA_ANCHO - panel_width - 86

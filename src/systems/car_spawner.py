@@ -2,59 +2,100 @@ import pygame
 import random
 from typing import List
 from src.Constantes import *
-from src.entities.Car import Car
+from src.systems.car_pool import CarPool
+
+# Constantes extraídas para evitar números mágicos
+DEFAULT_SPAWN_TIME = 2.0
+MAX_VISIBLE_CARS = 4
+MIN_DISTANCE_TO_PLAYER = 500
+MIN_SPACING_BETWEEN_CARS = 250
+SPAWN_X_OFFSET_MIN = 300
+SPAWN_X_OFFSET_MAX = 500
+PLAYER_HITBOX_SHRINK = (-8, -8)
+CAR_HITBOX_SHRINK = (-7, -20)
+CLEANUP_THRESHOLD_OFFSET = 600
+
+
+# Constantes de velocidad de autos
+SLOW_CAR_SPEED_MIN = 7
+SLOW_CAR_SPEED_MAX = 9
+NORMAL_CAR_SPEED_MIN = 10
+NORMAL_CAR_SPEED_MAX = 13
+FAST_CAR_SPEED_MIN = 14
+FAST_CAR_SPEED_MAX = 16
+VERY_FAST_CAR_SPEED_MIN = 18
+VERY_FAST_CAR_SPEED_MAX = 22
+SLOW_PAIRED_CAR_SPEED_MIN = 8
+SLOW_PAIRED_CAR_SPEED_MAX = 12
+
+# Pesos para generación de tipos de auto
+SLOW_CAR_WEIGHT = 30
+NORMAL_CAR_WEIGHT = 40
+FAST_CAR_WEIGHT = 30
+SINGLE_CAR_WEIGHT = 40
+DOUBLE_CAR_WEIGHT = 60
+
+# Intervalos de spawn
+SPAWN_INTERVAL_MIN = 3.0
+SPAWN_INTERVAL_MAX = 6.0
+CAR_GAP_MIN = 300
+CAR_GAP_MAX = 500
 
 class CarSpawner:
-    """Sistema de spawn de autos más claro y configurable."""
+    """Sistema de spawn optimizado con object pooling"""
 
     def __init__(self, resource_manager):
         self.resource_manager = resource_manager
-        self.cars: List[Car] = []
+        
+        # Usar CarPool en lugar de lista simple
+        self.car_pool = CarPool(resource_manager)
 
         # Timers de spawn
         self.spawn_timer = 0.0
-        self.next_spawn_time = 2.0
+        self.next_spawn_time = DEFAULT_SPAWN_TIME
 
-        # Configurables (fáciles de ajustar)
-        self.max_visible_cars = 4
-        self.min_distance_to_player = 500
-        self.min_spacing_between_cars = 250
-        self.spawn_x_offset_min = 300
-        self.spawn_x_offset_max = 500
+        # Configurables (extraídas como constantes)
+        self.max_visible_cars = MAX_VISIBLE_CARS
+        self.min_distance_to_player = MIN_DISTANCE_TO_PLAYER
+        self.min_spacing_between_cars = MIN_SPACING_BETWEEN_CARS
+        self.spawn_x_offset_min = SPAWN_X_OFFSET_MIN
+        self.spawn_x_offset_max = SPAWN_X_OFFSET_MAX
 
-        # Hitbox tuning (usar inflate)
-        self.player_hitbox_shrink = (-8, -8)  # (x, y) reducción del rect del jugador
-        self.car_hitbox_shrink = (-7, -20)    # reduce ancho/alto para colisión más justa
+        # Hitbox tuning
+        self.player_hitbox_shrink = PLAYER_HITBOX_SHRINK
+        self.car_hitbox_shrink = CAR_HITBOX_SHRINK
 
         # Generar primer auto
         self._spawn_initial_car()
 
-    # ------------------------------
-    # Métodos internos de spawn
-    # ------------------------------
     def _spawn_initial_car(self):
+        """Crea el primer auto usando el pool"""
         x = PANTALLA_ANCHO
         y = PISO_POS_Y - 86
-        self.cars.append(self._create_car(x, y, self._generate_car_speed()))
-
-    def _create_car(self, x: float, y: float, speed: int) -> Car:
-        """Factory para crear un objeto Car con recursos ya cargados."""
-        return Car(x, y, self.resource_manager, speed=speed)
+        speed = self._generate_car_speed()
+        self.car_pool.get_car(x, y, speed)
 
     def _generate_car_speed(self) -> int:
-        """Velocidad variada: lento / normal / rápido."""
-        type_choice = random.choices(['lento', 'normal', 'rapido'], weights=[30, 40, 30], k=1)[0]
+        """Velocidad variada: lento / normal / rápido usando constantes"""
+        type_choice = random.choices(
+            ['lento', 'normal', 'rapido'], 
+            weights=[SLOW_CAR_WEIGHT, NORMAL_CAR_WEIGHT, FAST_CAR_WEIGHT], 
+            k=1
+        )[0]
+        
         if type_choice == 'lento':
-            return random.randint(7, 9) # 6 7
-        if type_choice == 'normal':
-            return random.randint(10, 13)
-        return random.randint(14, 16)
+            return random.randint(SLOW_CAR_SPEED_MIN, SLOW_CAR_SPEED_MAX)
+        elif type_choice == 'normal':
+            return random.randint(NORMAL_CAR_SPEED_MIN, NORMAL_CAR_SPEED_MAX)
+        else:  # rápido
+            return random.randint(FAST_CAR_SPEED_MIN, FAST_CAR_SPEED_MAX)
 
-    def _next_spawn_interval(self):
-        return random.uniform(3.0, 6.0)
+    def _next_spawn_interval(self) -> float:
+        """Genera intervalo aleatorio entre spawns"""
+        return random.uniform(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_MAX)
 
     def update(self, delta_time: float, camera_x: float, player_x: float):
-        """Actualizar timer, spawnear si corresponde, actualizar y limpiar autos."""
+        """Actualizar con lógica de pooling optimizada"""
         self.spawn_timer += delta_time
 
         if self.spawn_timer >= self.next_spawn_time:
@@ -63,81 +104,91 @@ class CarSpawner:
                 self._spawn_cars(camera_x, count)
                 self._reset_spawn_timer()
 
-        self._cleanup_cars(camera_x)
-        self._update_cars(delta_time)
+        # Usar métodos optimizados del pool
+        self.car_pool.cleanup_cars(camera_x)
+        self.car_pool.update_active_cars(delta_time)
 
     def _decide_spawn_count(self) -> int:
-        """Decide 1 o 2 autos; ponderado."""
-        return random.choices([1, 2], weights=[40, 60], k=1)[0]
+        """Decide 1 o 2 autos; ponderado con constantes"""
+        return random.choices(
+            [1, 2], 
+            weights=[SINGLE_CAR_WEIGHT, DOUBLE_CAR_WEIGHT], 
+            k=1
+        )[0]
 
     def _can_spawn_car(self, camera_x: float, player_x: float) -> bool:
-        """Comprueba condiciones para spawnear: visibilidad, distancia al jugador y spacing."""
+        """Comprueba condiciones usando autos activos del pool"""
         spawn_x = camera_x + PANTALLA_ANCHO + self.spawn_x_offset_min
 
-        # contar autos en pantalla (con margen)
-        visible = sum(
-            1 for car in self.cars
-            if -200 < (car.rect.x - camera_x) < (PANTALLA_ANCHO + 200)
-        )
+        # Contar autos visibles del pool
+        visible = self._count_visible_cars(camera_x)
         if visible >= self.max_visible_cars:
             return False
 
-        # evitar spawnear demasiado cerca del jugador
+        # Evitar spawnear demasiado cerca del jugador
         if spawn_x - player_x < self.min_distance_to_player:
             return False
 
-        # spacing con otros autos
+        # Spacing con otros autos
         return self._safe_distance_from_other_cars(spawn_x)
 
+    def _count_visible_cars(self, camera_x: float) -> int:
+        """Cuenta autos visibles usando el pool"""
+        visible_count = 0
+        margin = 200
+        
+        for car in self.car_pool.get_active_cars():
+            car_screen_x = car.rect.x - camera_x
+            if -margin < car_screen_x < (PANTALLA_ANCHO + margin):
+                visible_count += 1
+                
+        return visible_count
+
     def _safe_distance_from_other_cars(self, spawn_x: int) -> bool:
-        """Asegura distancia mínima frente a otros autos ya spawneados."""
-        for car in self.cars:
+        """Verifica distancia usando autos activos del pool"""
+        for car in self.car_pool.get_active_cars():
             if abs(car.rect.x - spawn_x) < self.min_spacing_between_cars:
                 return False
         return True
 
     def _spawn_cars(self, camera_x: float, num_cars: int):
-        """Spawn principal: configura 1 o 2 autos con separaciones y velocidades variadas."""
-        base_x = camera_x + PANTALLA_ANCHO + random.randint(self.spawn_x_offset_min, self.spawn_x_offset_max)
+        """Spawn usando el pool de objetos"""
+        base_x = camera_x + PANTALLA_ANCHO + random.randint(
+            self.spawn_x_offset_min, self.spawn_x_offset_max
+        )
         y = PISO_POS_Y - 86
 
         if num_cars == 1:
-            self.cars.append(self._create_car(base_x, y, self._generate_car_speed()))
+            speed = self._generate_car_speed()
+            self.car_pool.get_car(base_x, y, speed)
             return
 
         # num_cars == 2: uno rápido adelante y otro más lento más atrás
-        fast_speed = random.randint(18, 22)
-        slow_speed = random.randint(8, 12)
-        gap = random.randint(300, 500)
+        fast_speed = random.randint(VERY_FAST_CAR_SPEED_MIN, VERY_FAST_CAR_SPEED_MAX)
+        slow_speed = random.randint(SLOW_PAIRED_CAR_SPEED_MIN, SLOW_PAIRED_CAR_SPEED_MAX)
+        gap = random.randint(CAR_GAP_MIN, CAR_GAP_MAX)
 
-        self.cars.append(self._create_car(base_x, y, speed=fast_speed))
-        self.cars.append(self._create_car(base_x + gap, y, speed=slow_speed))
+        self.car_pool.get_car(base_x, y, fast_speed)
+        self.car_pool.get_car(base_x + gap, y, slow_speed)
 
     def _reset_spawn_timer(self):
+        """Resetea timer de spawn"""
         self.spawn_timer = 0.0
         self.next_spawn_time = self._next_spawn_interval()
 
-
-    # Actualizar y limpiar autos
-    def _update_cars(self, delta_time: float):
-        for car in self.cars:
-            car.update(delta_time)
-
-    def _cleanup_cars(self, camera_x: float):
-        cleanup_threshold = camera_x - 600
-        self.cars = [car for car in self.cars if car.rect.right > cleanup_threshold]
-
     def check_collisions(self, player_rect: pygame.Rect) -> bool:
-        if not self.cars:
+        """Verificar colisiones optimizada usando pool"""
+        active_cars = self.car_pool.get_active_cars()
+        if not active_cars:
             return False
 
-        # hitbox reducida del jugador para ser más justo
+        # Hitbox reducida del jugador para ser más justo
         player_hit = player_rect.inflate(*self.player_hitbox_shrink)
 
-        # recorrido solo de autos cercanos (mejor que iterar todos)
-        for car in self.cars:
-            # filtro rápido por distancia X
-            if abs(car.rect.x - player_rect.x) > 150:
+        # Solo verificar autos cercanos
+        for car in active_cars:
+            # Filtro rápido por distancia X usando constante
+            if abs(car.rect.x - player_rect.x) > COLLISION_DISTANCE_THRESHOLD:
                 continue
 
             car_hit = car.rect.inflate(*self.car_hitbox_shrink)
@@ -146,5 +197,10 @@ class CarSpawner:
 
         return False
 
-    def get_cars(self) -> List[Car]:
-        return self.cars
+    def get_cars(self) -> List:
+        """Retorna autos activos del pool"""
+        return self.car_pool.get_active_cars()
+    
+    def get_pool_statistics(self) -> dict:
+        """Método de debugging para ver estado del pool"""
+        return self.car_pool.get_pool_stats()

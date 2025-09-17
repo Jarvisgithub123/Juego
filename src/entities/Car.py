@@ -3,16 +3,24 @@ from typing import List, Optional
 from src.Constantes import *
 import random
 
-# Constantes para los autos
-DEFAULT_CAR_WIDTH = 126
-DEFAULT_CAR_HEIGHT = 86
+# Constantes para los autos - movidas desde números mágicos
+
 ANIMATION_SPEED = 0.1
 SPRITESHEET_START_COLUMN = 0
 SPRITESHEET_END_COLUMN = 2
 SPRITESHEET_ROW = 0
 
+# Nuevas constantes para evitar números mágicos
+CAR_SPEED_THRESHOLD_FAST = 18
+CAR_SPEED_THRESHOLD_SLOW = 12
+FAST_CAR_RED_WEIGHT = 80
+FAST_CAR_BLUE_WEIGHT = 20
+SLOW_CAR_BLUE_WEIGHT = 80
+SLOW_CAR_RED_WEIGHT = 20
+ANIMATION_SPEED_DIVISOR = 13.0
+
 class Car(pygame.sprite.Sprite):
-    """Auto enemigo con velocidades más variadas"""
+    """Auto enemigo optimizado con soporte para object pooling"""
     
     CAR_TYPES = ["Auto_azul", "Auto_rojo"]
     
@@ -22,34 +30,72 @@ class Car(pygame.sprite.Sprite):
                  height: int = DEFAULT_CAR_HEIGHT):
         super().__init__()
         self.resource_manager = resource_manager
-        self.rect = pygame.Rect(initial_x, initial_y, width, height)
-        self.movement_speed = speed
         self.width = width
         self.height = height
         
-        # Elegir tipo basado en velocidad para coherencia visual
-        self.car_type = self._choose_car_type_by_speed(speed)
+        # Pool support
+        self.active = True
         
-        # Sistema de animación
-        self.animation_frame = 0
-        self.animation_timer = 0
-        # Animación más rápida para autos más rápidos
-        self.animation_speed = ANIMATION_SPEED * (13.0 / max(speed, 8))
+        # Crear rect una sola vez y reutilizar
+        self.rect = pygame.Rect(initial_x, initial_y, width, height)
+        
+        # Cache para frames de animación (se carga una vez por tipo de auto)
         self.animation_frames: List[pygame.Surface] = []
         
-        # Cargar frames y configurar sprite
-        self._load_animation_frames()
+        # Variables de animación
+        self.animation_frame = 0
+        self.animation_timer = 0
+        self.animation_speed = ANIMATION_SPEED
+        
         self.current_sprite: Optional[pygame.Surface] = None
+        
+        # Inicializar con los parámetros dados
+        self._initialize_car(initial_x, initial_y, speed)
+    
+    def _initialize_car(self, x: int, y: int, speed: int):
+        """Inicializa o reinicializa el auto con nuevos parámetros"""
+        self.rect.x = x
+        self.rect.y = y
+        self.movement_speed = speed
+        
+        # Elegir tipo basado en velocidad
+        self.car_type = self._choose_car_type_by_speed(speed)
+        
+        # Ajustar velocidad de animación
+        self.animation_speed = ANIMATION_SPEED * (ANIMATION_SPEED_DIVISOR / max(speed, 8))
+        
+        # Resetear animación
+        self.animation_frame = 0
+        self.animation_timer = 0
+        
+        # Cargar frames si no están cacheados para este tipo
+        if not self.animation_frames or getattr(self, '_cached_car_type', None) != self.car_type:
+            self._load_animation_frames()
+            self._cached_car_type = self.car_type
+        
         self._update_sprite()
+    
+    def reset_for_reuse(self, x: int, y: int, speed: int):
+        """Resetea el auto para reutilización desde el pool"""
+        self._initialize_car(x, y, speed)
+        self.active = True
     
     def _choose_car_type_by_speed(self, speed: int) -> str:
         """Autos rojos = más rápidos, azules = más lentos"""
-        if speed >= 18:
+        if speed >= CAR_SPEED_THRESHOLD_FAST:
             # Autos rápidos: 80% rojos
-            return random.choices(["Auto_rojo", "Auto_azul"], weights=[80, 20], k=1)[0]
-        elif speed <= 12:
+            return random.choices(
+                ["Auto_rojo", "Auto_azul"], 
+                weights=[FAST_CAR_RED_WEIGHT, FAST_CAR_BLUE_WEIGHT], 
+                k=1
+            )[0]
+        elif speed <= CAR_SPEED_THRESHOLD_SLOW:
             # Autos lentos: 80% azules  
-            return random.choices(["Auto_azul", "Auto_rojo"], weights=[80, 20], k=1)[0]
+            return random.choices(
+                ["Auto_azul", "Auto_rojo"], 
+                weights=[SLOW_CAR_BLUE_WEIGHT, SLOW_CAR_RED_WEIGHT], 
+                k=1
+            )[0]
         else:
             # Velocidad media: 50/50
             return random.choice(self.CAR_TYPES)
@@ -73,14 +119,21 @@ class Car(pygame.sprite.Sprite):
             self.animation_frames = [placeholder]
     
     def _update_sprite(self):
-        """Actualiza el sprite actual"""
+        """Actualiza el sprite actual - optimizado para evitar cálculos innecesarios"""
         if self.animation_frames:
             frame_index = int(self.animation_frame) % len(self.animation_frames)
-            self.current_sprite = self.animation_frames[frame_index]
-            self.image = self.current_sprite
+            new_sprite = self.animation_frames[frame_index]
+            
+            # Solo actualizar si el sprite cambió
+            if self.current_sprite != new_sprite:
+                self.current_sprite = new_sprite
+                self.image = self.current_sprite
     
     def update(self, delta_time: float = 1/60):
-        """Actualiza posición y animación"""
+        """Actualiza posición y animación - solo si está activo"""
+        if not self.active:
+            return
+            
         # Movimiento horizontal
         self.rect.x -= self.movement_speed
         
@@ -88,11 +141,18 @@ class Car(pygame.sprite.Sprite):
         self.animation_timer += delta_time
         if self.animation_timer >= self.animation_speed:
             self.animation_timer = 0
+            old_frame = self.animation_frame
             self.animation_frame = (self.animation_frame + 1) % len(self.animation_frames)
-            self._update_sprite()
+            
+            # Solo actualizar sprite si el frame cambió
+            if old_frame != self.animation_frame:
+                self._update_sprite()
     
     def draw(self, screen: pygame.Surface):
-        """Dibuja el auto"""
+        """Dibuja el auto - solo si está activo"""
+        if not self.active:
+            return
+            
         if self.current_sprite:
             screen.blit(self.current_sprite, self.rect)
         else:
@@ -101,12 +161,15 @@ class Car(pygame.sprite.Sprite):
             pygame.draw.rect(screen, color, self.rect)
     
     def get_position(self) -> tuple:
+        """Retorna posición actual"""
         return (self.rect.x, self.rect.y)
     
     def get_speed(self) -> int:
+        """Retorna velocidad actual"""
         return self.movement_speed
     
     def set_speed(self, new_speed: int):
+        """Cambia velocidad y reajusta animación"""
         self.movement_speed = max(1, new_speed)
         # Reajustar velocidad de animación
-        self.animation_speed = ANIMATION_SPEED * (13.0 / max(new_speed, 8))
+        self.animation_speed = ANIMATION_SPEED * (ANIMATION_SPEED_DIVISOR / max(new_speed, 8))

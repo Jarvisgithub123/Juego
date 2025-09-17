@@ -18,9 +18,9 @@ class pilaSpawner:
         
         Args:
             dt: Delta time
-            camera_x: Posición X de la cámara
-            player_x: Posición X del jugador
-            energy_callback: Función callback para manejar la energia
+            camera_x: Posicion X de la camara
+            player_x: Posicion X del jugador
+            energy_callback: Funcion callback para manejar la energia
         """
         self.spawn_timer += dt
         
@@ -63,7 +63,7 @@ class pilaSpawner:
         """Verifica colisiones entre el jugador y las pilas
         
         Args:
-            player_rect: Rectángulo del jugador
+            player_rect: Rectangulo del jugador
             
         Returns:
             La pila recolectada o None
@@ -76,7 +76,7 @@ class pilaSpawner:
                 
                 pila.collect(None)
                 
-                print(f"¡Pila recolectada en posición ({pila.rect.x}, {pila.rect.y})!")
+                print(f"¡Pila recolectada en posicion ({pila.rect.x}, {pila.rect.y})!")
                 break
                 
     

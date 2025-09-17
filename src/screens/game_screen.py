@@ -70,7 +70,7 @@ class GameScreen(Scene):
         print("Distancias de personajes inicializadas:", self.distancias_personajes)
     
     def _inicializar_energias_personajes(self):
-        """Inicializa las energías individuales de cada personaje con su autonomía máxima"""
+        """Inicializa las energías individuales de cada personaje con su autonomía maxima"""
         for personaje in self.player.personajes:
             autonomia = self.player.stats[personaje]["autonomia"]
             self.energias_individuales[personaje] = float(autonomia)
@@ -119,7 +119,7 @@ class GameScreen(Scene):
         """Para que no se reinicie al entrar en pausa"""
         if self.pause:
             return
-        """Actualiza toda la lógica del juego"""
+        """Actualiza toda la logica del juego"""
         if not self.game_over and not self.victory:
             self._update_game_systems(delta_time)
             self._update_entities(delta_time)
@@ -136,7 +136,7 @@ class GameScreen(Scene):
         if not self.player.is_dashing:
             distancia_frame = delta_time * DECREMENTO_KM_POR_SEGUNDO
         else:
-            # Durante el dash se avanza más rápido
+            # Durante el dash se avanza mas rapido
             distancia_frame = delta_time * DECREMENTO_KM_POR_SEGUNDO * 2
         
         # Agregar distancia al personaje actual
@@ -273,7 +273,7 @@ class GameScreen(Scene):
         except Exception as e:
             print(f"Error guardando estadísticas: {e}")
     def _get_next_game_number(self, filename):
-        """Obtiene el próximo número de partida"""
+        """Obtiene el proximo número de partida"""
         if not os.path.exists(filename):
             return 1
             

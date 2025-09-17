@@ -70,7 +70,7 @@ class ResourceManager:
                 self.images[name] = image
                 return True
             else:
-                print(f"Advertencia: No se encontró la imagen en {path}")
+                print(f"Advertencia: No se encontro la imagen en {path}")
                 return False
         except Exception as e:
             print(f"Error cargando imagen {path}: {e}")
