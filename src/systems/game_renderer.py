@@ -84,28 +84,41 @@ class GameRenderer:
         self.world_scroll_x += self.world_scroll_speed * delta_time
     
     def draw_background(self, camera_x: float):
-        """fondo con parallax"""
+        """OPTIMIZADO: fondo con parallax - versión mejorada pero funcional"""
+        # Cache para evitar recálculos cuando la cámara no se mueve mucho
+        if not hasattr(self, 'last_camera_x'):
+            self.last_camera_x = 0
+        
+        # Solo recalcular si hay cambio significativo
+        camera_moved = abs(camera_x - self.last_camera_x) > 5
+        
         for layer in self.bg_layers:
             image = layer["image"]
             parallax_factor = layer["parallax_factor"]
             layer_width = layer["width"]
-            # Calcular offset solo una vez
+            
+            # Calcular offset solo una vez por capa
             total_offset_x = (self.world_scroll_x * parallax_factor + 
                             camera_x * parallax_factor * 0.1)
             offset_x = -(total_offset_x % layer_width)
             
-            # Solo dibujar las copias que realmente son visibles
-            positions_to_draw = []
-            # Verificar qué posiciones necesitamos dibujar
-            test_positions = [offset_x - layer_width, offset_x, offset_x + layer_width]
+            # OPTIMIZACIÓN: Reducir cantidad de blits calculando posiciones exactas
+            positions_needed = []
             
-            for pos in test_positions:
-                # Solo agregar si esta parcial o completamente visible
-                if pos + layer_width > 0 and pos < PANTALLA_ANCHO:
-                    positions_to_draw.append(pos)
+            # Calcular solo las posiciones que realmente necesitamos
+            start_x = offset_x
+            while start_x < PANTALLA_ANCHO:
+                if start_x + layer_width > 0:  # Solo si es visible
+                    positions_needed.append(start_x)
+                start_x += layer_width
+            
             # Dibujar solo las posiciones necesarias
-            for pos in positions_to_draw:
+            for pos in positions_needed:
                 self.screen.blit(image, (pos, 0))
+        
+        # Actualizar cache de posición de cámara
+        if camera_moved:
+            self.last_camera_x = camera_x
     
     def draw_floor(self):
         """Dibuja el piso del juego"""

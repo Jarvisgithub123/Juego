@@ -11,7 +11,7 @@ def main():
         pygame.init()
         game = GameManager()
         game.run()
-    except Exception as e:
+    except Exception as e: 
         print(f"Error al iniciar el juego: {e}")
     finally:
         pygame.quit()
@@ -32,7 +32,7 @@ def main_with_profiling():
         s = io.StringIO()
         stats = pstats.Stats(profiler, stream=s)
         stats.sort_stats('cumulative')
-        stats.print_stats(30)  
+        stats.print_stats(30)
         print(s.getvalue())
         # Guardar estadisticas en archivo
         stats.dump_stats('profile_results.prof')

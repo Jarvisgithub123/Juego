@@ -5,7 +5,7 @@ ALTO_PANTALLA = 800    # Alto de ventana principal
 # Configuracion de renderizado
 PANTALLA_ANCHO = 1280  # Ancho del area de juego
 PANTALLA_ALTO = 720    # Alto del area de juego
-FPS = 60               # Frames por segundo objetivo
+FPS = 100            
 
 # COLORES DEL JUEGO
 
@@ -39,7 +39,7 @@ COLOR_BARRA_FONDO = (50, 50, 50)
 # FISICA Y MOVIMIENTO
 
 # Fisica del jugador
-GRAVEDAD = 1                    # Fuerza de gravedad aplicada al jugador
+GRAVEDAD = 0.8                 # Fuerza de gravedad aplicada al jugador
 PISO_POS_Y = 650               # Posicion Y del piso donde aterriza el jugador
 
 # Configuracion de dash del jugador
@@ -53,7 +53,7 @@ DECREMENTO_KM_POR_SEGUNDO = 0.03      # Velocidad de avance en km/s
 
 # Velocidades de elementos
 VELOCIDAD_FONDO = 4              # Velocidad del scroll de fondo
-VELOCIDAD_AUTO_BASE = 13         # Velocidad base de los autos enemigos
+VELOCIDAD_AUTO_BASE = 10         # Velocidad base de los autos enemigos
 VELOCIDAD_AUTO_VARIACION = 1    # Variacion maxima de velocidad de autos
 
 

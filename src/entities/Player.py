@@ -33,13 +33,13 @@ class Player:
         self.personajes = ["UIAbot", "UAIBOTA", "UAIBOTINA", "UAIBOTINO"]
         self.stats = {
         "UIAbot": {  
-            "jump_strength": -19, "dash_speed": 12, "dash_duration": 0.18, "dash_cooldown": 0.5, "autonomia": 20},
+            "jump_strength": -19, "dash_speed": 12, "dash_duration": 0.2, "dash_cooldown": 2.0, "autonomia": 20},
         "UAIBOTA": {  
             "jump_strength": -21, "dash_speed": 10, "dash_duration": 0.3, "dash_cooldown": 1.5, "autonomia":10},
         "UAIBOTINA": {  
-            "jump_strength": -17, "dash_speed": 15, "dash_duration": 0.2, "dash_cooldown": 0.4, "autonomia": 30},
+            "jump_strength": -17, "dash_speed": 15, "dash_duration": 0.1, "dash_cooldown": 1.4, "autonomia": 30},
         "UAIBOTINO": {  
-            "jump_strength": -17, "dash_speed": 14, "dash_duration": 0.2, "dash_cooldown": 0.45, "autonomia": 30}
+            "jump_strength": -17, "dash_speed": 14, "dash_duration": 0.2, "dash_cooldown": 1.0, "autonomia": 30}
     }
 
         

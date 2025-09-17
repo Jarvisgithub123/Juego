@@ -278,21 +278,18 @@ class GameScreen(Scene):
             return 1
             
         try:
+            last_game_num = 0
             with open(filename, 'r', newline='', encoding='utf-8') as csvfile:
                 reader = csv.reader(csvfile)
-                rows = list(reader)
-                last_game_num = 0
-                for row in rows:
+                next(reader)  # Saltamos la primera línea del encabezado
+                for row in reader:
                     if row and row[0].startswith("Partida"):
                         try:
-                            num = int(row[0].split()[1].replace(":", ""))
-                            if num > last_game_num:
-                                last_game_num = num
+                            num = int(''.join(filter(str.isdigit, row[0])))
+                            last_game_num = max(last_game_num, num)
                         except ValueError:
                             continue
                 return last_game_num + 1
-            
-                
         except Exception as e:
             print(f"Error leyendo archivo de estadísticas: {e}")
             return 1
