@@ -35,6 +35,7 @@ class GameManager:
         # imagenes estaticas
         self.resource_manager.load_image("menu_background1","Assets/Imagenes/menubackground1.png")
         self.resource_manager.load_image("menu_background2","Assets/Imagenes/menubackground2.png")
+        self.resource_manager.load_image("level1_bg", "Assets/Imagenes/Background/bg_sky.png")
         self.resource_manager.load_image("bg_sky", "Assets/Imagenes/Background/bg_sky.png")
         self.resource_manager.load_image("bg_mid", "Assets/Imagenes/Background/bg_mid.png")
         self.resource_manager.load_image("bg_front", "Assets/Imagenes/Background/bg_front1.png")
@@ -45,6 +46,7 @@ class GameManager:
         self.resource_manager.load_image("cartel_uaibot", "Assets/Imagenes/cartel_uaibot.png")
         self.resource_manager.load_image("cartel_uaibotina", "Assets/Imagenes/cartel_uaibotina.png")
         self.resource_manager.load_image("personaje3", "Assets/Imagenes/Uiabota_info.png")
+        self.resource_manager.load_image("character_a", "Assets/Sprites/UAIBOTAz.png")
         # PERSONAJES 
         # UIAbot: tiene spritesheet con animacion
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
