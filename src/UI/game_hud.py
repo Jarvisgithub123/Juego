@@ -105,7 +105,7 @@ class GameHUD:
         font_datos = self.resource_manager.get_font('hud')
         
         if font_titulo and font_datos:
-            # Título del panel
+            # Titulo del panel
             titulo_text = "Distancias Recorridas"
             titulo_surface = font_titulo.render(titulo_text, True, COLOR_AMARILLO)
             titulo_rect = titulo_surface.get_rect()
@@ -140,7 +140,7 @@ class GameHUD:
                     distancia_rect.y = personaje_rect.y
                     screen.blit(distancia_surface, distancia_rect)
             
-            # Línea separadora
+            # Linea separadora
             total_y = y_offset + (len(personajes_ordenados) * line_height) + 2
             # Total de la partida
             distancia_total = sum(distancias_personajes.values())

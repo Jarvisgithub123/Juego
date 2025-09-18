@@ -3,7 +3,7 @@ from typing import Callable, List, Optional, Dict
 from src.Constantes import *
 
 class Player:
-    """Player refactorizado pero manteniendo compatibilidad con código existente"""
+    """Player refactorizado pero manteniendo compatibilidad con codigo existente"""
     
     def __init__(self, initial_x: int, initial_y: int, gravity: float, resource_manager, initial_character: str = 'UIAbot'):
         """
@@ -22,7 +22,7 @@ class Player:
         self.original_position_x = initial_x
         self.original_position_y = initial_y
         
-        # COMPATIBILIDAD: Mantener la estructura original que espera el código existente
+        # COMPATIBILIDAD: Mantener la estructura original que espera el codigo existente
         self.personajes = ["UIAbot", "UAIBOTA", "UAIBOTINA", "UAIBOTINO"]
         self.stats = {
             "UIAbot": {  
@@ -55,7 +55,7 @@ class Player:
             }
         }
 
-        # Encontrar índice del personaje inicial
+        # Encontrar indice del personaje inicial
         for i, personaje in enumerate(self.personajes):
             if personaje == initial_character:  
                 self.personaje_actual = i
@@ -122,10 +122,10 @@ class Player:
         self.dash_cooldown_timer = 0
     
     def _load_animation_frames(self):
-        """Carga los frames de animación - optimizado para evitar recargas innecesarias"""
+        """Carga los frames de animacion - optimizado para evitar recargas innecesarias"""
         current_character_name = self.personajes[self.personaje_actual]
         
-        # Solo recargar si cambió el personaje
+        # Solo recargar si cambio el personaje
         if self._cached_character == current_character_name:
             return
             
@@ -133,7 +133,7 @@ class Player:
 
         print(f"Cargando animacion para personaje: {current_character_name}")
         
-        # intentar cargar spritesheet con animación
+        # intentar cargar spritesheet con animacion
         spritesheet = self.resource_manager.get_spritesheet(spritesheet_name)
         
         if spritesheet:
@@ -146,7 +146,7 @@ class Player:
             self.animation_frames = frames
             self.has_animation = True
         else:
-            # intenta cargar imagen estática
+            # intenta cargar imagen estatica
             character_image = self.resource_manager.get_image(spritesheet_name)
             if character_image:
                 scaled_image = pygame.transform.scale(
@@ -163,7 +163,7 @@ class Player:
                 self.has_animation = False
         
         self._cached_character = current_character_name
-        self.animation_frame = 0  # Resetear animación
+        self.animation_frame = 0  # Resetear animacion
 
     def jump(self):
         """Hace saltar al jugador si esta en el suelo"""
@@ -246,17 +246,17 @@ class Player:
         self.personaje_actual = (self.personaje_actual + 1) % len(self.personajes)
         new_character = self.personajes[self.personaje_actual]
         
-        # Solo actualizar si realmente cambió
+        # Solo actualizar si realmente cambio
         if old_character != new_character:
             stats = self.stats[new_character]
             
-            # Actualizar estadísticas físicas
+            # Actualizar estadisticas fisicas
             self.jump_strength = stats["jump_strength"]
             self.dash_speed = stats["dash_speed"]
             self.dash_duration = stats["dash_duration"]
             self.dash_cooldown = stats["dash_cooldown"]
         
-            # Recargar animación
+            # Recargar animacion
             self._load_animation_frames()
             self.animation_frame = 0
             self._update_sprite()
@@ -328,12 +328,12 @@ class Player:
         else:
             new_sprite = self.animation_frames[0]
         
-        # Solo actualizar si el sprite cambió (optimización)
+        # Solo actualizar si el sprite cambio (optimizacion)
         if self.current_sprite != new_sprite:
             self.current_sprite = new_sprite
     
     def _update_animation(self, delta_time: float):
-        """Actualiza el frame de animación - optimizado"""
+        """Actualiza el frame de animacion - optimizado"""
         if self.has_animation and len(self.animation_frames) > 1:
             self.animation_timer += delta_time
             
@@ -342,7 +342,7 @@ class Player:
                 old_frame = self.animation_frame
                 self.animation_frame = (self.animation_frame + 1) % len(self.animation_frames)
                 
-                # Solo actualizar sprite si el frame cambió
+                # Solo actualizar sprite si el frame cambio
                 if old_frame != self.animation_frame:
                     self._update_sprite()
         elif not self.current_sprite and self.animation_frames:

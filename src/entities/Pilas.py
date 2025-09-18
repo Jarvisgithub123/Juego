@@ -29,7 +29,7 @@ class pilas(pygame.sprite.Sprite):
         
     
     def collect(self, robot):
-        """ Método para recolectar la pila y dar energia al robot
+        """ Metodo para recolectar la pila y dar energia al robot
         
         Args:
             robot: El robot que recolecta la pila

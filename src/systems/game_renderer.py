@@ -21,7 +21,7 @@ class GameRenderer:
         self.cached_text_surfaces = {}
         
         # Config para cambio aleatorio del front
-        self.front_options = []                     # ...se llenará con nombres disponibles...
+        self.front_options = []                     # ...se llenara con nombres disponibles...
         self.current_front_name = None
         # Mantenemos un mapa de tiles para la capa frontal: index -> variant_name
         self.front_tile_map = {}                    # tile_index -> "bg_front"|"bg_front2"
@@ -92,10 +92,10 @@ class GameRenderer:
                     scaled.fill((40, 40, 40))
                     scaled = scaled.convert()
                 self.scaled_backgrounds[name] = scaled
-            # si la imagen real fue cargada en resource_manager, la consideramos opción
+            # si la imagen real fue cargada en resource_manager, la consideramos opcion
             if self.resource_manager.get_image(name):
                 self.front_options.append(name)
-        # Si no hay opciones reales, usar al menos 'bg_front' como opción disponible
+        # Si no hay opciones reales, usar al menos 'bg_front' como opcion disponible
         if not self.front_options:
             self.front_options = ["bg_front"]
         
@@ -104,11 +104,11 @@ class GameRenderer:
         front_image = self.scaled_backgrounds[self.current_front_name]
         self.bg_layers.append({
             "name": "front_dynamic",
-            "image": front_image,               # valor por defecto (se ignorará por tile)
+            "image": front_image,               # valor por defecto (se ignorara por tile)
             "parallax_factor": 3.6,
             "width": front_image.get_width()
         })
-        # Guardar algunos datos útiles para la capa frontal
+        # Guardar algunos datos utiles para la capa frontal
         self.front_parallax_factor = 3.6
         self.front_tile_width = front_image.get_width()
         # inicializar segmento para evitar cambio inmediato
@@ -147,7 +147,7 @@ class GameRenderer:
         # Si no hay al menos 2 opciones, no hacemos nada
         if not self.front_options or len(self.front_options) == 1:
             return
-        # Usar el scroll global del mundo para decidir el segmento (más fiable que solo camera_x)
+        # Usar el scroll global del mundo para decidir el segmento (mas fiable que solo camera_x)
         seg = int(self.world_scroll_x // self.front_change_distance)
         if seg != self.last_front_segment:
             # elegir una variante distinta a la actual cuando sea posible
@@ -163,18 +163,18 @@ class GameRenderer:
                     layer["width"] = self.scaled_backgrounds[self.current_front_name].get_width()
                     break
             self.last_front_segment = seg
-            # Depuración mínima para verificar cambios (puedes quitar)
+            # Depuracion minima para verificar cambios (puedes quitar)
             print(f"[GameRenderer] front cambiado a {self.current_front_name} en segmento {seg}")
 
     # Nuevo helper para obtener/crear la variante de un tile
     def _get_front_variant_for_tile(self, tile_index: int) -> str:
         """Retorna la variante asignada para tile_index; la genera si no existe.
         Se intenta (con cierta probabilidad) cambiar respecto al tile anterior para que
-        la transición ocurra en la línea entre tiles."""
+        la transicion ocurra en la linea entre tiles."""
         if tile_index in self.front_tile_map:
             return self.front_tile_map[tile_index]
 
-        # Intentar mantener continuidad: mirar versión anterior
+        # Intentar mantener continuidad: mirar version anterior
         prev = self.front_tile_map.get(tile_index - 1, self.current_front_name)
         # Decidir si cambiamos
         if random.random() < self.front_change_chance:
@@ -202,20 +202,20 @@ class GameRenderer:
         camera_moved = abs(camera_x - self.last_camera_x) > 5
         
         for layer in self.bg_layers:
-            # Si es la capa frontal dinámica, dibujar por tiles con variantes por índice
+            # Si es la capa frontal dinamica, dibujar por tiles con variantes por indice
             if layer.get("name") == "front_dynamic":
                 layer_width = layer["width"]
                 parallax_factor = layer["parallax_factor"]
 
-                # total_offset_x define qué tile está en pantalla (puede ser flotante)
+                # total_offset_x define que tile esta en pantalla (puede ser flotante)
                 total_offset_x = (self.world_scroll_x * parallax_factor +
                                   camera_x * parallax_factor * BACKGROUND_PARALLAX_CAMERA_FACTOR)
-                # índice del tile más a la izquierda que debería dibujarse
+                # indice del tile mas a la izquierda que deberia dibujarse
                 start_tile_index = int(math.floor(total_offset_x / layer_width))
                 # offset_x para dibujar el primer tile en coordenadas de pantalla
                 offset_x = -(total_offset_x % layer_width)
 
-                # calcular cuántos tiles necesitamos para cubrir la pantalla
+                # calcular cuantos tiles necesitamos para cubrir la pantalla
                 tiles_needed = int(math.ceil((PANTALLA_ANCHO - offset_x) / layer_width)) + 1
 
                 for i in range(tiles_needed):
