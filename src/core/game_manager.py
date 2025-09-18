@@ -42,9 +42,9 @@ class GameManager:
         self.resource_manager.load_image("pila", "Assets/Imagenes/bateria.png")
         self.resource_manager.load_image("escudo", "Assets/Imagenes/escudo.png")
         self.resource_manager.load_image("cartel", "Assets/Imagenes/Background/billboard.png")
-        self.resource_manager.load_image("cartel_uaibot", "Assets/Imagenes/cartel_uaibot.png")
-        self.resource_manager.load_image("cartel_uaibotina", "Assets/Imagenes/cartel_uaibotina.png")
-        
+        self.resource_manager.load_image("personaje1", "Assets/Imagenes/prueba.png")
+        self.resource_manager.load_image("personaje2", "Assets/Imagenes/personaje2.png")
+        self.resource_manager.load_image("personaje3", "Assets/Imagenes/Uiabota_info.png")
         # PERSONAJES 
         # UIAbot: tiene spritesheet con animacion
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)

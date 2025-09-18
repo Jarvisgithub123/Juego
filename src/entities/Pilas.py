@@ -8,11 +8,19 @@ class pilas(pygame.sprite.Sprite):
         super().__init__(*groups)
         
         # Cargar imagen directamente en lugar de usar spritesheet
-        pila_image = resource_manager.get_image("pila")  
+        pila_image = resource_manager.get_image("pila").convert_alpha()
+        self.image = pila_image
+
+    
+                
         self.rect = self.image.get_rect()
+        
+        
         # Estado de la pila
         self.collected = False
         self.speed = 8
+        
+
     
     def update(self):
         """Actualiza la posicion de la pila"""
