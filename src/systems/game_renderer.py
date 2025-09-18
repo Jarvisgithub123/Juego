@@ -14,8 +14,8 @@ class GameRenderer:
         self.resource_manager = resource_manager
         self.world_scroll_x = 0
         self.world_scroll_speed = 30
-        self.color_reiniciar = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
-        
+
+            
         # Cache para superficies escaladas
         self.scaled_backgrounds = {}
         self.cached_text_surfaces = {}
@@ -33,6 +33,20 @@ class GameRenderer:
         self._init_background_system()
         self._prerender_static_texts()
     
+    def color_aleatorio(self):
+        """Actualiza el efecto de parpadeo y cambio de color"""
+        tiempo_actual = pygame.time.get_ticks() // 500
+        random.seed(tiempo_actual)
+        return (random.randint(100, 255), random.randint(100, 255), random.randint(100, 255))
+    
+    def mostrar_parpadeo(self):
+        """Genera un color aleatorio para el efecto de parpadeo"""
+        return (pygame.time.get_ticks() // 500 % 2) == 0
+        
+        
+        
+        
+        
     def _init_background_system(self):
         """Carga las capas del fondo con diferentes velocidades (parallax)"""
         self.bg_layers = []
@@ -99,7 +113,7 @@ class GameRenderer:
         """Pre-renderiza textos que no cambian durante el juego"""
         font_large = self.resource_manager.get_font('titulo')
         font_normal = self.resource_manager.get_font('pequeña')
-        
+        self.color_aleatorio()
         if font_large:
             # Textos de game over
             self.cached_text_surfaces['game_over'] = font_large.render(
@@ -117,10 +131,7 @@ class GameRenderer:
             self.cached_text_surfaces['victory_msg'] = font_normal.render(
                 "¡El paquete fue entregado con exito!", True, COLOR_TEXTO_VICTORIA
             )
-            # Texto de reiniciar (con color aleatorio)
-            self.cached_text_surfaces['restart'] = font_normal.render(
-                "Presiona [R] para reiniciar el juego", True, self.color_reiniciar
-            )
+        
     
     def update(self, delta_time: float):
         """Actualiza el sistema de renderizado"""
@@ -334,7 +345,28 @@ class GameRenderer:
             # Solo dibujar si esta en pantalla
             if -pila.rect.width <= screen_x <= PANTALLA_ANCHO:
                 self.screen.blit(pila.image, (screen_x, pila.rect.y))
-    
+    def draw_restart_text(self, y_position: int):
+        """Dibuja el texto de reiniciar con efecto de parpadeo y color aleatorio"""
+        if self.mostrar_parpadeo():
+            font_normal = self.resource_manager.get_font('pequeña')
+            if font_normal:
+                # Renderizar el texto con color aleatorio cada vez
+                restart_text = font_normal.render(
+                    "Presiona [R] para reiniciar el juego", 
+                    True, 
+                    self.color_aleatorio()
+                )
+                
+                restart_rect = restart_text.get_rect(
+                    center=(PANTALLA_ANCHO // 2, y_position)
+                )
+                
+                # Dibujar fondo gris oscuro
+                bg_rect = restart_rect.inflate(20, 10)
+                pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)
+                
+                # Dibujar el texto
+                self.screen.blit(restart_text, restart_rect)
     def draw_game_over_screen(self):
         """Dibuja la pantalla de game over"""
         self._draw_overlay((0, 0, 0), 128)
@@ -352,14 +384,7 @@ class GameRenderer:
             )
             self.screen.blit(self.cached_text_surfaces['escape_menu'], text_rect)
         
-        if 'restart' in self.cached_text_surfaces:
-            # Dibujar fondo para el texto de reiniciar
-            restart_rect = self.cached_text_surfaces['restart'].get_rect(
-                center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 + 20)
-            )
-            bg_rect = restart_rect.inflate(20, 10)
-            pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)
-            self.screen.blit(self.cached_text_surfaces['restart'], restart_rect)
+        self.draw_restart_text(PANTALLA_ALTO // 2 + 20)
     
     def draw_victory_screen(self):
         """Dibuja la pantalla de victoria"""
@@ -384,13 +409,7 @@ class GameRenderer:
             )
             self.screen.blit(self.cached_text_surfaces['escape_menu'], text_rect)
         
-        if 'restart' in self.cached_text_surfaces:
-            restart_rect = self.cached_text_surfaces['restart'].get_rect(
-                center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2 + 20)
-            )
-            bg_rect = restart_rect.inflate(20, 10)
-            pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)
-            self.screen.blit(self.cached_text_surfaces['restart'], restart_rect)
+        self.draw_restart_text(PANTALLA_ALTO // 2 + 20)
     
     def _draw_overlay(self, color: tuple, alpha: int):
         # Cache de overlay
