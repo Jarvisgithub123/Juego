@@ -8,7 +8,7 @@ class CarPool:
         self.resource_manager = resource_manager
         self.available_cars: List[Car] = []
         self.active_cars: List[Car] = []
-        self.max_pool_size = 15  # Límite maximo del pool
+        self.max_pool_size = 15  # Limite maximo del pool
         
         # Pre-crear algunos autos
         for _ in range(initial_size):
@@ -25,7 +25,7 @@ class CarPool:
             self.active_cars.append(car)
             return car
         else:
-            # Solo crear nuevo si no excedemos el límite del pool
+            # Solo crear nuevo si no excedemos el limite del pool
             if len(self.active_cars) < self.max_pool_size:
                 car = Car(x, y, self.resource_manager, speed)
                 car.active = True
@@ -42,7 +42,7 @@ class CarPool:
         if car in self.active_cars:
             self.active_cars.remove(car)
             car.active = False
-            # Solo mantener un número razonable en el pool disponible
+            # Solo mantener un numero razonable en el pool disponible
             if len(self.available_cars) < 6:
                 self.available_cars.append(car)
     
@@ -68,7 +68,7 @@ class CarPool:
         return self.active_cars
     
     def get_pool_stats(self) -> dict:
-        """Retorna estadísticas del pool para debugging"""
+        """Retorna estadisticas del pool para debugging"""
         return {
             "active": len(self.active_cars),
             "available": len(self.available_cars),

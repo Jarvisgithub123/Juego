@@ -85,7 +85,7 @@ UAIBOTINO_AUTONOMIA = 30
 DEFAULT_CAR_WIDTH = 126
 DEFAULT_CAR_HEIGHT = 86
 
-# Animación de autos
+# Animacion de autos
 CAR_ANIMATION_SPEED = 0.1
 CAR_ANIMATION_SPEED_DIVISOR = 13.0
 
@@ -170,11 +170,11 @@ VELOCIDAD_AUTO_VARIACION = 1    # Variacion maxima de velocidad de autos
 
 # ===== CONSTANTES DE CAMARA=====
 
-# Configuración de cámara
+# Configuracion de camara
 DEFAULT_PLAYER_SCREEN_X = 100  # Donde aparece el jugador visualmente
 DEFAULT_FOLLOW_SPEED = 8.0
-MINIMUM_DEVIATION_THRESHOLD = 10  # Mínimo movimiento antes de seguir
-CAMERA_SMOOTH_FACTOR = 0.08  # Factor de suavizado de cámara
+MINIMUM_DEVIATION_THRESHOLD = 10  # Minimo movimiento antes de seguir
+CAMERA_SMOOTH_FACTOR = 0.08  # Factor de suavizado de camara
 
 # ===== CONSTANTES DE ANIMACION =====
 
@@ -209,7 +209,7 @@ TEXT_BORDER_SIZE_LARGE = 4
 
 # ===== CONSTANTES DE AUDIO =====
 
-# Volúmenes por defecto
+# Volumenes por defecto
 DEFAULT_MUSIC_VOLUME = 0.7
 MENU_MUSIC_VOLUME = 0.5
 GAME_MUSIC_VOLUME = 0.6
@@ -217,7 +217,7 @@ GAME_MUSIC_VOLUME = 0.6
 # ===== CONSTANTES DE BACKGROUND Y PARALLAX =====
 
 # Factores de parallax para capas de fondo
-BG_SKY_PARALLAX_FACTOR = 0      # Fondo estático
+BG_SKY_PARALLAX_FACTOR = 0      # Fondo estatico
 BG_MID_PARALLAX_FACTOR = 2      # Capa media
 BG_FRONT_PARALLAX_FACTOR = 3.6  # Capa frontal
 
@@ -225,7 +225,7 @@ BG_FRONT_PARALLAX_FACTOR = 3.6  # Capa frontal
 WORLD_SCROLL_SPEED = 30
 BACKGROUND_PARALLAX_CAMERA_FACTOR = 0.1
 
-# Animación de menu background
+# Animacion de menu background
 MENU_BACKGROUND_ANIMATION_SPEED = 0.5
 
 # ===== CONFIGURACIONES DE DEBUG Y DESARROLLO =====
@@ -234,7 +234,7 @@ DEBUG_MODE = False              # Activar modo debug
 SHOW_HITBOXES = False          # Mostrar hitboxes de colision
 ENABLE_CONSOLE_LOGS = True     # Habilitar logs en consola
 
-# Pool sizes para optimización
+# Pool sizes para optimizacion
 INITIAL_CAR_POOL_SIZE = 8
 MAX_CAR_POOL_SIZE = 15
 AVAILABLE_CAR_POOL_LIMIT = 6

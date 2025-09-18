@@ -59,7 +59,7 @@ class GameScreen(Scene):
         self.victory = False
         self.energy_remaining = self.energias_individuales[self.player.get_current_character()]
     
-        print(f"Energía inicial {self.player.get_current_character()}: {self.energy_remaining}")
+        print(f"Energia inicial {self.player.get_current_character()}: {self.energy_remaining}")
         self.kilometers_remaining = KILOMETROS_OBJETIVO
         self.time = 0.0
     
@@ -70,11 +70,11 @@ class GameScreen(Scene):
         print("Distancias de personajes inicializadas:", self.distancias_personajes)
     
     def _inicializar_energias_personajes(self):
-        """Inicializa las energías individuales de cada personaje con su autonomía maxima"""
+        """Inicializa las energias individuales de cada personaje con su autonomia maxima"""
         for personaje in self.player.personajes:
             autonomia = self.player.stats[personaje]["autonomia"]
             self.energias_individuales[personaje] = float(autonomia)
-            print(f"Energía inicial {personaje}: {autonomia}")
+            print(f"Energia inicial {personaje}: {autonomia}")
     
     def handle_event(self, event: pygame.event.Event):
         """Maneja los eventos de entrada del usuario"""
@@ -110,9 +110,9 @@ class GameScreen(Scene):
         self.player.obtener_autonomia_maxima()
         
         print(f"Cambio a {personaje_actual}")
-        print(f"Energía {personaje_actual}: {self.energy_remaining}")
+        print(f"Energia {personaje_actual}: {self.energy_remaining}")
         
-        # NUEVO: Actualizar el último personaje activo para el tracking
+        # NUEVO: Actualizar el ultimo personaje activo para el tracking
         self.ultimo_personaje_activo = personaje_actual
     
     def update(self, delta_time: float):
@@ -172,7 +172,7 @@ class GameScreen(Scene):
         self.pila_spawner.update(delta_time, self.camera.x, self.player.rect.x, self.player.rect, self.agregar_energia)
     
     def agregar_energia(self, cantidad):
-        """Agrega energía a los robots sin pasar su maximo"""
+        """Agrega energia a los robots sin pasar su maximo"""
         personaje_actual = self.player.get_current_character()
         
         autonomia_maxima_actual = self.player.obtener_autonomia_maxima()
@@ -241,19 +241,19 @@ class GameScreen(Scene):
         print("Sonidos detenidos al salir del juego")
     
     def _save_game_statistics(self):
-        """Guarda las estadísticas de la partida en un archivo CSV"""
+        """Guarda las estadisticas de la partida en un archivo CSV"""
         try:
             filename = "estadisticas_juego.csv"
             file_exists = os.path.exists(filename)
             
-            # Obtener número de partida
+            # Obtener numero de partida
             partida_num = self._get_next_game_number(filename)
             
             with open(filename, 'a', newline='', encoding='utf-8') as csvfile:
                 writer = csv.writer(csvfile)
                 # Escribir datos de la partida actual
                 if not file_exists:
-                    # Escribir encabezado si el archivo no existía
+                    # Escribir encabezado si el archivo no existia
                     writer.writerow(["Partida", "Km"])
                     
                 row = [f"Partida {partida_num}:"]
@@ -263,15 +263,15 @@ class GameScreen(Scene):
                     writer.writerow(row)
 
                 
-            print(f"Estadísticas guardadas - Partida {partida_num}")
+            print(f"Estadisticas guardadas - Partida {partida_num}")
             print("Distancias por personaje:")
             for personaje, distancia in self.distancias_personajes.items():
                 print(f"  {personaje}: {distancia:.2f} km")
                 
         except Exception as e:
-            print(f"Error guardando estadísticas: {e}")
+            print(f"Error guardando estadisticas: {e}")
     def _get_next_game_number(self, filename):
-        """Obtiene el proximo número de partida"""
+        """Obtiene el proximo numero de partida"""
         if not os.path.exists(filename):
             return 1
             
@@ -279,7 +279,7 @@ class GameScreen(Scene):
             last_game_num = 0
             with open(filename, 'r', newline='', encoding='utf-8') as csvfile:
                 reader = csv.reader(csvfile)
-                next(reader)  # Saltamos la primera línea del encabezado
+                next(reader)  # Saltamos la primera linea del encabezado
                 for row in reader:
                     if row and row[0].startswith("Partida"):
                         try:
@@ -289,12 +289,12 @@ class GameScreen(Scene):
                             continue
                 return last_game_num + 1
         except Exception as e:
-            print(f"Error leyendo archivo de estadísticas: {e}")
+            print(f"Error leyendo archivo de estadisticas: {e}")
             return 1
     
     def _restart_game(self):
         """Reinicia el juego desde el principio"""
-        # NUEVO: Guardar estadísticas antes de reiniciar
+        # NUEVO: Guardar estadisticas antes de reiniciar
         self._save_game_statistics()
         
         pygame.mixer.stop()
@@ -303,7 +303,7 @@ class GameScreen(Scene):
     
     def _return_to_menu(self):
         """Regresa al menu principal"""
-        # NUEVO: Guardar estadísticas antes de volver al menú
+        # NUEVO: Guardar estadisticas antes de volver al menu
         if self.game_over or self.victory:
             self._save_game_statistics()
             

@@ -28,28 +28,34 @@ class MenuScreen(Scene):
         button_width = 250
         button_height = 75
         spacing = 30
-        total_height = 3 * button_height + 2 * spacing
+        total_height = 4 * button_height + 3 * spacing  # Ahora son 4 botones
         start_y = (ALTO_PANTALLA - total_height) // 2 + 60
         
-        # POSICIoN CORREGIDA: Posicionar botones a la derecha
-        margin_from_right = 150  # Margen desde el borde derecho
+        margin_from_right = 150  
         start_x = button_width - margin_from_right  # Formula correcta
         
         self.buttons = [
             Button("Jugar", start_x, start_y, button_width, button_height, 
                 self.resource_manager, self._start_game),
-            Button("Ajustes", start_x, start_y + button_height + spacing, 
+            Button("Misiones", start_x, start_y + button_height + spacing, 
+                button_width, button_height, self.resource_manager, self._show_levels),
+            Button("Ajustes", start_x, start_y + 2 * (button_height + spacing), 
                 button_width, button_height, self.resource_manager, self._show_settings),
-            Button("Salir", start_x, start_y + 2 * (button_height + spacing), 
+            Button("Salir", start_x, start_y + 3 * (button_height + spacing), 
                 button_width, button_height, self.resource_manager, self._quit_game)
         ]
     
     def _start_game(self):
-        """Inicia el juego"""
+        """Inicia el juego directamente"""
         if self.scene_manager:
             from src.screens.character_screen import CharacterScreen
             self.scene_manager.change_scene(CharacterScreen)
 
+    def _show_levels(self):
+        """Muestra la pantalla de seleccion de niveles/misiones"""
+        if self.scene_manager:
+            from src.screens.level_select_screen import LevelSelectScreen
+            self.scene_manager.change_scene(LevelSelectScreen)
     
     def _show_settings(self):
         """Muestra las opciones"""

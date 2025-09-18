@@ -123,7 +123,7 @@ class CharacterScreen(Scene):
             print("Primero selecciona un personaje")
     
     def _go_back(self):
-        """Vuelve al menú principal"""
+        """Vuelve al menu principal"""
         from src.screens.menu_screen import MenuScreen
         self.scene_manager.change_scene(MenuScreen)
     
