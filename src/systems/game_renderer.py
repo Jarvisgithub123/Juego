@@ -26,6 +26,7 @@ class GameRenderer:
         # Mantenemos un mapa de tiles para la capa frontal: index -> variant_name
         self.front_tile_map = {}                    # tile_index -> "bg_front"|"bg_front2"
         self.front_change_chance = 0.5              # probabilidad de cambiar a otro fondo en el siguiente tile
+       
         # REDUCIDO: cambiar con más frecuencia mientras avanzas (antes PANTALLA_ANCHO)
         self.front_change_distance = max(200, PANTALLA_ANCHO // 3)  # configurable (ajustable)
         self.last_front_segment = -1
@@ -38,12 +39,16 @@ class GameRenderer:
         tiempo_actual = pygame.time.get_ticks() // 500
         random.seed(tiempo_actual)
         return (random.randint(100, 255), random.randint(100, 255), random.randint(100, 255))
-    
+
     def mostrar_parpadeo(self):
-        """Genera un color aleatorio para el efecto de parpadeo"""
+        """Controla el parpadeo del texto de reinicio"""
         return (pygame.time.get_ticks() // 500 % 2) == 0
-        
-        
+    
+    def Latido_reiniciar(self):
+        """Efecto de latido para el texto de reinicio"""
+        tiempo_actual = pygame.time.get_ticks() 
+        scale = 0.95 + 0.2 * abs(math.sin(tiempo_actual * 0.007))
+        return scale  
         
         
         
@@ -350,23 +355,29 @@ class GameRenderer:
         if self.mostrar_parpadeo():
             font_normal = self.resource_manager.get_font('pequeña')
             if font_normal:
-                # Renderizar el texto con color aleatorio cada vez
-                restart_text = font_normal.render(
-                    "Presiona [R] para reiniciar el juego", 
-                    True, 
-                    self.color_aleatorio()
-                )
+                    scale = self.Latido_reiniciar()
+                    # Renderizar el texto con color aleatorio cada vez
+                    restart_text = font_normal.render(
+                        "Presiona [R] para reiniciar el juego", 
+                        True, 
+                        self.color_aleatorio()
+                    )
+                    
+                    restart_rect = restart_text.get_rect(
+                        center=(PANTALLA_ANCHO // 2, y_position)
+                    )
+                    
+                    # Dibujar fondo gris oscuro
+                    bg_expansion = int(10 + 15 * scale)
+                    bg_rect = restart_rect.inflate(bg_expansion * 2, bg_expansion)
+                    pygame.draw.rect(self.screen, (50, 50, 50), bg_rect, border_radius=15)
+                    # === FONDO ANIMADO ===
+                    # Fondo con efecto pulsante
+                    
                 
-                restart_rect = restart_text.get_rect(
-                    center=(PANTALLA_ANCHO // 2, y_position)
-                )
                 
-                # Dibujar fondo gris oscuro
-                bg_rect = restart_rect.inflate(20, 10)
-                pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)
-                
-                # Dibujar el texto
-                self.screen.blit(restart_text, restart_rect)
+                    # Dibujar el texto
+                    self.screen.blit(restart_text, restart_rect)
     def draw_game_over_screen(self):
         """Dibuja la pantalla de game over"""
         self._draw_overlay((0, 0, 0), 128)
