@@ -11,7 +11,7 @@ class CharacterScreen(Scene):
         self.selected_character = None
         self.buttons = []
         
-        # edidas originales del cartel
+        # medidas originales del cartel
         original_width, original_height = 1057, 706
         scale_x = ANCHO_PANTALLA / original_width
         scale_y = ALTO_PANTALLA / original_height
@@ -27,7 +27,7 @@ class CharacterScreen(Scene):
         # Lista de personajes disponibles (puedes añadir mas)
         self.characters = [
             ("UIAbot", self.resource_manager.get_image("personaje1")),
-            ("UAIBOTA", self.resource_manager.get_image("UAIBOTA_walk")),
+            ("UAIBOTA", self.resource_manager.get_image("personaje3")),
             ("UAIBOTINA", self.resource_manager.get_image("personaje2")),
             ("UAIBOTINO", self.resource_manager.get_image("UAIBOTINO_walk")),
         ]
@@ -53,7 +53,7 @@ class CharacterScreen(Scene):
             new_width = int(card_rect.width * scale_ratio * 1.20)
             new_height = int(card_rect.height * scale_ratio)
 
-            self.character_scaled = pygame.transform.smoothscale(image, (new_width, new_height))
+            self.character_scaled = pygame.transform.scale(image, (new_width, new_height))
             self.character_rect = self.character_scaled.get_rect(center=self.billboard_area.center)
             self.selected_character = name  
         else:
