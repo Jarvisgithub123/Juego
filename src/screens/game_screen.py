@@ -150,12 +150,10 @@ class GameScreen(Scene):
         self.renderer.update(delta_time)
     
     def _update_camera(self, delta_time: float):
-        """Actualiza la camara para seguir al jugador suavemente"""
-        target_x = max(0, self.player.rect.x - 150)
-        diff = target_x - self.camera.x
-        if abs(diff) > 15:
-            self.camera.x += diff * 0.08
-    
+        """Actualiza la camara usando el sistema de Camera (suavizado centralizado)."""
+        # Delegar la logica de seguimiento a la clase Camera para evitar comportamientos inconsistentes.
+        self.camera.update(delta_time, self.player.rect)
+
     def _update_entities(self, delta_time: float):
         """Actualiza entidades del juego"""
         keys = pygame.key.get_pressed()

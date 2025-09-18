@@ -35,22 +35,19 @@ class GameManager:
         # imagenes estaticas
         self.resource_manager.load_image("menu_background1","Assets/Imagenes/menubackground1.png")
         self.resource_manager.load_image("menu_background2","Assets/Imagenes/menubackground2.png")
-        self.resource_manager.load_image("bg_sky", "Assets/Imagenes/bg_sky.png")
-        self.resource_manager.load_image("bg_mid", "Assets/Imagenes/bg_mid.png")
-        self.resource_manager.load_image("bg_front", "Assets/Imagenes/bg_front.png")
-        self.resource_manager.load_image("pila", "Assets/Imagenes/MONSTER.png")
-        self.resource_manager.load_image("cartel", "Assets/Imagenes/billboard.png")
+        self.resource_manager.load_image("bg_sky", "Assets/Imagenes/Background/bg_sky.png")
+        self.resource_manager.load_image("bg_mid", "Assets/Imagenes/Background/bg_mid.png")
+        self.resource_manager.load_image("bg_front", "Assets/Imagenes/Background/bg_front1.png")
+        self.resource_manager.load_image("bg_front2", "Assets/Imagenes/Background/bg_front2.png")
+        self.resource_manager.load_image("pila", "Assets/Imagenes/bateria.png")
+        self.resource_manager.load_image("escudo", "Assets/Imagenes/escudo.png")
+        self.resource_manager.load_image("cartel", "Assets/Imagenes/Background/billboard.png")
         self.resource_manager.load_image("personaje1", "Assets/Imagenes/prueba.png")
         self.resource_manager.load_image("personaje2", "Assets/Imagenes/personaje2.png")
         
         # PERSONAJES 
         # UIAbot: tiene spritesheet con animacion
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
-        
-        # otros personajes: por ahora imagenes estaticas 
-        #self.resource_manager.load_image("UAIBOTA_walk", "Assets/Sprites/UAIBOTA.png")
-        #self.resource_manager.load_image("UAIBOTINA_walk", "Assets/Sprites/UAIBOTINA.png")
-        #self.resource_manager.load_image("UAIBOTINO_walk", "Assets/Sprites/UAIBOTINO.png")
         self.resource_manager.load_spritesheet("UAIBOTA_walk", "Assets/Sprites/Uiabota.png", 64, 86)
         self.resource_manager.load_spritesheet("UAIBOTINA_walk", "Assets/Sprites/Uiabotina.png", 64, 86)
         self.resource_manager.load_spritesheet("UAIBOTINO_walk", "Assets/Sprites/Uibotino.png", 64, 86)

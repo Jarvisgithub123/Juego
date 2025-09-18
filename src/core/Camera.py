@@ -34,13 +34,19 @@ class Camera:
             delta_time: Tiempo transcurrido desde el ultimo frame
             player_rect: Rectangulo del jugador a seguir
         """
-        player_deviation = self._calculate_player_deviation(player_rect)
+        # Calcular la posicion objetivo de la camara (evitar valores negativos)
+        desired_x = max(0.0, player_rect.x - self.player_visual_x)
         
-        if self._should_follow_player(player_deviation):
-            self._follow_player_smoothly(player_deviation, delta_time)
-        else:
-            self._return_to_center_smoothly(delta_time)
-    
+        # Interpolacion suave (lerp) controlada por follow_speed.
+        # Factor de interpolacion limitado entre 0 y 1.
+        factor = max(0.0, min(1.0, self.follow_speed * delta_time))
+        self.world_position_x += (desired_x - self.world_position_x) * factor
+        
+        # Mantener Y estable (por si se usa mas tarde)
+        desired_y = 0.0
+        factor_y = max(0.0, min(1.0, self.follow_speed * delta_time))
+        self.world_position_y += (desired_y - self.world_position_y) * factor_y
+	
     def _calculate_player_deviation(self, player_rect: pygame.Rect) -> float:
         """Calcula cuanto se desvio el jugador de su posicion visual ideal"""
         return player_rect.x - self.player_visual_x
