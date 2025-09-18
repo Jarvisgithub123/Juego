@@ -26,9 +26,9 @@ class CharacterScreen(Scene):
 
         # Lista de personajes disponibles (puedes añadir mas)
         self.characters = [
-            ("UIAbot", self.resource_manager.get_image("personaje1")),
+            ("UIAbot", self.resource_manager.get_image("cartel_uaibot")),
             ("UAIBOTA", self.resource_manager.get_image("UAIBOTA_walk")),
-            ("UAIBOTINA", self.resource_manager.get_image("personaje2")),
+            ("UAIBOTINA", self.resource_manager.get_image("cartel_uaibotina")),
             ("UAIBOTINO", self.resource_manager.get_image("UAIBOTINO_walk")),
         ]
         self.current_index = 0
