@@ -45,7 +45,8 @@ class GameManager:
         self.resource_manager.load_image("cartel", "Assets/Imagenes/Background/billboard.png")
         self.resource_manager.load_image("cartel_uaibot", "Assets/Imagenes/cartel_uaibot.png")
         self.resource_manager.load_image("cartel_uaibotina", "Assets/Imagenes/cartel_uaibotina.png")
-        self.resource_manager.load_image("personaje3", "Assets/Imagenes/Uiabota_info.png")
+        self.resource_manager.load_image("cartel_uaibota", "Assets/Imagenes/cartel_uaibota.png")
+        self.resource_manager.load_image("cartel_uaibotino", "Assets/Imagenes/cartel_uaibotino.png")
         
         # PERSONAJES 
         # UIAbot: tiene spritesheet con animacion
