@@ -4,11 +4,12 @@ from src.Constantes import *
 from src.entities.Car import Car
 from src.entities.Player import Player
 from src.entities.Pilas import pilas
+from src.entities.Escudo import Escudo
 import random
 import math
 
 class GameRenderer:
-    """Maneja todo el sistema de renderizado del juego"""  
+    """Maneja todo el sistema de renderizado del juego con efectos de escudo"""  
     def __init__(self, screen: pygame.Surface, resource_manager):
         self.screen = screen
         self.resource_manager = resource_manager
@@ -21,14 +22,12 @@ class GameRenderer:
         self.cached_text_surfaces = {}
         
         # Config para cambio aleatorio del front
-        self.front_options = []                     # ...se llenara con nombres disponibles...
+        self.front_options = []                     
         self.current_front_name = None
-        # Mantenemos un mapa de tiles para la capa frontal: index -> variant_name
-        self.front_tile_map = {}                    # tile_index -> "bg_front"|"bg_front2"
-        self.front_change_chance = 0.5              # probabilidad de cambiar a otro fondo en el siguiente tile
+        self.front_tile_map = {}                    
+        self.front_change_chance = 0.5              
        
-        # REDUCIDO: cambiar con más frecuencia mientras avanzas (antes PANTALLA_ANCHO)
-        self.front_change_distance = max(200, PANTALLA_ANCHO // 3)  # configurable (ajustable)
+        self.front_change_distance = max(200, PANTALLA_ANCHO // 3)  
         self.last_front_segment = -1
         
         self._init_background_system()
@@ -49,8 +48,6 @@ class GameRenderer:
         tiempo_actual = pygame.time.get_ticks() 
         scale = 0.95 + 0.2 * abs(math.sin(tiempo_actual * 0.007))
         return scale  
-        
-        
         
     def _init_background_system(self):
         """Carga las capas del fondo con diferentes velocidades (parallax)"""
@@ -104,7 +101,7 @@ class GameRenderer:
         front_image = self.scaled_backgrounds[self.current_front_name]
         self.bg_layers.append({
             "name": "front_dynamic",
-            "image": front_image,               # valor por defecto (se ignorara por tile)
+            "image": front_image,               
             "parallax_factor": 3.6,
             "width": front_image.get_width()
         })
@@ -137,7 +134,6 @@ class GameRenderer:
                 "¡El paquete fue entregado con exito!", True, COLOR_TEXTO_VICTORIA
             )
         
-    
     def update(self, delta_time: float):
         """Actualiza el sistema de renderizado"""
         self.world_scroll_x += self.world_scroll_speed * delta_time
@@ -163,14 +159,10 @@ class GameRenderer:
                     layer["width"] = self.scaled_backgrounds[self.current_front_name].get_width()
                     break
             self.last_front_segment = seg
-            # Depuracion minima para verificar cambios (puedes quitar)
-            print(f"[GameRenderer] front cambiado a {self.current_front_name} en segmento {seg}")
 
     # Nuevo helper para obtener/crear la variante de un tile
     def _get_front_variant_for_tile(self, tile_index: int) -> str:
-        """Retorna la variante asignada para tile_index; la genera si no existe.
-        Se intenta (con cierta probabilidad) cambiar respecto al tile anterior para que
-        la transicion ocurra en la linea entre tiles."""
+        """Retorna la variante asignada para tile_index; la genera si no existe."""
         if tile_index in self.front_tile_map:
             return self.front_tile_map[tile_index]
 
@@ -190,7 +182,7 @@ class GameRenderer:
         return chosen
 
     def draw_background(self, camera_x: float):
-        """OPTIMIZADO: fondo con parallax - version mejorada pero funcional"""
+        """fondo con parallax - version mejorada pero funcional"""
         # APLICAR CAMBIO DE FRONT SI CORRESPONDE
         self._maybe_update_front_by_camera(camera_x)
         
@@ -225,7 +217,7 @@ class GameRenderer:
                     if tile_image:
                         pos_x = offset_x + i * layer_width
                         self.screen.blit(tile_image, (pos_x, 0))
-                continue  # ya dibujamos la capa frontal, pasar a la siguiente capa
+                continue  
 
             image = layer["image"]
             parallax_factor = layer["parallax_factor"]
@@ -236,7 +228,7 @@ class GameRenderer:
                             camera_x * parallax_factor * BACKGROUND_PARALLAX_CAMERA_FACTOR)
             offset_x = -(total_offset_x % layer_width)
             
-            # OPTIMIZACIoN: Reducir cantidad de blits calculando posiciones exactas
+            # OPTIMIZACIÓN: Reducir cantidad de blits calculando posiciones exactas
             positions_needed = []
             
             # Calcular solo las posiciones que realmente necesitamos
@@ -264,14 +256,98 @@ class GameRenderer:
                         (0, PISO_POS_Y), (PANTALLA_ANCHO, PISO_POS_Y), 3)
     
     def draw_player(self, player: Player, camera_x: float):
-        """Dibuja el jugador con efectos visuales """
+        """Dibuja el jugador con efectos visuales del escudo"""
         screen_x = player.rect.x - camera_x
         screen_y = player.rect.y
+        
+        # Dibujar efectos del escudo ANTES del jugador si está activo
+        if player.should_show_shield_effect():
+            self._draw_shield_effect(player, camera_x)
+        
+        # Dibujar efecto de colisión del escudo si corresponde
+        if player.should_show_collision_effect():
+            self._draw_shield_collision_effect(player, camera_x)
         
         if player.current_sprite:
             self._draw_player_sprite(player, screen_x, screen_y)
         else:
             self._draw_player_fallback(player, screen_x, screen_y)
+    
+    def _draw_shield_effect(self, player: Player, camera_x: float):
+        """Dibuja el efecto visual del escudo activo"""
+        screen_x = player.rect.x - camera_x + player.rect.width // 2
+        screen_y = player.rect.y + player.rect.height // 2
+        
+        current_time = pygame.time.get_ticks()
+        
+        # Crear un efecto de anillo pulsante
+        pulse = abs(math.sin(current_time * 0.008))
+        
+        # Radio que pulsa basado en el tiempo restante del escudo
+        shield_percentage = player.get_shield_percentage()
+        base_radius = int(50 * shield_percentage)  # Se reduce con el tiempo
+        radius = int(base_radius + pulse * 10)
+        
+        # Color del escudo que cambia según el tiempo restante
+        if shield_percentage > 0.5:
+            shield_color = (0, 150, 255, 120)  # Azul fuerte
+        elif shield_percentage > 0.2:
+            shield_color = (255, 150, 0, 120)  # Naranja (advertencia)
+        else:
+            shield_color = (255, 50, 50, 120)   # Rojo (crítico)
+        
+        # Crear surface temporal para el efecto con transparencia
+        shield_surface = pygame.Surface((radius * 2 + 20, radius * 2 + 20), pygame.SRCALPHA)
+        
+        # Dibujar múltiples anillos para efecto más vistoso
+        for i in range(3):
+            inner_radius = max(5, radius - i * 8)
+            alpha = max(30, shield_color[3] - i * 30)
+            color_with_alpha = (*shield_color[:3], alpha)
+            pygame.draw.circle(shield_surface, color_with_alpha, 
+                             (radius + 10, radius + 10), inner_radius, 2 + i)
+        
+        # Dibujar en la pantalla
+        shield_rect = shield_surface.get_rect(center=(screen_x, screen_y))
+        self.screen.blit(shield_surface, shield_rect)
+        
+        # Añadir partículas brillantes alrededor del escudo
+        particle_count = max(4, int(8 * shield_percentage))
+        for i in range(particle_count):
+            angle = (current_time * 0.05 + i * (360 / particle_count)) % 360
+            particle_distance = radius - 5
+            particle_x = screen_x + particle_distance * math.cos(math.radians(angle))
+            particle_y = screen_y + particle_distance * math.sin(math.radians(angle))
+            
+            # Dibujar pequeñas partículas brillantes
+            particle_size = max(1, int(3 * shield_percentage))
+            pygame.draw.circle(self.screen, (255, 255, 255), 
+                             (int(particle_x), int(particle_y)), particle_size)
+    
+    def _draw_shield_collision_effect(self, player: Player, camera_x: float):
+        """Dibuja el efecto visual cuando el escudo absorbe una colisión"""
+        screen_x = player.rect.x - camera_x + player.rect.width // 2
+        screen_y = player.rect.y + player.rect.height // 2
+        
+        # Efecto de expansión rápida
+        effect_progress = 1.0 - (player.shield_collision_effect_time / SHIELD_EFFECT_DURATION)
+        
+        # Múltiples ondas expansivas
+        for wave in range(3):
+            radius = int(30 + wave * 15 + effect_progress * 60)
+            alpha = max(0, int(255 * (1 - effect_progress) - wave * 50))
+            
+            if alpha > 0:
+                # Color de impacto (amarillo/naranja brillante)
+                impact_color = (255, 255 - wave * 40, 0, alpha)
+                
+                # Crear surface para la onda
+                wave_surface = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+                pygame.draw.circle(wave_surface, impact_color, (radius, radius), radius, 5)
+                
+                # Dibujar en pantalla
+                wave_rect = wave_surface.get_rect(center=(screen_x, screen_y))
+                self.screen.blit(wave_surface, wave_rect)
     
     def _draw_player_sprite(self, player: Player, screen_x: float, screen_y: float):
         """Dibuja el sprite del jugador"""
@@ -342,14 +418,54 @@ class GameRenderer:
             car.fallback_rect.y = car.rect.y
             pygame.draw.rect(self.screen, (0, 0, 255), car.fallback_rect)
     
+    def draw_collectibles(self, collectibles: List, camera_x: float):
+        """Dibuja todos los objetos coleccionables (pilas y escudos) en la pantalla"""
+        for collectible in collectibles:
+            screen_x = collectible.rect.x - camera_x
+            
+            # Solo dibujar si esta en pantalla
+            if -collectible.rect.width <= screen_x <= PANTALLA_ANCHO:
+                # Añadir efecto especial para escudos
+                if isinstance(collectible, Escudo):
+                    self._draw_escudo_with_effect(collectible, screen_x)
+                else:
+                    # Dibujar objetos normales (pilas)
+                    self.screen.blit(collectible.image, (screen_x, collectible.rect.y))
+    
+    def _draw_escudo_with_effect(self, escudo: Escudo, screen_x: float):
+        """Dibuja un escudo con efectos visuales especiales"""
+        # Dibujar el escudo base
+        self.screen.blit(escudo.image, (screen_x, escudo.rect.y))
+        
+        # Añadir efecto de brillo pulsante
+        current_time = pygame.time.get_ticks()
+        pulse = (math.sin(current_time * 0.01) + 1) / 2  # Valor entre 0 y 1
+        
+        # Crear superficie con brillo
+        glow_surface = pygame.Surface((escudo.rect.width + 20, escudo.rect.height + 20), pygame.SRCALPHA)
+        glow_alpha = int(50 + pulse * 30)  # Alpha variable
+        glow_color = (150, 200, 255, glow_alpha)  # Azul brillante
+        
+        # Dibujar círculo de brillo detrás del escudo
+        center_x = glow_surface.get_width() // 2
+        center_y = glow_surface.get_height() // 2
+        glow_radius = int(30 + pulse * 5)
+        pygame.draw.circle(glow_surface, glow_color, (center_x, center_y), glow_radius)
+        
+        # Posicionar el brillo
+        glow_x = screen_x - 10
+        glow_y = escudo.rect.y - 10
+        self.screen.blit(glow_surface, (glow_x, glow_y))
+    
     def draw_pilas(self, pilas: List[pilas], camera_x: float):
-        """Dibuja las pilas en la pantalla"""
+        """Dibuja las pilas en la pantalla (método de compatibilidad)"""
         for pila in pilas:
             screen_x = pila.rect.x - camera_x
             
             # Solo dibujar si esta en pantalla
             if -pila.rect.width <= screen_x <= PANTALLA_ANCHO:
                 self.screen.blit(pila.image, (screen_x, pila.rect.y))
+    
     def draw_restart_text(self, y_position: int):
         """Dibuja el texto de reiniciar con efecto de parpadeo y color aleatorio"""
         if self.mostrar_parpadeo():
@@ -371,13 +487,10 @@ class GameRenderer:
                     bg_expansion = int(10 + 15 * scale)
                     bg_rect = restart_rect.inflate(bg_expansion * 2, bg_expansion)
                     pygame.draw.rect(self.screen, (50, 50, 50), bg_rect, border_radius=15)
-                    # === FONDO ANIMADO ===
-                    # Fondo con efecto pulsante
                     
-                
-                
                     # Dibujar el texto
                     self.screen.blit(restart_text, restart_rect)
+    
     def draw_game_over_screen(self):
         """Dibuja la pantalla de game over"""
         self._draw_overlay((0, 0, 0), 128)

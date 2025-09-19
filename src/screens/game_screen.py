@@ -5,14 +5,14 @@ from src.entities.Player import Player
 from src.UI.game_hud import GameHUD
 from src.core.Camera import Camera
 from src.systems.car_spawner import CarSpawner
-from src.systems.Pilas_spawner import pilaSpawner
+from src.systems.Collectible_spawner import CollectibleSpawner
 from src.systems.game_renderer import GameRenderer
 import csv
 import os
 from datetime import datetime
 
 class GameScreen(Scene):
-    """Pantalla principal del juego donde UAIBOT corre y esquiva autos"""
+    """Pantalla principal del juego donde UAIBOT corre, esquiva autos y usa escudos"""
     
     def __init__(self, screen: pygame.Surface, resource_manager, scene_manager):
         super().__init__(screen, resource_manager, scene_manager)
@@ -22,7 +22,8 @@ class GameScreen(Scene):
         # Sistemas principales
         self.camera = Camera(PANTALLA_ANCHO, PANTALLA_ALTO)
         self.car_spawner = CarSpawner(resource_manager)
-        self.pila_spawner = pilaSpawner(resource_manager)
+        #Reemplazar pila_spawner con collectible_spawner
+        self.collectible_spawner = CollectibleSpawner(resource_manager)
         self.renderer = GameRenderer(screen, resource_manager)
         self.hud = GameHUD(resource_manager)
         
@@ -61,10 +62,10 @@ class GameScreen(Scene):
         self.energias_individuales = {}
         self._inicializar_energias_personajes()
         
-        # NUEVO: Sistema de tracking de distancias por personaje
+        # Sistema de tracking de distancias por personaje
         self.distancias_personajes = {}
         self._inicializar_distancias_personajes()
-        self.distancia_total_partida = 0.0  # Distancia total de la partida actual
+        self.distancia_total_partida = 0.0
         self.ultimo_personaje_activo = self.player.get_current_character()
         
         # Estado del juego
@@ -72,9 +73,12 @@ class GameScreen(Scene):
         self.game_over = False
         self.victory = False
         self.energy_remaining = self.energias_individuales[self.player.get_current_character()]
+        
+        #Variable para evitar game over mientras el escudo está activo
+        self.shield_collision_just_happened = False
     
         if self.game_mode == 'infinite':
-            self.kilometers_remaining = float('inf')  # Infinito
+            self.kilometers_remaining = float('inf')
             print("Modo infinito")
         else:
             self.kilometers_remaining = KILOMETROS_OBJETIVO
@@ -129,7 +133,7 @@ class GameScreen(Scene):
         print(f"Cambio a {personaje_actual}")
         print(f"Energia {personaje_actual}: {self.energy_remaining}")
         
-        # NUEVO: Actualizar el ultimo personaje activo para el tracking
+        # Actualizar el ultimo personaje activo para el tracking
         self.ultimo_personaje_activo = personaje_actual
     
     def update(self, delta_time: float):
@@ -142,7 +146,7 @@ class GameScreen(Scene):
             self._update_entities(delta_time)
             self._check_game_conditions()
             
-            # NUEVO: Actualizar tracking de distancias
+            # Actualizar tracking de distancias
             self._update_distance_tracking(delta_time)
        
     def _update_distance_tracking(self, delta_time: float):
@@ -168,7 +172,6 @@ class GameScreen(Scene):
     
     def _update_camera(self, delta_time: float):
         """Actualiza la camara usando el sistema de Camera (suavizado centralizado)."""
-        # Delegar la logica de seguimiento a la clase Camera para evitar comportamientos inconsistentes.
         self.camera.update(delta_time, self.player.rect)
 
     def _update_entities(self, delta_time: float):
@@ -186,7 +189,23 @@ class GameScreen(Scene):
             self.handle_character_change()
      
         self.car_spawner.update(delta_time, self.camera.x, self.player.rect.x)
-        self.pila_spawner.update(delta_time, self.camera.x, self.player.rect.x, self.player.rect, self.agregar_energia)
+        
+        #Usar CollectibleSpawner en lugar de PilaSpawner
+        # Crear un wrapper para manejar tanto escudos como pilas
+        def collectible_callback(amount):
+            """Callback que maneja tanto energía como escudos"""
+            self.agregar_energia(amount)
+        
+        # Pasar el player como contexto para que el spawner pueda manejar escudos
+        collectible_callback.__self__ = self.player
+        
+        self.collectible_spawner.update(
+            delta_time, 
+            self.camera.x, 
+            self.player.rect.x, 
+            self.player.rect, 
+            collectible_callback
+        )
     
     def agregar_energia(self, cantidad):
         """Agrega energia a los robots sin pasar su maximo"""
@@ -198,12 +217,41 @@ class GameScreen(Scene):
         self.energias_individuales[personaje_actual] = self.energy_remaining 
     
     def _check_game_conditions(self):
-        """Verifica condiciones de fin de juego"""
-        # Verificar colisiones
-        if self.car_spawner.check_collisions(self.player.rect):
-            self._trigger_game_over()
-            return
-        
+        """Verifica condiciones de fin de juego - ACTUALIZADO con sistema de escudo"""
+        # Limpiar flag de colisión protegida cuando ya terminó el efecto visual
+        if self.shield_collision_just_happened and not self.player.should_show_collision_effect():
+            self.shield_collision_just_happened = False
+
+        # Si acabamos de absorber una colisión y aún estamos en la ventana de efecto,
+        # evitamos chequear nuevas colisiones para no repetir el problema.
+        if self.shield_collision_just_happened:
+            # Aún en periodo post-absorción: no comprobar colisiones
+            pass
+        else:
+            # Verificar colisiones
+            if self.car_spawner.check_collisions(self.player.rect):
+                # Considerar absorbida si el jugador tiene escudo activo O si
+                # aún está el efecto visual de absorción (por timing)
+                if self.player.is_protected() or self.player.should_show_collision_effect():
+                    # El escudo absorbe la colisión: activar efecto y marcar flag
+                    self.player.activate_shield_collision_effect()
+                    self.shield_collision_just_happened = True
+
+                    # Empujar ligeramente al jugador hacia delante para evitar solapamiento continuo
+                    try:
+                        PUSH_OUT = 60
+                        self.player.rect.x += PUSH_OUT
+                    except Exception:
+                        pass
+
+                    print("¡Escudo protegió de la colisión!")
+                    # No procesar game over
+                    return
+                else:
+                    # Sin escudo, game over normal
+                    self._trigger_game_over()
+                    return
+
         # Verificar condiciones de fin
         if self.energy_remaining <= 0:
             self._trigger_game_over()
@@ -242,6 +290,7 @@ class GameScreen(Scene):
             self.kilometers_remaining = max(0, KILOMETROS_OBJETIVO - km_traveled)
         else: 
             self.kilometers_remaining = self.time * DECREMENTO_KM_POR_SEGUNDO
+    
     def _consume_energy(self, energy_amount: float) -> bool:
         """Consume energia si hay suficiente disponible"""
         if self.energy_remaining >= energy_amount:
@@ -300,6 +349,7 @@ class GameScreen(Scene):
                 
         except Exception as e:
             print(f"Error guardando estadisticas: {e}")
+    
     def _get_next_game_number(self, filename):
         """Obtiene el proximo numero de partida"""
         if not os.path.exists(filename):
@@ -324,7 +374,7 @@ class GameScreen(Scene):
     
     def _restart_game(self):
         """Reinicia el juego desde el principio"""
-        # NUEVO: Guardar estadisticas antes de reiniciar
+        # Guardar estadisticas antes de reiniciar
         self._save_game_statistics()
         
         pygame.mixer.stop()
@@ -333,7 +383,7 @@ class GameScreen(Scene):
     
     def _return_to_menu(self):
         """Regresa al menu principal"""
-        # NUEVO: Guardar estadisticas antes de volver al menu
+        # Guardar estadisticas antes de volver al menu
         if self.game_over or self.victory:
             self._save_game_statistics()
             
@@ -347,14 +397,18 @@ class GameScreen(Scene):
         self.renderer.draw_floor()
         self.renderer.draw_player(self.player, self.camera.x)
         self.renderer.draw_cars(self.car_spawner.get_cars(), self.camera.x)
-        self.renderer.draw_pilas(self.pila_spawner.get_pilas(), self.camera.x)
+        
+        #Usar el método unificado para dibujar todos los coleccionables
+        self.renderer.draw_collectibles(self.collectible_spawner.get_collectibles(), self.camera.x)
         
         # Dibujar UI
         if not self.game_over and not self.victory:
             autonomia_maxima_actual = self.player.obtener_autonomia_maxima()
+            #Pasar información del escudo al HUD
             self.hud.draw(self.screen, self.energy_remaining, 
                          autonomia_maxima_actual, self.kilometers_remaining,
-                         self.distancias_personajes, self.game_mode)  # NUEVO: Pasar distancias al HUD
+                         self.distancias_personajes, self.game_mode,
+                         self.player.get_shield_time_remaining())  # Tiempo de escudo restante
         
         # Dibujar pantallas de fin de juego
         if self.game_over:
@@ -363,7 +417,7 @@ class GameScreen(Scene):
             self.renderer.draw_victory_screen()
         if self.pause and not self.game_over and not self.victory:
             overlay = pygame.Surface((PANTALLA_ANCHO, PANTALLA_ALTO))
-            overlay.set_alpha(150)  # nivel de transparencia
+            overlay.set_alpha(150)
             overlay.fill((0, 0, 0))
             self.screen.blit(overlay, (0, 0))
 

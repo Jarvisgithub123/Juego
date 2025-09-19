@@ -119,7 +119,7 @@ class Car(pygame.sprite.Sprite):
             self.animation_frames = [placeholder]
     
     def _update_sprite(self):
-        """Actualiza el sprite actual - optimizado para evitar calculos innecesarios"""
+        """Actualiza el sprite actual para evitar calculos innecesarios"""
         if self.animation_frames:
             frame_index = int(self.animation_frame) % len(self.animation_frames)
             new_sprite = self.animation_frames[frame_index]

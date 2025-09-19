@@ -3,7 +3,7 @@ from typing import Callable, List, Optional, Dict
 from src.Constantes import *
 
 class Player:
-    """Player refactorizado pero manteniendo compatibilidad con codigo existente"""
+    """Player con sistema de escudo integrado"""
     
     def __init__(self, initial_x: int, initial_y: int, gravity: float, resource_manager, initial_character: str = 'UIAbot'):
         """
@@ -68,8 +68,8 @@ class Player:
         
         # Variable para detectar tecla C presionada (evitar spam)
         self.c_key_pressed = False
-        self.space_key_pressed = False  # NUEVO: evitar spam de salto
-        self.z_key_pressed = False      # NUEVO: evitar spam de dash
+        self.space_key_pressed = False  #evitar spam de salto
+        self.z_key_pressed = False      #evitar spam de dash
 
         # Variables de fisica y movimiento
         self._init_physics(gravity)
@@ -80,10 +80,68 @@ class Player:
         # Sistema de dash
         self._init_dash_system()
         
+        #Sistema de escudo
+        self._init_shield_system()
+        
         # Cargar sprites y preparar animacion
         self._load_animation_frames()
         self.current_sprite = None
         self._update_sprite()
+    
+    def _init_shield_system(self):
+        """Inicializa el sistema de escudo del jugador"""
+        self.has_shield = False
+        self.shield_time = 0.0
+        self.shield_collision_effect_time = 0.0  # Para mostrar efecto cuando se usa el escudo
+        self.max_shield_time = ESCUDO_DURACION
+        
+    def update_shield(self, delta_time: float):
+        """Actualiza el estado del escudo"""
+        if self.has_shield and self.shield_time > 0:
+            self.shield_time -= delta_time
+            if self.shield_time <= 0:
+                self.has_shield = False
+                self.shield_time = 0.0
+                print("Escudo desactivado")
+        
+        # Actualizar efecto de colision del escudo
+        if self.shield_collision_effect_time > 0:
+            self.shield_collision_effect_time -= delta_time * 1000  # Convertir a milisegundos
+    
+    def activate_shield_collision_effect(self):
+        """Activa el efecto visual cuando el escudo absorbe una colision"""
+        if self.has_shield:
+            self.shield_collision_effect_time = SHIELD_EFFECT_DURATION
+            # Reducir un poco el tiempo de escudo al usarse
+            self.shield_time = max(0, self.shield_time - 0.5)
+            print("¡Escudo absorbe colisión!")
+            
+            # Reproducir sonido de impacto del escudo
+            self.resource_manager.play_sound("shield_hit")
+            return True
+        return False
+    
+    def is_protected(self) -> bool:
+        """Verifica si el jugador está protegido por el escudo"""
+        return self.has_shield and self.shield_time > 0
+    
+    def should_show_shield_effect(self) -> bool:
+        """Verifica si debe mostrarse el efecto visual del escudo"""
+        return self.has_shield and self.shield_time > 0
+    
+    def should_show_collision_effect(self) -> bool:
+        """Verifica si debe mostrarse el efecto de colision del escudo"""
+        return self.shield_collision_effect_time > 0
+    
+    def get_shield_time_remaining(self) -> float:
+        """Retorna el tiempo restante de escudo"""
+        return self.shield_time if self.has_shield else 0.0
+    
+    def get_shield_percentage(self) -> float:
+        """Retorna el porcentaje de escudo restante (0.0 a 1.0)"""
+        if not self.has_shield:
+            return 0.0
+        return min(1.0, self.shield_time / self.max_shield_time)
     
     def obtener_autonomia_maxima(self) -> int:
         """Retorna la autonomia maxima del personaje actual"""
@@ -226,13 +284,16 @@ class Player:
         
     def update(self, delta_time: float = 1/60, keys_pressed=None, energy_callback: Callable[[float], bool] = None):    
         """
-        Actualiza la fisica y animacion del jugador - mejorado con anti-spam
+        Actualiza la fisica y animacion del jugador - mejorado con anti-spam y sistema de escudo
         """
         self._update_cooldowns(delta_time)
         self._update_dash_movement(delta_time)
         self._update_return_to_origin(delta_time)
         self._update_vertical_physics(delta_time)
         self._update_animation_if_grounded(delta_time)
+        
+        #Actualizar sistema de escudo
+        self.update_shield(delta_time)
         
         if keys_pressed:
             self.handle_character_change_input(keys_pressed)
@@ -241,7 +302,7 @@ class Player:
                 self._handle_dash_input(keys_pressed, energy_callback)
 
     def change_character(self):
-        """Cambia el personaje del jugador - optimizado"""
+        """Cambia el personaje del jugador """
         old_character = self.personajes[self.personaje_actual]
         self.personaje_actual = (self.personaje_actual + 1) % len(self.personajes)
         new_character = self.personajes[self.personaje_actual]
@@ -318,7 +379,7 @@ class Player:
             self._update_animation(delta_time)
     
     def _update_sprite(self):
-        """Actualiza el sprite actual - optimizado para evitar updates innecesarios"""
+        """Actualiza el sprite actual para evitar updates innecesarios"""
         if not self.animation_frames:
             return
             
@@ -328,12 +389,12 @@ class Player:
         else:
             new_sprite = self.animation_frames[0]
         
-        # Solo actualizar si el sprite cambio (optimizacion)
+        # Solo actualizar si el sprite cambio 
         if self.current_sprite != new_sprite:
             self.current_sprite = new_sprite
     
     def _update_animation(self, delta_time: float):
-        """Actualiza el frame de animacion - optimizado"""
+        """Actualiza el frame de animacion"""
         if self.has_animation and len(self.animation_frames) > 1:
             self.animation_timer += delta_time
             

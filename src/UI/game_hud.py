@@ -1,11 +1,12 @@
 import pygame
 from src.Constantes import *
+import math
 
 
 #TODO: Añadir iconos
 #TODO: Mejorar interfaz
 class GameHUD:
-    """Interfaz de usuario del juego (HUD)"""
+    """Interfaz de usuario del juego (HUD) con sistema de escudo"""
     
     def __init__(self, resource_manager):
         self.resource_manager = resource_manager
@@ -32,12 +33,17 @@ class GameHUD:
         self.distances_panel_width = 300
         self.distances_panel_height = 150
         
-        # Cache para superficies de texto (optimizacion)
+        # Cache para superficies de texto 
         self.cached_text = {}
         
+        # NUEVO: Variables para el indicador de escudo
+        self.last_shield_text = None
+        self.shield_surface = None
+        
     def draw(self, screen: pygame.Surface, energy_remaining: float, 
-             max_energy: float, km_remaining: float, distancias_personajes: dict = None, game_mode='normal'):
-        """Version optimizada con cache de textos"""
+             max_energy: float, km_remaining: float, distancias_personajes: dict = None, 
+             game_mode='normal', shield_time: float = 0.0):
+        """Version optimizada con cache de textos y sistema de escudo"""
         
         # Cache textos de instrucciones (no cambian)
         if not self.cached_instruction_texts:
@@ -71,14 +77,89 @@ class GameHUD:
                     self.km_surface = font.render(km_str, True, COLOR_BLANCO)
                     self.last_km_text = km_str
             
+            # NUEVO: Shield text (solo si hay escudo activo)
+            if shield_time > 0:
+                shield_str = f"Escudo: {shield_time:.1f}s"
+                if self.last_shield_text != shield_str:
+                    self.shield_surface = font.render(shield_str, True, COLOR_AMARILLO)
+                    self.last_shield_text = shield_str
+            else:
+                self.last_shield_text = None
+                self.shield_surface = None
+            
         # Dibujar todo (usando superficies cacheadas)
         self._draw_energy_bar(screen, energy_remaining, max_energy)
         screen.blit(self.energy_surface, (20, 20))
         screen.blit(self.km_surface, (20, 60))
+        
+        # NUEVO: Dibujar indicador de escudo si está activo
+        if shield_time > 0:
+            self._draw_shield_indicator(screen, shield_time)
+        
         self._draw_cached_instructions(screen)
         
         if distancias_personajes:
             self._draw_distances_panel(screen, distancias_personajes)
+    
+    def _draw_shield_indicator(self, screen: pygame.Surface, shield_time: float):
+        """Dibuja el indicador de escudo activo manteniendo el estilo del HUD"""
+        # Configuracion de la barra de escudo (debajo de la barra de energia)
+        shield_bar_width = 150
+        shield_bar_height = 15
+        shield_bar_x = PANTALLA_ANCHO - shield_bar_width - 100
+        shield_bar_y = 80  # Debajo de la barra de energia
+        
+        # Calcular porcentaje de escudo restante
+        max_shield_time = ESCUDO_DURACION
+        shield_percentage = max(0, min(1, shield_time / max_shield_time))
+        
+        # Determinar color del escudo basado en tiempo restante
+        if shield_percentage > 0.5:
+            shield_color = (0, 150, 255)  # Azul fuerte
+        elif shield_percentage > 0.2:
+            shield_color = COLOR_AMARILLO  # Naranja (advertencia)
+        else:
+            shield_color = COLOR_ROJO      # Rojo (critico)
+        
+        # Dibujar fondo de la barra de escudo (mismo estilo que energia)
+        pygame.draw.rect(screen, COLOR_BARRA_FONDO, 
+                        (shield_bar_x, shield_bar_y, shield_bar_width, shield_bar_height))
+        
+        # Calcular ancho segun tiempo de escudo restante
+        shield_width = int(shield_percentage * shield_bar_width)
+        
+        # Dibujar barra de escudo
+        if shield_width > 0:
+            pygame.draw.rect(screen, shield_color, 
+                           (shield_bar_x, shield_bar_y, shield_width, shield_bar_height))
+        
+        # Borde de la barra (mismo estilo que energia)
+        pygame.draw.rect(screen, COLOR_NEGRO, 
+                        (shield_bar_x, shield_bar_y, shield_bar_width, shield_bar_height), 2)
+        
+        # Texto del escudo con efecto pulsante
+        font_hud = self.resource_manager.get_font('hud')
+        if font_hud and self.shield_surface:
+            current_time = pygame.time.get_ticks()
+            pulse = (math.sin(current_time * 0.008) + 1) / 2  # Valor entre 0 y 1
+            
+            # Crear superficie con alpha para el efecto pulsante
+            shield_text_alpha = int(180 + pulse * 75)  # Entre 180 y 255
+            shield_text_surface = font_hud.render(f"Escudo: {shield_time:.1f}s", True, shield_color)
+            
+            # Dibujar texto del escudo
+            screen.blit(shield_text_surface, (shield_bar_x, shield_bar_y - 25))
+            
+            # NUEVO: Añadir simbolo de escudo parpadeante
+            shield_symbol = "🛡️"
+            symbol_surface = font_hud.render(shield_symbol, True, shield_color)
+            symbol_x = shield_bar_x - 30
+            symbol_y = shield_bar_y - 25
+            
+            # Solo mostrar simbolo en pulsos (efecto parpadeo)
+            if pulse > 0.3:
+                screen.blit(symbol_surface, (symbol_x, symbol_y))
+
     def _draw_cached_instructions(self, screen):
         """Dibuja instrucciones usando cache"""
         y_start = PANTALLA_ALTO - 120
@@ -161,6 +242,7 @@ class GameHUD:
             total_km_rect.right = panel_x + panel_width - 10
             total_km_rect.y = total_rect.y
             screen.blit(total_km_surface, total_km_rect)      
+    
     def _draw_energy_bar(self, screen, current_energy, max_energy):
         """Dibuja la barra de energia en la parte superior derecha"""
         percentage = (current_energy / max_energy) * 100

@@ -59,7 +59,7 @@ class Button:
                     self.resource_manager.play_sound("boton_hover")
         
         elif event.type == pygame.MOUSEMOTION:
-            # OPTIMIZACIoN: Solo cambiar estado si es necesario
+            #Solo cambiar estado si es necesario
             was_hovered = self.is_hovered
             self.is_hovered = self.rect.collidepoint(event.pos)
             
