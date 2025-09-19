@@ -40,7 +40,21 @@ class GameScreen(Scene):
         except Exception as e:
             print(f"Error al acceder a shared_data: {e}")
             print("Usando personaje por defecto")
-
+        
+        self.game_mode = 'normal'  # Por defecto
+        try:
+            if (self.scene_manager and hasattr(self.scene_manager, 'game_manager') 
+                and self.scene_manager.game_manager 
+                and hasattr(self.scene_manager.game_manager, 'shared_data') 
+                and self.scene_manager.game_manager.shared_data):
+                
+                self.game_mode = self.scene_manager.game_manager.shared_data.get('game_mode', 'normal')
+                print(f"Modo de juego: {self.game_mode}")
+        except Exception as e:
+            print(f"Error al obtener modo de juego: {e}")
+            print("Usando modo normal por defecto")
+        
+        self.time = 0.0
         # Crear el player con el personaje correcto
         self.player = Player(100, PISO_POS_Y - 60, GRAVEDAD, resource_manager, selected_character)
 
@@ -59,9 +73,12 @@ class GameScreen(Scene):
         self.victory = False
         self.energy_remaining = self.energias_individuales[self.player.get_current_character()]
     
-        print(f"Energia inicial {self.player.get_current_character()}: {self.energy_remaining}")
-        self.kilometers_remaining = KILOMETROS_OBJETIVO
-        self.time = 0.0
+        if self.game_mode == 'infinite':
+            self.kilometers_remaining = float('inf')  # Infinito
+            print("Modo infinito")
+        else:
+            self.kilometers_remaining = KILOMETROS_OBJETIVO
+            print(f"Modo normal {KILOMETROS_OBJETIVO} km")
     
     def _inicializar_distancias_personajes(self):
         """Inicializa el tracking de distancia para cada personaje"""
@@ -190,8 +207,11 @@ class GameScreen(Scene):
         # Verificar condiciones de fin
         if self.energy_remaining <= 0:
             self._trigger_game_over()
-        elif self.kilometers_remaining <= 0:
+            return
+        
+        elif self.game_mode == 'normal' and self.kilometers_remaining <= 0:
             self._trigger_victory()
+            return
     
     def _trigger_game_over(self):
         """Activa el estado de game over"""
@@ -217,9 +237,11 @@ class GameScreen(Scene):
         if self.player.is_dashing:
             self.time += delta_time + DECREMENTO_KM_POR_SEGUNDO
         # Calcular distancia basada en tiempo transcurrido
-        km_traveled = self.time * DECREMENTO_KM_POR_SEGUNDO
-        self.kilometers_remaining = max(0, KILOMETROS_OBJETIVO - km_traveled)
-    
+        if self.game_mode == 'normal':
+            km_traveled = self.time * DECREMENTO_KM_POR_SEGUNDO
+            self.kilometers_remaining = max(0, KILOMETROS_OBJETIVO - km_traveled)
+        else: 
+            self.kilometers_remaining = self.time * DECREMENTO_KM_POR_SEGUNDO
     def _consume_energy(self, energy_amount: float) -> bool:
         """Consume energia si hay suficiente disponible"""
         if self.energy_remaining >= energy_amount:
@@ -254,9 +276,17 @@ class GameScreen(Scene):
                 # Escribir datos de la partida actual
                 if not file_exists:
                     # Escribir encabezado si el archivo no existia
-                    writer.writerow(["Partida", "Km"])
+                    writer.writerow(["Partida", "Modo","Km"])
+                
+                modo_texto = "Infinito" if self.game_mode == 'infinite' else "Normal"
+                
+                if self.game_mode == 'infinite':
+                    km_final = f"{self.kilometers_remaining:.2f} km recorridos"
+                else:
+                    km_restantes = KILOMETROS_OBJETIVO - self.kilometers_remaining
+                    km_final = f"{km_restantes:.2f}/{KILOMETROS_OBJETIVO} km"
                     
-                row = [f"Partida {partida_num}:"]
+                row = [f"Partida {partida_num}:", modo_texto, km_final]
                 writer.writerow(row)
                 for personaje, distancia in self.distancias_personajes.items():
                     row = [f"{personaje}:", f"{distancia:.2f} km".replace(".",",")]
@@ -324,7 +354,7 @@ class GameScreen(Scene):
             autonomia_maxima_actual = self.player.obtener_autonomia_maxima()
             self.hud.draw(self.screen, self.energy_remaining, 
                          autonomia_maxima_actual, self.kilometers_remaining,
-                         self.distancias_personajes)  # NUEVO: Pasar distancias al HUD
+                         self.distancias_personajes, self.game_mode)  # NUEVO: Pasar distancias al HUD
         
         # Dibujar pantallas de fin de juego
         if self.game_over:

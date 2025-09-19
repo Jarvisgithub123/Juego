@@ -46,10 +46,10 @@ class MenuScreen(Scene):
         ]
     
     def _start_game(self):
-        """Inicia el juego directamente"""
+        """Elegir modo de juego"""
         if self.scene_manager:
-            from src.screens.character_screen import CharacterScreen
-            self.scene_manager.change_scene(CharacterScreen)
+            from src.screens.Select_mode import ModeScreen
+            self.scene_manager.change_scene(ModeScreen)
 
     def _show_levels(self):
         """Muestra la pantalla de seleccion de niveles/misiones"""

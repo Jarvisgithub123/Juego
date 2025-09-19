@@ -19,7 +19,7 @@ def main():
 
 def main_with_profiling():
     """Ejecuta el juego con profiling activado"""
-    profiler = cProfile.Profile()
+    profiler = cProfile.Profile() 
     
     try:
         profiler.enable()

@@ -36,7 +36,7 @@ class GameHUD:
         self.cached_text = {}
         
     def draw(self, screen: pygame.Surface, energy_remaining: float, 
-             max_energy: float, km_remaining: float, distancias_personajes: dict = None):
+             max_energy: float, km_remaining: float, distancias_personajes: dict = None, game_mode='normal'):
         """Version optimizada con cache de textos"""
         
         # Cache textos de instrucciones (no cambian)
@@ -60,11 +60,17 @@ class GameHUD:
                 self.last_energy_text = energy_str
             
             # KM text
-            km_str = f"Distancia: {km_remaining:.2f} km"
-            if self.last_km_text != km_str:
-                self.km_surface = font.render(km_str, True, COLOR_BLANCO)
-                self.last_km_text = km_str
-        
+            if game_mode == 'normal':
+                km_str = f"Distancia: {km_remaining:.2f} km"
+                if self.last_km_text != km_str:
+                    self.km_surface = font.render(km_str, True, COLOR_BLANCO)
+                    self.last_km_text = km_str
+            else:
+                km_str = f"Distancia: {km_remaining:.2f} km"
+                if self.last_km_text != km_str:
+                    self.km_surface = font.render(km_str, True, COLOR_BLANCO)
+                    self.last_km_text = km_str
+            
         # Dibujar todo (usando superficies cacheadas)
         self._draw_energy_bar(screen, energy_remaining, max_energy)
         screen.blit(self.energy_surface, (20, 20))
