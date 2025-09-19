@@ -15,14 +15,14 @@ class LevelScreen(Scene):
                       {
                         "speaker": "character_a",
                         "name": "UIABOT",
-                        "text": """(Primer dia de trabajo, ya siento la electricidad en mis circuitos. Estara la maquina de cafe para robots?)""",
+                        "text": """(Primer dia de trabajo..., asi se sienten los humanos cuando estan nerviosos? necesito un poco de acido de baterias...""",
                         "position": "left",
                         "emotion": 1
                     },
                     {
                         "speaker": "character_b",
                         "name": "Supervisor Connor",
-                        "text": "Bienvenido UIABOT, Soy Connor, tu supervisor. Te asignaron una entrega sencilla para empezar, nada de lujos.",
+                        "text": "Bienvenido UIABOT, Soy Connor, tu supervisor. Te asignaron una entrega sencilla para empezar, nada dificil.",
                         "position": "right"
                     },
                     {
@@ -35,32 +35,32 @@ class LevelScreen(Scene):
                     {
                         "speaker": "character_a",
                         "name": "UIABOT",
-                        "text": "(Bien, un paquete misterioso. Ojala sea algo que salve a la humanidad... o al menos que tenga cafe.)",
+                        "text": "(Bien, un paquete misterioso. Ojala sea algo que salve a la humanidad... o al menos que contenga mis queridas baterias...)",
                         "position": "left",
                         "emotion": 1
                     },
                     {
                         "speaker": "character_b",
                         "name": "Supervisor Connor",
-                        "text": "Es un lote sobre stickers de manuales para shampoo. El cliente esta al norte de el distrito 67. Rapido y sin accidentes.",
+                        "text": "Es un lote de instrucciones de como dormir, para humanos hecho por robots. El cliente esta al norte de el distrito 67, entrega rapida!.",
                         "position": "right"
                     },
                     {
                         "speaker": "character_a",
                         "name": "UIABOT",
-                        "text": "Manual de como no quedarse dormido mientras leo. Perfecto, lo entrego y vuelvo por mi cafe supervisor!.",
+                        "text": "No sabia q los robots podian especializarse en eso.., bueno perfecto!, voy a entregarlo lo mas rapido posible.",
                         "position": "left"
                     },
                     {
                         "speaker": "character_b",
                         "name": "Supervisor Connor",
-                        "text": "Eso si llegas a tiempo... Buena suerte.",
+                        "text": "Buena suerte UIABOT.",
                         "position": "right"
                     },
                     {
                         "speaker": "character_b",
                         "name": "Supervisor Connor",
-                        "text": "(Es normal que los robots tomen cafe? Espero que el cafe de la empresa no sea cafe oxidado, podria afectar sus circuitos...)",
+                        "text": "(Espero que no se pierda en su primer dia...)",
                         "position": "right"
                     },
             ],
@@ -105,13 +105,13 @@ class LevelScreen(Scene):
                 {
                     "speaker": "character_a",
                     "name": "UIABOT",
-                    "text": "Mi segundo encargo oficial es llevar croquetas premium a un gato... robot. Que honor.",
+                    "text": "Mi segundo encargo oficial es llevar croquetas premium a un gato... robot. Que tierno!.",
                     "position": "right"
                 },
                 {
                     "speaker": "character_a",
                     "name": "UIABOT",
-                    "text": "(Ojala me hubieran fabricado como un gato robot... y no como un robot repartidor)",
+                    "text": "(Ojala me hubieran fabricado como un gato robot... y no como uno repartidor)",
                     "position": "right",
                     "emotion": 1
                     
@@ -125,7 +125,7 @@ class LevelScreen(Scene):
                 {
                     "speaker": "character_d",
                     "name": "Claire Bluefield",
-                    "text": "Es MishiBot, la estrella de mis streams. La gente paga por verlo comer, por jugar.",
+                    "text": "Es MishiBot, la estrella de mis streams. La gente paga por verlo comer, por jugar y por ser un gato!.",
                     "position": "left",
                     "emotion": 1
                     
@@ -133,14 +133,14 @@ class LevelScreen(Scene):
                 {
                     "speaker": "character_a",
                     "name": "UIABOT",
-                    "text": "Genial. Yo entrenando miles de protocolos de precision,salto y termino como repartidor en vez de un felino famoso...",
+                    "text": "Genial. Yo entrenando miles de protocolos de precision o salto y termino como repartidor en vez de un felino famoso...",
                     "position": "right",
                     "emotion": 4
                 },
                 {
                     "speaker": "character_d",
                     "name": "Claire Bluefield",
-                    "text": "Apurate! Si tardo en la entrega... pierdo a los viewers del chat. Y sin ellos, no soy nada!!!.",
+                    "text": "Apurate! Si tardo en la entrega... pierdo a los viewers del chat, y sin ellos, no soy nada!!!.",
                     "position": "left"
                 },
             ]
