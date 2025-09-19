@@ -21,14 +21,14 @@ class LevelScreen(Scene):
                     },
                     {
                         "speaker": "character_b",
-                        "name": "Supervisor Vega",
-                        "text": "Bienvenido UIABOT, Soy Vega, tu supervisor. Te asignaron una entrega sencilla para empezar, nada de lujos.",
+                        "name": "Supervisor Connor",
+                        "text": "Bienvenido UIABOT, Soy Connor, tu supervisor. Te asignaron una entrega sencilla para empezar, nada de lujos.",
                         "position": "right"
                     },
                     {
                         "speaker": "character_a",
                         "name": "UIABOT",
-                        "text": "Hola Vega, encantado de conocerte.",
+                        "text": "Hola Connor, encantado de conocerte.",
                         "position": "left",
                         "emotion": 0
                     },
@@ -41,7 +41,7 @@ class LevelScreen(Scene):
                     },
                     {
                         "speaker": "character_b",
-                        "name": "Supervisor Vega",
+                        "name": "Supervisor Connor",
                         "text": "Es un lote sobre stickers de manuales para shampoo. El cliente esta al norte de el distrito 67. Rapido y sin accidentes.",
                         "position": "right"
                     },
@@ -53,13 +53,13 @@ class LevelScreen(Scene):
                     },
                     {
                         "speaker": "character_b",
-                        "name": "Supervisor Vega",
+                        "name": "Supervisor Connor",
                         "text": "Eso si llegas a tiempo... Buena suerte.",
                         "position": "right"
                     },
                     {
                         "speaker": "character_b",
-                        "name": "Supervisor Vega",
+                        "name": "Supervisor Connor",
                         "text": "(Es normal que los robots tomen cafe? Espero que el cafe de la empresa no sea cafe oxidado, podria afectar sus circuitos...)",
                         "position": "right"
                     },
@@ -100,37 +100,48 @@ class LevelScreen(Scene):
                         "position": "right",
                         "emotion": 2
                     },
-            ]
+            ],
             "level_3": [
                 {
                     "speaker": "character_a",
                     "name": "UIABOT",
                     "text": "Mi segundo encargo oficial es llevar croquetas premium a un gato... robot. Que honor.",
-                    "position": "left"
+                    "position": "right"
                 },
                 {
                     "speaker": "character_a",
                     "name": "UIABOT",
                     "text": "(Ojala me hubieran fabricado como un gato robot... y no como un robot repartidor)",
+                    "position": "right",
+                    "emotion": 1
+                    
+                },
+                {
+                    "speaker": "character_d",
+                    "name": "Claire Bluefield",
+                    "text": "¡No es cualquier gato!",
                     "position": "left"
                 },
                 {
-                    "speaker": "character_b",
-                    "name": "LunaVlog",
-                    "text": "¡No es cualquier gato! Es MishiBot, la estrella de mis streams. La gente paga por verlo comer, por jugar (incluso por hacer sus necesidades).",
-                    "position": "right"
+                    "speaker": "character_d",
+                    "name": "Claire Bluefield",
+                    "text": "Es MishiBot, la estrella de mis streams. La gente paga por verlo comer, por jugar (incluso por hacer sus necesidades).",
+                    "position": "left",
+                    "emotion": 1
+                    
                 },
                 {
                     "speaker": "character_a",
                     "name": "UIABOT",
                     "text": "Genial. Yo entrenando miles de protocolos de precision,salto y termino como repartidor en vez de un felino famoso...",
-                    "position": "left"
+                    "position": "right",
+                    "emotion": 4
                 },
                 {
-                    "speaker": "character_b",
-                    "name": "LunaVlog",
+                    "speaker": "character_d",
+                    "name": "Claire Bluefield",
                     "text": "Apurate! Si tardo en la entrega... pierdo a los viewers del chat. Y sin ellos, no soy nada!!!.",
-                    "position": "right"
+                    "position": "left"
                 },
             ]
         }

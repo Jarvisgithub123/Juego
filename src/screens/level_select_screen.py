@@ -26,7 +26,7 @@ class LevelSelectScreen(Scene):
                 "available": True,
                 "characters": ["character_c", "character_a"],  # incluir character_a para que coincida con los diálogos
                 "preview_image": "level2_preview"
-            }
+            },
             "level_3": {
                 "name": "The Legend of Mishi",
                 "description": "Otra mision con Uiabot, esta vez debe entregar un paquete a un gato famoso.",

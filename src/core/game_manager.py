@@ -61,7 +61,7 @@ class GameManager:
         self.resource_manager.load_spritesheet("character_a", "Assets/Sprites/Misiones/Uiabot_talk.png",450, 780)
         
         self.resource_manager.load_spritesheet("character_c", "Assets/Sprites/Misiones/npc_2.png",450, 780)
-        self.resource_manager.load_spritesheet("character_d", "Assets/Sprites/Misiones/",450, 780)
+        self.resource_manager.load_spritesheet("character_d", "Assets/Sprites/Misiones/npc_3.png",450, 780)
         
         #FONDOS DE MISIONES
         self.resource_manager.load_image("level1_bg", "Assets/Imagenes/Background/fondo_mision_1.png")
