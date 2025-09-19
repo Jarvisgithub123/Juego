@@ -143,9 +143,28 @@ class LevelScreen(Scene):
                     "text": "Apurate! Si tardo en la entrega... pierdo a los viewers del chat, y sin ellos, no soy nada!!!.",
                     "position": "left"
                 },
+            ],
+            "level_4": [
+                {   "speaker": "character_a",
+                    "name": "UIABOT",
+                    "text": "(Oh oh...esta persona se ve un poco demasiado intimidante..espero no me pida nada raro..)",
+                    "position": "right",
+                    "emotion": 0
+                },
+                {
+                    "speaker": "character_e",
+                    "name": "Sr.Kujo",
+                    "text": "Hola, no tengo tiempo para charla, entrega este paquete a esta direccion. Rapido.",
+                    "position": "left"
+                },
+                
             ]
         }
-        
+        #UIABOT: (Que miedo...) si, enseguida!... Se puede saber que hay dentro del paquete?
+
+#Sr.Kujo: Es una reliquia muy frágil, necesito que llegue a salvo...ah...y cuidado al entregarlo, no te pinches.
+
+#UIBOT: Seguro... Nos vemos! (Que no me pinche? que circuitos quiso decir...)
         # Estado del dialogo
         self.current_dialog_index = 0
         self.dialog_finished = False
