@@ -12,19 +12,27 @@ class LevelSelectScreen(Scene):
         # Configuracion de niveles - Facil de extender
         self.levels_data = {
             "level_1": {
-                "name": "El Despertar",
-                "description": "UAIBOT despierta en un mundo desconocido...",
+                "name": "Primer dia de trabajo",
+                "description": "Uiabot debe entregar su primer paquete.",
                 "background": "level1_bg",
                 "available": True,
                 "characters": ["character_a", "character_b"],
                 "preview_image": "level1_preview"
             },
             "level_2": {
-                "name": "La Busqueda",
-                "description": "Una nueva aventura comienza...",
+                "name": "Duermen los androides con palomas espias?",
+                "description": "Uiabot debe entregar una paloma mensajera sospechosa.",
                 "background": "level2_bg", 
                 "available": True,
-                "characters": ["character_c", "character_d"],
+                "characters": ["character_c", "character_a"],  # incluir character_a para que coincida con los diálogos
+                "preview_image": "level2_preview"
+            }
+            "level_3": {
+                "name": "The Legend of Mishi",
+                "description": "Otra mision con Uiabot, esta vez debe entregar un paquete a un gato famoso.",
+                "background": "level3_bg", 
+                "available": True,
+                "characters": ["character_d", "character_a"],  # incluir character_a para que coincida con los diálogos
                 "preview_image": "level2_preview"
             }
             # Facil agregar mas niveles aqui
@@ -40,7 +48,7 @@ class LevelSelectScreen(Scene):
         self.current_background = 0
         
         # Configuracion visual de niveles
-        self.level_card_width = 600
+        self.level_card_width = 670
         self.level_card_height = 370
         self.card_spacing = 50
         

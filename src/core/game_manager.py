@@ -35,7 +35,7 @@ class GameManager:
         # imagenes estaticas
         self.resource_manager.load_image("menu_background1","Assets/Imagenes/menubackground1.png")
         self.resource_manager.load_image("menu_background2","Assets/Imagenes/menubackground2.png")
-        self.resource_manager.load_image("level1_bg", "Assets/Imagenes/Background/bg_sky.png")
+        
         self.resource_manager.load_image("bg_sky", "Assets/Imagenes/Background/bg_sky.png")
         self.resource_manager.load_image("bg_mid", "Assets/Imagenes/Background/bg_mid.png")
         self.resource_manager.load_image("bg_front", "Assets/Imagenes/Background/bg_front1.png")
@@ -46,13 +46,27 @@ class GameManager:
         self.resource_manager.load_image("cartel_uaibot", "Assets/Imagenes/cartel_uaibot.png")
         self.resource_manager.load_image("cartel_uaibotina", "Assets/Imagenes/cartel_uaibotina.png")
         self.resource_manager.load_image("personaje3", "Assets/Imagenes/Uiabota_info.png")
-        self.resource_manager.load_image("character_a", "Assets/Sprites/UAIBOTAz.png")
+        
         # PERSONAJES 
         # UIAbot: tiene spritesheet con animacion
         self.resource_manager.load_spritesheet("UIAbot_walk", "Assets/Sprites/uiabot2.png", 64, 86)
         self.resource_manager.load_spritesheet("UAIBOTA_walk", "Assets/Sprites/Uiabota.png", 64, 86)
         self.resource_manager.load_spritesheet("UAIBOTINA_walk", "Assets/Sprites/Uiabotina.png", 64, 86)
         self.resource_manager.load_spritesheet("UAIBOTINO_walk", "Assets/Sprites/Uibotino.png", 64, 86)
+        
+        
+        #MISIONES
+        
+        #NPCS
+        self.resource_manager.load_spritesheet("character_a", "Assets/Sprites/Misiones/Uiabot_talk.png",450, 780)
+        
+        self.resource_manager.load_spritesheet("character_c", "Assets/Sprites/Misiones/npc_2.png",450, 780)
+        self.resource_manager.load_spritesheet("character_d", "Assets/Sprites/Misiones/",450, 780)
+        
+        #FONDOS DE MISIONES
+        self.resource_manager.load_image("level1_bg", "Assets/Imagenes/Background/fondo_mision_1.png")
+        self.resource_manager.load_image("level2_bg", "Assets/Imagenes/Background/fondo_mision_2.png")
+        
         
         # spritesheets de autos
         self.resource_manager.load_spritesheet("Auto_azul", "Assets/Sprites/Autos/Auto-azul.png", 126, 86)
@@ -69,7 +83,7 @@ class GameManager:
         # musica
         self.resource_manager.load_music("menu", "Assets/Music/Music-menu.mp3")
         self.resource_manager.load_music("game_music", "Assets/Music/Game-music.mp3")
-        
+        self.resource_manager.load_music("level_music", "Assets/Music/Mission_music.mp3")
         # Debug: mostrar cantidad de recursos cargados
         info = self.resource_manager.get_resource_info()
         print(f"Recursos cargados: {info}")
