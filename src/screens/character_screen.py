@@ -16,7 +16,7 @@ class CharacterScreen(Scene):
         scale_x = ANCHO_PANTALLA / original_width
         scale_y = ALTO_PANTALLA / original_height
 
-        original_area = pygame.Rect(225, 160, 575, 260)
+        original_area = pygame.Rect(244, 110, 544, 314)
         self.billboard_area = pygame.Rect(
             int(original_area.x * scale_x),
             int(original_area.y * scale_y),
@@ -24,12 +24,11 @@ class CharacterScreen(Scene):
             int(original_area.height * scale_y)
         )
 
-        # Lista de personajes disponibles (puedes añadir mas)
         self.characters = [
             ("UIAbot", self.resource_manager.get_image("cartel_uaibot")),
-            ("UAIBOTA", self.resource_manager.get_image("personaje3")),
+            ("UAIBOTA", self.resource_manager.get_image("cartel_uaibota")),
             ("UAIBOTINA", self.resource_manager.get_image("cartel_uaibotina")),
-            ("UAIBOTINO", self.resource_manager.get_image("UAIBOTINO_walk")),
+            ("UAIBOTINO", self.resource_manager.get_image("cartel_uaibotino")),
         ]
         self.current_index = 0
 
@@ -50,7 +49,7 @@ class CharacterScreen(Scene):
                 self.billboard_area.width / card_rect.width,
                 self.billboard_area.height / card_rect.height
             )
-            new_width = int(card_rect.width * scale_ratio * 1.20)
+            new_width = int(card_rect.width * scale_ratio * 1.16)
             new_height = int(card_rect.height * scale_ratio)
 
             self.character_scaled = pygame.transform.scale(image, (new_width, new_height))
