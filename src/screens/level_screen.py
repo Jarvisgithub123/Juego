@@ -12,50 +12,38 @@ class LevelScreen(Scene):
         # Configuracion de dialogos por nivel - Facil de extender
         self.dialogs_data = {
             "level_1": [
-                {
-                    "speaker": "character_a",
-                    "name": "ARIA",
-                    "text": "¡Por fin despiertas! Pense que no lo lograrias...",
-                    "position": "left"
-                },
-                {
-                    "speaker": "character_b", 
-                    "name": "NEXUS",
-                    "text": "El sistema de energia esta fallando. Necesitamos encontrar las baterias perdidas antes de que sea demasiado tarde.",
-                    "position": "right"
-                },
-                {
-                    "speaker": "character_a",
-                    "name": "ARIA", 
-                    "text": "¿Estas listo para esta mision, UAIBOT? El destino de nuestra ciudad digital depende de ti.",
-                    "position": "left"
-                },
-                {
-                    "speaker": "character_b",
-                    "name": "NEXUS",
-                    "text": "Recuerda: salta con ESPACIO, usa el dash con Z cuando tengas energia, y cambia entre nosotros con C si necesitas ayuda.",
-                    "position": "right"
-                }
+                    {
+                        "speaker": "character_b",
+                        "name": "Amigo del mago",
+                        "text": "Gracias por venir, necesito tu ayuda para que lleves una cosa...",
+                        "position": "left"
+                    },
+                    {
+                        "speaker": "character_a",
+                        "name": "UIAbot",
+                        "text": "Claro, ese es mi trabaj... ¿Una paloma robotica? Parece muy real..",
+                        "position": "right"
+                    },
+                    {
+                        "speaker": "character_b",
+                        "name": "Amigo del mago",
+                        "text": "Es… un proyecto especial del club de inventores. Solo llevala antes del show.",
+                        "position": "left"
+                    },
+                    {
+                        "speaker": "character_a",
+                        "name": "UIAbot",
+                        "text": "Perfecto, Mision: Entregar una paloma que probablemente tiene camaras instaladas...",
+                        "position": "right"
+                    },
+                    {
+                        "speaker": "character_a",
+                        "name": "UIAbot",
+                        "text": "( Nota mental: Todas las palomas son asi? deberia investigar en mi base de datos... )",
+                        "position": "right"
+                    },
             ],
             "level_2": [
-                {
-                    "speaker": "character_c",
-                    "name": "ZARA",
-                    "text": "Los datos que recuperaste revelan algo inquietante... hay mas de lo que pensabamos.",
-                    "position": "left"
-                },
-                {
-                    "speaker": "character_d",
-                    "name": "CIPHER", 
-                    "text": "La corrupcion se extiende mas alla de nuestra red. Debemos actuar rapido.",
-                    "position": "right"
-                },
-                {
-                    "speaker": "character_c",
-                    "name": "ZARA",
-                    "text": "Esta mision sera mas peligrosa. Los obstaculos han evolucionado. ¿Estas preparado?",
-                    "position": "left"
-                }
             ]
         }
         
@@ -68,7 +56,7 @@ class LevelScreen(Scene):
         
         # Configuracion visual
         self.dialog_box_height = 200
-        self.character_size = (150, 200)
+        self.character_size = (450, 780)
         self.text_margin = 40
         
         # Obtener datos del nivel seleccionado
@@ -291,15 +279,15 @@ class LevelScreen(Scene):
                 self.screen.blit(continue_surface, (continue_x, continue_y))
     
     def _draw_characters(self):
-        """Dibuja los personajes en pantalla (izquierda / derecha) con efecto segun quien hable"""
+        """Dibuja los personajes en pantalla: el que habla a tamaño normal, el otro más pequeño y oscurecido."""
         dialog_data = self._get_current_dialog_data()
         if not dialog_data:
             return
 
         # Posiciones de los personajes
-        left_char_x = 100
-        right_char_x = ANCHO_PANTALLA - 250
-        char_y = ALTO_PANTALLA - 400
+        left_char_x = 30
+        right_char_x = ANCHO_PANTALLA - 450
+        char_y = ALTO_PANTALLA - 600
 
         speaker_position = dialog_data.get("position", "left")
 
@@ -308,64 +296,92 @@ class LevelScreen(Scene):
         left_key = chars[0] if len(chars) > 0 else "character_a"
         right_key = chars[1] if len(chars) > 1 else "character_b"
 
-        # Cargar y escalar imagenes (si estan disponibles)
+        # Cargar imagenes (si estan disponibles)
         left_img = self.resource_manager.get_image(left_key)
         right_img = self.resource_manager.get_image(right_key)
 
+        def draw_character(img, pos_x, pos_y, speaking):
+            """Dibuja img en pos; si speaking True -> tamaño normal, si False -> más pequeño y oscurecido."""
+            target_w, target_h = self.character_size
+
+            if speaking:
+                # dibujar al tamaño completo
+                try:
+                    surf = pygame.transform.smoothscale(img, (target_w, target_h))
+                except Exception:
+                    surf = pygame.transform.scale(img, (target_w, target_h))
+                surf = surf.convert_alpha() if surf.get_flags() & pygame.SRCALPHA else surf.convert()
+                self.screen.blit(surf, (pos_x, pos_y))
+            else:
+                # reducir un poco (ej. 90%)
+                scale = 0.90
+                small_w = max(1, int(target_w * scale))
+                small_h = max(1, int(target_h * scale))
+                try:
+                    surf = pygame.transform.smoothscale(img, (small_w, small_h))
+                except Exception:
+                    surf = pygame.transform.scale(img, (small_w, small_h))
+                surf = surf.convert_alpha() if surf.get_flags() & pygame.SRCALPHA else surf.convert()
+
+                # centrar la versión reducida dentro del área original
+                offset_x = pos_x + (target_w - small_w) // 2
+                offset_y = pos_y + (target_h - small_h) // 2
+                self.screen.blit(surf, (offset_x, offset_y))
+
+                # --- NUEVO: usar máscara del sprite para oscurecer SOLO la silueta ---
+                try:
+                    mask = pygame.mask.from_surface(surf)
+                    # Generar superficie a partir de la máscara: píxeles setcolor opacos, unsetcolor transparentes
+                    mask_surf = mask.to_surface(setcolor=(0, 0, 0, 255), unsetcolor=(0, 0, 0, 0))
+                    mask_surf = mask_surf.convert_alpha()
+                    # Ajustar transparencia del overlay (ej. 120/255)
+                    mask_surf.set_alpha(120)
+                    # Blitear la máscara centrada en la misma posición que el sprite reducido
+                    self.screen.blit(mask_surf, (offset_x, offset_y))
+                except Exception:
+                    # Fallback: capa rectangular semitransparente si falla la máscara
+                    dark = pygame.Surface((small_w, small_h), pygame.SRCALPHA)
+                    dark.fill((0, 0, 0, 120))
+                    self.screen.blit(dark, (offset_x, offset_y))
+
         # Dibujar izquierdo
         if left_img:
-            try:
-                scaled_left = pygame.transform.smoothscale(left_img, self.character_size)
-            except Exception:
-                scaled_left = pygame.transform.scale(left_img, self.character_size)
-            if speaker_position == "left":
-                # brillo al hablar
-                self.screen.blit(scaled_left, (left_char_x, char_y))
-                glow = pygame.Surface(self.character_size, pygame.SRCALPHA)
-                glow.fill((255, 255, 120, 40))
-                self.screen.blit(glow, (left_char_x, char_y))
-            else:
-                # oscurecer si no habla
-                dark = pygame.Surface(self.character_size, pygame.SRCALPHA)
-                dark.fill((0, 0, 0, 120))
-                self.screen.blit(scaled_left, (left_char_x, char_y))
-                self.screen.blit(dark, (left_char_x, char_y))
+            draw_character(left_img, left_char_x, char_y, speaker_position == "left")
         else:
             # placeholder
             placeholder_rect = pygame.Rect(left_char_x, char_y, *self.character_size)
-            color = COLOR_AMARILLO if speaker_position == "left" else (100, 100, 100)
-            pygame.draw.rect(self.screen, color, placeholder_rect)
-            font = self.resource_manager.get_font('pequeña')
-            if font:
-                text = font.render("CHAR A", True, COLOR_BLANCO)
-                text_rect = text.get_rect(center=placeholder_rect.center)
-                self.screen.blit(text, text_rect)
+            if speaker_position == "left":
+                pygame.draw.rect(self.screen, COLOR_AMARILLO, placeholder_rect)
+            else:
+                small_rect = pygame.Rect(
+                    left_char_x + int(self.character_size[0] * 0.05),
+                    char_y + int(self.character_size[1] * 0.05),
+                    int(self.character_size[0] * 0.90),
+                    int(self.character_size[1] * 0.90)
+                )
+                pygame.draw.rect(self.screen, (100, 100, 100), small_rect)
+                dark = pygame.Surface((small_rect.width, small_rect.height), pygame.SRCALPHA)
+                dark.fill((0,0,0,120))
+                self.screen.blit(dark, (small_rect.x, small_rect.y))
 
         # Dibujar derecho
         if right_img:
-            try:
-                scaled_right = pygame.transform.smoothscale(right_img, self.character_size)
-            except Exception:
-                scaled_right = pygame.transform.scale(right_img, self.character_size)
-            if speaker_position == "right":
-                self.screen.blit(scaled_right, (right_char_x, char_y))
-                glow = pygame.Surface(self.character_size, pygame.SRCALPHA)
-                glow.fill((255, 255, 120, 40))
-                self.screen.blit(glow, (right_char_x, char_y))
-            else:
-                dark = pygame.Surface(self.character_size, pygame.SRCALPHA)
-                dark.fill((0, 0, 0, 120))
-                self.screen.blit(scaled_right, (right_char_x, char_y))
-                self.screen.blit(dark, (right_char_x, char_y))
+            draw_character(right_img, right_char_x, char_y, speaker_position == "right")
         else:
             placeholder_rect = pygame.Rect(right_char_x, char_y, *self.character_size)
-            color = COLOR_AMARILLO if speaker_position == "right" else (100, 100, 100)
-            pygame.draw.rect(self.screen, color, placeholder_rect)
-            font = self.resource_manager.get_font('pequeña')
-            if font:
-                text = font.render("CHAR B", True, COLOR_BLANCO)
-                text_rect = text.get_rect(center=placeholder_rect.center)
-                self.screen.blit(text, text_rect)
+            if speaker_position == "right":
+                pygame.draw.rect(self.screen, COLOR_AMARILLO, placeholder_rect)
+            else:
+                small_rect = pygame.Rect(
+                    right_char_x + int(self.character_size[0] * 0.05),
+                    char_y + int(self.character_size[1] * 0.05),
+                    int(self.character_size[0] * 0.90),
+                    int(self.character_size[1] * 0.90)
+                )
+                pygame.draw.rect(self.screen, (100, 100, 100), small_rect)
+                dark = pygame.Surface((small_rect.width, small_rect.height), pygame.SRCALPHA)
+                dark.fill((0,0,0,120))
+                self.screen.blit(dark, (small_rect.x, small_rect.y))
     
     def draw(self):
         """Dibuja la pantalla del nivel"""
