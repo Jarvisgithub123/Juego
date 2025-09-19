@@ -114,7 +114,7 @@ class Player:
             self.shield_collision_effect_time = SHIELD_EFFECT_DURATION
             # Reducir un poco el tiempo de escudo al usarse
             self.shield_time = max(0, self.shield_time - 0.5)
-            print("¡Escudo absorbe colisión!")
+            print("¡Escudo absorbe colision!")
             
             # Reproducir sonido de impacto del escudo
             self.resource_manager.play_sound("shield_hit")
@@ -122,7 +122,7 @@ class Player:
         return False
     
     def is_protected(self) -> bool:
-        """Verifica si el jugador está protegido por el escudo"""
+        """Verifica si el jugador esta protegido por el escudo"""
         return self.has_shield and self.shield_time > 0
     
     def should_show_shield_effect(self) -> bool:
@@ -153,6 +153,8 @@ class Player:
         self.velocity_y = 0
         self.gravity = gravity
         self.on_ground = True
+        self.double_jump_used = False
+        self.can_double_jump = False
         current_character = self.personajes[self.personaje_actual]
         self.jump_strength = self.stats[current_character]["jump_strength"]
     
@@ -228,6 +230,7 @@ class Player:
         if self.on_ground:
             self.velocity_y = self.jump_strength
             self.on_ground = False
+            self.double_jump_used = False  
             self.resource_manager.play_sound("salto")
     
     def dash(self, energy_callback: Callable[[float], bool]) -> bool:
@@ -273,15 +276,28 @@ class Player:
         else:
             self.space_key_pressed = False
     
-    def _handle_dash_input(self, keys_pressed: dict, energy_callback: Callable[[float], bool]):
-        """Maneja entrada de dash con anti-spam"""
-        if keys_pressed[pygame.K_z]:
-            if not self.z_key_pressed:
-                self.dash(energy_callback)
-            self.z_key_pressed = True
+    def _handle_jump_input(self, keys_pressed: dict):
+        """Maneja entrada de salto con anti-spam y doble salto"""
+        if keys_pressed[pygame.K_SPACE]:
+            if not self.space_key_pressed:
+                if self.on_ground:
+                    # Salto normal
+                    self.jump()
+                else:
+                    # Verificar si puede hacer doble salto
+                    from src.systems.ability_system import ability_system
+                    if ability_system.can_double_jump() and not self.double_jump_used:
+                        self.double_jump()
+            self.space_key_pressed = True
         else:
-            self.z_key_pressed = False
-        
+            self.space_key_pressed = False
+    
+    def double_jump(self):
+        """Realiza un doble salto si esta disponible"""
+        if not self.on_ground and not self.double_jump_used:
+            self.velocity_y = self.jump_strength * 0.8  # Doble salto es un poco mas debil
+            self.double_jump_used = True
+            self.resource_manager.play_sound("salto")
     def update(self, delta_time: float = 1/60, keys_pressed=None, energy_callback: Callable[[float], bool] = None):    
         """
         Actualiza la fisica y animacion del jugador - mejorado con anti-spam y sistema de escudo
@@ -372,7 +388,8 @@ class Player:
         self.rect.y = self.original_position_y
         self.velocity_y = 0
         self.on_ground = True
-    
+        self.double_jump_used = False
+        
     def _update_animation_if_grounded(self, delta_time: float):
         """Actualiza la animacion solo si esta en el suelo"""
         if self.on_ground:

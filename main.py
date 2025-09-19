@@ -32,31 +32,31 @@ def main_debug():
             lineno = last.lineno
             func = last.name
             line_text = last.line
-            print(f"ERROR: excepción en {filename}, línea {lineno}, función {func}")
+            print(f"ERROR: excepcion en {filename}, linea {lineno}, funcion {func}")
             if line_text:
-                print(f"  Código: {line_text.strip()}")
+                print(f"  Codigo: {line_text.strip()}")
         else:
-            print("ERROR: excepción sin traceback disponible")
+            print("ERROR: excepcion sin traceback disponible")
 
         # Imprimir traceback completo en consola
         print("\nTraceback completo:")
         traceback.print_exc()
 
-        # Guardar informe en archivo para inspección posterior
+        # Guardar informe en archivo para inspeccion posterior
         try:
             with open("crash_report.txt", "w", encoding="utf-8") as f:
-                f.write("ERROR: excepción capturada\n\n")
+                f.write("ERROR: excepcion capturada\n\n")
                 if tb_list:
-                    f.write(f"Archivo: {filename}\nLínea: {lineno}\nFunción: {func}\n")
+                    f.write(f"Archivo: {filename}\nLinea: {lineno}\nFuncion: {func}\n")
                     if line_text:
-                        f.write(f"Código: {line_text.strip()}\n\n")
+                        f.write(f"Codigo: {line_text.strip()}\n\n")
                 f.write("Traceback completo:\n")
                 traceback.print_exc(file=f)
             print("Crash report guardado en crash_report.txt")
         except Exception as write_err:
             print(f"No se pudo escribir crash_report.txt: {write_err}")
 
-        # Salir con código de error
+        # Salir con codigo de error
         try:
             pygame.quit()
         except Exception:

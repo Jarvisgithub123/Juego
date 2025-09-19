@@ -251,9 +251,25 @@ class LevelScreen(Scene):
         return None
     
     def _go_to_character_select(self):
-        """Transicion a la pantalla de seleccion de personajes"""
-        from src.screens.character_screen import CharacterScreen
-        self.scene_manager.change_scene(CharacterScreen)
+            """Transicion a la pantalla de seleccion de personajes"""
+            # Asegurar que el modo este configurado como mision
+            try:
+                if (hasattr(self.scene_manager, 'game_manager') and 
+                    self.scene_manager.game_manager and
+                    hasattr(self.scene_manager.game_manager, 'shared_data')):
+                    
+                    if not hasattr(self.scene_manager.game_manager, 'shared_data'):
+                        self.scene_manager.game_manager.shared_data = {}
+                    
+                    # Configurar modo mision
+                    self.scene_manager.game_manager.shared_data['game_mode'] = 'mission'
+                    print("Modo configurado como mision")
+                    
+            except Exception as e:
+                print(f"Error configurando modo mision: {e}")
+                
+            from src.screens.character_screen import CharacterScreen
+            self.scene_manager.change_scene(CharacterScreen)
     
     def _skip_to_character_select(self):
         """Saltar directamente a seleccion de personajes"""
@@ -323,7 +339,7 @@ class LevelScreen(Scene):
         text_x = dialog_rect.x + self.text_margin
         text_y = dialog_rect.y + self.text_margin
         
-        # Definir colores por si no están en constantes
+        # Definir colores por si no estan en constantes
         color_amarillo = (255, 255, 0)
         color_blanco = (255, 255, 255)
         
@@ -451,21 +467,21 @@ class LevelScreen(Scene):
         left_frames = self._get_scaled_frames_for(left_key)
         right_frames = self._get_scaled_frames_for(right_key)
 
-        # SOLUCION: Determinar quién habla basado en position y aplicar emotion solo al hablante
+        # SOLUCION: Determinar quien habla basado en position y aplicar emotion solo al hablante
         dialog_speaker_key = dialog_data.get("speaker")
         dialog_emotion = dialog_data.get("emotion", 0)
         
-        # Solo el hablante recibe la emoción del diálogo
+        # Solo el hablante recibe la emocion del dialogo
         left_emotion = None
         right_emotion = None
         
-        # Determinar quién habla basado en la posición
+        # Determinar quien habla basado en la posicion
         if speaker_position == "left":
             left_emotion = dialog_emotion
-            # El personaje de la derecha no habla, no tiene emoción especial
+            # El personaje de la derecha no habla, no tiene emocion especial
         elif speaker_position == "right":
             right_emotion = dialog_emotion
-            # El personaje de la izquierda no habla, no tiene emoción especial
+            # El personaje de la izquierda no habla, no tiene emocion especial
 
         # Helpers para indices open/closed segun emotion
         def _frame_indices(frames, emotion_idx):
@@ -477,7 +493,7 @@ class LevelScreen(Scene):
                 if len(frames) > 1:
                     return (0, 1)
                 return (0, 0)
-            # personaje hablante: usar frames según su emoción
+            # personaje hablante: usar frames segun su emocion
             open_i = emotion_idx * 2
             closed_i = open_i + 1
             # si no hay closed_i, fallback a 0/1 o 0

@@ -228,7 +228,7 @@ class GameRenderer:
                             camera_x * parallax_factor * BACKGROUND_PARALLAX_CAMERA_FACTOR)
             offset_x = -(total_offset_x % layer_width)
             
-            # OPTIMIZACIÓN: Reducir cantidad de blits calculando posiciones exactas
+            # Reducir cantidad de blits calculando posiciones exactas
             positions_needed = []
             
             # Calcular solo las posiciones que realmente necesitamos
@@ -260,11 +260,11 @@ class GameRenderer:
         screen_x = player.rect.x - camera_x
         screen_y = player.rect.y
         
-        # Dibujar efectos del escudo ANTES del jugador si está activo
+        # Dibujar efectos del escudo ANTES del jugador si esta activo
         if player.should_show_shield_effect():
             self._draw_shield_effect(player, camera_x)
         
-        # Dibujar efecto de colisión del escudo si corresponde
+        # Dibujar efecto de colision del escudo si corresponde
         if player.should_show_collision_effect():
             self._draw_shield_collision_effect(player, camera_x)
         
@@ -288,18 +288,18 @@ class GameRenderer:
         base_radius = int(50 * shield_percentage)  # Se reduce con el tiempo
         radius = int(base_radius + pulse * 10)
         
-        # Color del escudo que cambia según el tiempo restante
+        # Color del escudo que cambia segun el tiempo restante
         if shield_percentage > 0.5:
             shield_color = (0, 150, 255, 120)  # Azul fuerte
         elif shield_percentage > 0.2:
             shield_color = (255, 150, 0, 120)  # Naranja (advertencia)
         else:
-            shield_color = (255, 50, 50, 120)   # Rojo (crítico)
+            shield_color = (255, 50, 50, 120)   # Rojo (critico)
         
         # Crear surface temporal para el efecto con transparencia
         shield_surface = pygame.Surface((radius * 2 + 20, radius * 2 + 20), pygame.SRCALPHA)
         
-        # Dibujar múltiples anillos para efecto más vistoso
+        # Dibujar multiples anillos para efecto mas vistoso
         for i in range(3):
             inner_radius = max(5, radius - i * 8)
             alpha = max(30, shield_color[3] - i * 30)
@@ -311,7 +311,7 @@ class GameRenderer:
         shield_rect = shield_surface.get_rect(center=(screen_x, screen_y))
         self.screen.blit(shield_surface, shield_rect)
         
-        # Añadir partículas brillantes alrededor del escudo
+        # Añadir particulas brillantes alrededor del escudo
         particle_count = max(4, int(8 * shield_percentage))
         for i in range(particle_count):
             angle = (current_time * 0.05 + i * (360 / particle_count)) % 360
@@ -319,20 +319,20 @@ class GameRenderer:
             particle_x = screen_x + particle_distance * math.cos(math.radians(angle))
             particle_y = screen_y + particle_distance * math.sin(math.radians(angle))
             
-            # Dibujar pequeñas partículas brillantes
+            # Dibujar pequeñas particulas brillantes
             particle_size = max(1, int(3 * shield_percentage))
             pygame.draw.circle(self.screen, (255, 255, 255), 
                              (int(particle_x), int(particle_y)), particle_size)
     
     def _draw_shield_collision_effect(self, player: Player, camera_x: float):
-        """Dibuja el efecto visual cuando el escudo absorbe una colisión"""
+        """Dibuja el efecto visual cuando el escudo absorbe una colision"""
         screen_x = player.rect.x - camera_x + player.rect.width // 2
         screen_y = player.rect.y + player.rect.height // 2
         
-        # Efecto de expansión rápida
+        # Efecto de expansion rapida
         effect_progress = 1.0 - (player.shield_collision_effect_time / SHIELD_EFFECT_DURATION)
         
-        # Múltiples ondas expansivas
+        # Multiples ondas expansivas
         for wave in range(3):
             radius = int(30 + wave * 15 + effect_progress * 60)
             alpha = max(0, int(255 * (1 - effect_progress) - wave * 50))
@@ -446,7 +446,7 @@ class GameRenderer:
         glow_alpha = int(50 + pulse * 30)  # Alpha variable
         glow_color = (150, 200, 255, glow_alpha)  # Azul brillante
         
-        # Dibujar círculo de brillo detrás del escudo
+        # Dibujar circulo de brillo detras del escudo
         center_x = glow_surface.get_width() // 2
         center_y = glow_surface.get_height() // 2
         glow_radius = int(30 + pulse * 5)
@@ -458,7 +458,7 @@ class GameRenderer:
         self.screen.blit(glow_surface, (glow_x, glow_y))
     
     def draw_pilas(self, pilas: List[pilas], camera_x: float):
-        """Dibuja las pilas en la pantalla (método de compatibilidad)"""
+        """Dibuja las pilas en la pantalla (metodo de compatibilidad)"""
         for pila in pilas:
             screen_x = pila.rect.x - camera_x
             

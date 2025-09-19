@@ -105,19 +105,38 @@ class CharacterScreen(Scene):
         """Confirma la seleccion del personaje y guarda la eleccion"""
         if self.selected_character:
             try:
-                if hasattr(self.scene_manager, 'game_manager') and self.scene_manager.game_manager:
-                    if not hasattr(self.scene_manager.game_manager, 'shared_data'):
-                        self.scene_manager.game_manager.shared_data = {}
-                    self.scene_manager.game_manager.shared_data['selected_character'] = self.selected_character
+                gm = getattr(self.scene_manager, 'game_manager', None)
+                if gm is not None:
+                    if not hasattr(gm, 'shared_data') or gm.shared_data is None:
+                        gm.shared_data = {}
+                    gm.shared_data['selected_character'] = self.selected_character
                     print(f"Personaje seleccionado guardado: {self.selected_character}")
                 else:
                     print("Warning: No se pudo acceder a game_manager")
             except Exception as e:
                 print(f"Error al guardar personaje seleccionado: {e}")
             
-            from src.screens.game_screen import GameScreen
+            # Detener musica antes de cambiar de escena
             self.resource_manager.stop_music()
-            self.scene_manager.change_scene(GameScreen)
+            
+            # Elegir pantalla destino segun el modo de juego (mission vs normal/infinite)
+            target_mode = 'normal'
+            try:
+                gm = getattr(self.scene_manager, 'game_manager', None)
+                if gm is not None:
+                    shared = getattr(gm, 'shared_data', None) or {}
+                    target_mode = shared.get('game_mode', 'normal')
+            except Exception:
+                target_mode = 'normal'
+            
+            if target_mode == 'mission':
+                # Ir a la pantalla de mision especifica
+                from src.screens.game_screen_mission import MissionGameScreen
+                self.scene_manager.change_scene(MissionGameScreen)
+            else:
+                # Flujo por defecto: modo normal/infinito
+                from src.screens.game_screen import GameScreen
+                self.scene_manager.change_scene(GameScreen)
         else:
             print("Primero selecciona un personaje")
     

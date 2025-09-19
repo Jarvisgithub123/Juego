@@ -92,7 +92,7 @@ class GameHUD:
         screen.blit(self.energy_surface, (20, 20))
         screen.blit(self.km_surface, (20, 60))
         
-        # NUEVO: Dibujar indicador de escudo si está activo
+        # NUEVO: Dibujar indicador de escudo si esta activo
         if shield_time > 0:
             self._draw_shield_indicator(screen, shield_time)
         

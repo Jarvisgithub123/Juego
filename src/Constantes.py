@@ -239,9 +239,9 @@ INITIAL_CAR_POOL_SIZE = 8
 MAX_CAR_POOL_SIZE = 15
 AVAILABLE_CAR_POOL_LIMIT = 6
 
-ESCUDO_DURACION = 8.0  # Duración del escudo en segundos
+ESCUDO_DURACION = 8.0  # Duracion del escudo en segundos
 ESCUDO_SPAWN_CHANCE = 0.3  # 30% de probabilidad de generar escudo en lugar de pila
 
 # === CONSTANTES PARA EFECTOS VISUALES ===
-SHIELD_EFFECT_DURATION = 300  # Duración del efecto visual de impacto en milisegundos
-COLLISION_FLASH_DURATION = 200  # Duración del flash al colisionar con escudo
+SHIELD_EFFECT_DURATION = 300  # Duracion del efecto visual de impacto en milisegundos
+COLLISION_FLASH_DURATION = 200  # Duracion del flash al colisionar con escudo

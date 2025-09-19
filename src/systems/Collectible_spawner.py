@@ -48,7 +48,7 @@ class CollectibleSpawner:
         spawn_x = camera_x + PANTALLA_ANCHO + 100  # Siempre fuera de pantalla a la derecha
         spawn_y = random.randint(PISO_POS_Y - 400, PISO_POS_Y - 100)  # Diferentes alturas
         
-        # Decidir qué tipo de objeto generar
+        # Decidir que tipo de objeto generar
         if random.random() < ESCUDO_SPAWN_CHANCE:
             # Generar escudo
             new_collectible = Escudo(self.resource_manager)
@@ -76,30 +76,29 @@ class CollectibleSpawner:
                 print(f"{collectible_type} eliminado: collected={collectible.collected}, pos={collectible.rect.x}")
         
         self.collectibles = active_collectibles
-    
-    def check_collisions(self, player_rect: pygame.Rect, energy_callback):
-        """Verifica colisiones entre el jugador y los objetos coleccionables
         
-        Args:
-            player_rect: Rectangulo del jugador
-            energy_callback: Callback para efectos en el jugador
-        """
+    def check_collisions(self, player_rect: pygame.Rect, energy_callback):
+        """Verifica colisiones entre el jugador y los objetos coleccionables"""
         for collectible in self.collectibles:
             if not collectible.collected and player_rect.colliderect(collectible.rect):
-                # Aplicar efecto específico según el tipo de objeto
+                # Aplicar efecto especifico segun el tipo de objeto
                 if isinstance(collectible, Escudo):
                     # Para escudos, necesitamos acceder al player directamente
-                    # El energy_callback debería ser una referencia al método que maneja escudos
-                    if hasattr(energy_callback, '__self__'):  # Si es un método bound
+                    if hasattr(energy_callback, '__self__'):
                         player = energy_callback.__self__
                         if hasattr(player, 'has_shield'):
                             player.has_shield = True
-                            player.shield_time = ESCUDO_DURACION
-                            print(f"¡Escudo recolectado! Protección por {ESCUDO_DURACION} segundos")
+                            # Usar duracion de escudo desde ability_system
+                            from src.systems.ability_system import ability_system
+                            enhanced_duration = ability_system.get_enhanced_shield_duration()
+                            player.shield_time = enhanced_duration
+                            player.max_shield_time = enhanced_duration
                 elif isinstance(collectible, pilas):
-                    # Para pilas, usar el callback de energía normal
+                    # Para pilas, usar la energia mejorada
                     if energy_callback:
-                        energy_callback(ENERGIA_PILA)
+                        battery_energy = self.get_battery_energy()
+                        energy_callback(battery_energy)
+                        
                 
                 # Marcar como recolectado
                 collectible.collect(None)
@@ -107,13 +106,21 @@ class CollectibleSpawner:
                 collectible_type = "escudo" if isinstance(collectible, Escudo) else "pila"
                 print(f"¡{collectible_type} recolectado en posicion ({collectible.rect.x}, {collectible.rect.y})!")
                 break
+    def set_enhanced_battery_energy(self, enhanced_energy: float):
+        """Configura la energia mejorada que dan las pilas"""
+        self.enhanced_battery_energy = enhanced_energy
+        print(f"Energia de pilas actualizada a: {enhanced_energy}")
+
+    def get_battery_energy(self) -> float:
+        """Obtiene la energia que dan las pilas """
+        return getattr(self, 'enhanced_battery_energy', ENERGIA_PILA)
     
     def get_collectibles(self) -> List:
         """Devuelve la lista de objetos coleccionables activos"""
         return [collectible for collectible in self.collectibles if not collectible.collected]
     
     def get_pilas(self) -> List[pilas]:
-        """Devuelve solo las pilas activas (compatibilidad con código existente)"""
+        """Devuelve solo las pilas activas (compatibilidad con codigo existente)"""
         return [collectible for collectible in self.collectibles 
                 if isinstance(collectible, pilas) and not collectible.collected]
     

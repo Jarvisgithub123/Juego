@@ -24,7 +24,7 @@ class LevelSelectScreen(Scene):
                 "description": "Uiabot debe entregar una paloma mensajera sospechosa.",
                 "background": "level2_bg", 
                 "available": True,
-                "characters": ["character_c", "character_a"],  # incluir character_a para que coincida con los diálogos
+                "characters": ["character_c", "character_a"],  # incluir character_a para que coincida con los dialogos
                 "preview_image": "level2_preview"
             },
             "level_3": {
@@ -32,7 +32,7 @@ class LevelSelectScreen(Scene):
                 "description": "Otra mision con Uiabot, esta vez debe entregar un paquete a un gato famoso.",
                 "background": "level3_bg", 
                 "available": True,
-                "characters": ["character_d", "character_a"],  # incluir character_a para que coincida con los diálogos
+                "characters": ["character_d", "character_a"],  # incluir character_a para que coincida con los dialogos
                 "preview_image": "level2_preview"
             }
             # Facil agregar mas niveles aqui

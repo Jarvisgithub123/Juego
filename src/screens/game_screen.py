@@ -28,14 +28,13 @@ class GameScreen(Scene):
         self.hud = GameHUD(resource_manager)
         
         selected_character = 'UIAbot'  # pj por defecto
-         # Intenta obtener el personaje seleccionado desde shared_data
+        # Obtener personaje seleccionado desde shared_data de forma robusta
         try:
-            if self.scene_manager and hasattr(self.scene_manager, 'game_manager') and self.scene_manager.game_manager:
-                if hasattr(self.scene_manager.game_manager, 'shared_data') and self.scene_manager.game_manager.shared_data:
-                    selected_character = self.scene_manager.game_manager.shared_data.get('selected_character', 'UIAbot')
-                    print(f"Personaje seleccionado : {selected_character}")
-                else:
-                    print("Warning: game_manager no tiene shared_data")
+            gm = getattr(self.scene_manager, 'game_manager', None)
+            if gm is not None:
+                shared = getattr(gm, 'shared_data', None) or {}
+                selected_character = shared.get('selected_character', 'UIAbot')
+                print(f"Personaje seleccionado : {selected_character}")
             else:
                 print("Warning: No se pudo acceder a game_manager")
         except Exception as e:
@@ -44,12 +43,10 @@ class GameScreen(Scene):
         
         self.game_mode = 'normal'  # Por defecto
         try:
-            if (self.scene_manager and hasattr(self.scene_manager, 'game_manager') 
-                and self.scene_manager.game_manager 
-                and hasattr(self.scene_manager.game_manager, 'shared_data') 
-                and self.scene_manager.game_manager.shared_data):
-                
-                self.game_mode = self.scene_manager.game_manager.shared_data.get('game_mode', 'normal')
+            gm = getattr(self.scene_manager, 'game_manager', None)
+            if gm is not None:
+                shared = getattr(gm, 'shared_data', None) or {}
+                self.game_mode = shared.get('game_mode', 'normal')
                 print(f"Modo de juego: {self.game_mode}")
         except Exception as e:
             print(f"Error al obtener modo de juego: {e}")
@@ -74,7 +71,7 @@ class GameScreen(Scene):
         self.victory = False
         self.energy_remaining = self.energias_individuales[self.player.get_current_character()]
         
-        #Variable para evitar game over mientras el escudo está activo
+        #Variable para evitar game over mientras el escudo esta activo
         self.shield_collision_just_happened = False
     
         if self.game_mode == 'infinite':
@@ -193,7 +190,7 @@ class GameScreen(Scene):
         #Usar CollectibleSpawner en lugar de PilaSpawner
         # Crear un wrapper para manejar tanto escudos como pilas
         def collectible_callback(amount):
-            """Callback que maneja tanto energía como escudos"""
+            """Callback que maneja tanto energia como escudos"""
             self.agregar_energia(amount)
         
         # Pasar el player como contexto para que el spawner pueda manejar escudos
@@ -218,22 +215,22 @@ class GameScreen(Scene):
     
     def _check_game_conditions(self):
         """Verifica condiciones de fin de juego - ACTUALIZADO con sistema de escudo"""
-        # Limpiar flag de colisión protegida cuando ya terminó el efecto visual
+        # Limpiar flag de colision protegida cuando ya termino el efecto visual
         if self.shield_collision_just_happened and not self.player.should_show_collision_effect():
             self.shield_collision_just_happened = False
 
-        # Si acabamos de absorber una colisión y aún estamos en la ventana de efecto,
+        # Si acabamos de absorber una colision y aun estamos en la ventana de efecto,
         # evitamos chequear nuevas colisiones para no repetir el problema.
         if self.shield_collision_just_happened:
-            # Aún en periodo post-absorción: no comprobar colisiones
+            # Aun en periodo post-absorcion: no comprobar colisiones
             pass
         else:
             # Verificar colisiones
             if self.car_spawner.check_collisions(self.player.rect):
                 # Considerar absorbida si el jugador tiene escudo activo O si
-                # aún está el efecto visual de absorción (por timing)
+                # aun esta el efecto visual de absorcion (por timing)
                 if self.player.is_protected() or self.player.should_show_collision_effect():
-                    # El escudo absorbe la colisión: activar efecto y marcar flag
+                    # El escudo absorbe la colision: activar efecto y marcar flag
                     self.player.activate_shield_collision_effect()
                     self.shield_collision_just_happened = True
 
@@ -244,7 +241,7 @@ class GameScreen(Scene):
                     except Exception:
                         pass
 
-                    print("¡Escudo protegió de la colisión!")
+                    print("¡Escudo protegio de la colision!")
                     # No procesar game over
                     return
                 else:
@@ -398,13 +395,13 @@ class GameScreen(Scene):
         self.renderer.draw_player(self.player, self.camera.x)
         self.renderer.draw_cars(self.car_spawner.get_cars(), self.camera.x)
         
-        #Usar el método unificado para dibujar todos los coleccionables
+        #Usar el metodo unificado para dibujar todos los coleccionables
         self.renderer.draw_collectibles(self.collectible_spawner.get_collectibles(), self.camera.x)
         
         # Dibujar UI
         if not self.game_over and not self.victory:
             autonomia_maxima_actual = self.player.obtener_autonomia_maxima()
-            #Pasar información del escudo al HUD
+            #Pasar informacion del escudo al HUD
             self.hud.draw(self.screen, self.energy_remaining, 
                          autonomia_maxima_actual, self.kilometers_remaining,
                          self.distancias_personajes, self.game_mode,

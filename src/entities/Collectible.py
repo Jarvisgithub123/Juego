@@ -8,9 +8,9 @@ class Collectible(pygame.sprite.Sprite, ABC):
     
     def __init__(self, resource_manager, image_name: str, *groups, 
                  width: int = DEFAULT_PILAS_WIDTH, height: int = DEFAULT_PILAS_HEIGHT):
-        # ACEPTAR llamadas donde width/height pueden haber sido pasados como últimos elementos en *groups.
+        # ACEPTAR llamadas donde width/height pueden haber sido pasados como ultimos elementos en *groups.
         groups_list = list(groups)
-        # Si los dos últimos elementos son ints, asumir que son width, height (en ese orden).
+        # Si los dos ultimos elementos son ints, asumir que son width, height (en ese orden).
         if len(groups_list) >= 2 and isinstance(groups_list[-1], int) and isinstance(groups_list[-2], int):
             # Extraer height y width desde el final
             height = groups_list.pop()
@@ -45,7 +45,7 @@ class Collectible(pygame.sprite.Sprite, ABC):
             self.rect.x -= self.speed
     
     def collect(self, robot):
-        """Método para recolectar el objeto - debe ser implementado por las subclases
+        """Metodo para recolectar el objeto - debe ser implementado por las subclases
         
         Args:
             robot: El robot que recolecta el objeto
@@ -57,12 +57,12 @@ class Collectible(pygame.sprite.Sprite, ABC):
     
     @abstractmethod
     def _apply_effect(self, robot):
-        """Aplica el efecto específico del objeto - debe ser implementado por subclases"""
+        """Aplica el efecto especifico del objeto - debe ser implementado por subclases"""
         pass
     
     @abstractmethod
     def _play_collection_sound(self):
-        """Reproduce el sonido de recolección - debe ser implementado por subclases"""
+        """Reproduce el sonido de recoleccion - debe ser implementado por subclases"""
         pass
     
     def is_active(self) -> bool:
@@ -70,5 +70,5 @@ class Collectible(pygame.sprite.Sprite, ABC):
         return not self.collected
         
     def get_effect_info(self) -> str:
-        """Retorna información sobre el efecto del objeto"""
+        """Retorna informacion sobre el efecto del objeto"""
         return "Objeto coleccionable base"

@@ -9,12 +9,12 @@ class pilas(Collectible):
     def __init__(self, resource_manager, *groups, width: int = DEFAULT_PILAS_WIDTH, height: int = DEFAULT_PILAS_HEIGHT):
         super().__init__(resource_manager, "pila", *groups, width, height)
         
-        # Configuración específica de las pilas
+        # Configuracion especifica de las pilas
         self.energy_amount = ENERGIA_PILA
-        self.effect_duration = 0.0  # Las pilas dan energía instantánea
+        self.effect_duration = 0.0  # Las pilas dan energia instantanea
     
     def _apply_effect(self, robot):
-        """Aplica el efecto específico de la pila - aumenta energía"""
+        """Aplica el efecto especifico de la pila - aumenta energia"""
         energia_anterior = robot.energia if hasattr(robot, 'energia') else 0
         
         # Aumentar la energia del robot sin exceder su maximo
@@ -26,11 +26,11 @@ class pilas(Collectible):
         print(f"¡Pila recolectada! +{self.energy_amount} segundos de energia")
     
     def _play_collection_sound(self):
-        """Reproduce el sonido de recolección de pila"""
-        # Aquí puedes agregar un sonido específico para las pilas
+        """Reproduce el sonido de recoleccion de pila"""
+        # Aqui puedes agregar un sonido especifico para las pilas
         # self.resource_manager.play_sound("collect_battery")
         pass
     
     def get_effect_info(self) -> str:
-        """Retorna información sobre el efecto de la pila"""
-        return f"Restaura {self.energy_amount} puntos de energía"
+        """Retorna informacion sobre el efecto de la pila"""
+        return f"Restaura {self.energy_amount} puntos de energia"
