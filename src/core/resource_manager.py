@@ -53,7 +53,7 @@ class ResourceManager:
         """Fuentes base para titulos, botones, HUD, etc."""
         self.fonts['titulo'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 90)
         self.fonts['subtitulo'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 40)
-        self.fonts['boton'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 55)
+        self.fonts['boton'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 48)
         self.fonts['pequeña'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 32)
         self.fonts['hud'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 32)
         self.fonts['instrucciones'] = pygame.font.Font("Assets/Fuentes/C&C Red Alert [INET].ttf", 36)

@@ -35,7 +35,7 @@ class LevelScreen(Scene):
                     {
                         "speaker": "character_a",
                         "name": "UIABOT",
-                        "text": "(Genial, un paquete misterioso. Ojala sea cafe asi podria simular que me importa.)",
+                        "text": "(Bien, un paquete misterioso. Ojala sea algo que salve a la humanidad... o al menos que tenga cafe.)",
                         "position": "left",
                         "emotion": 1
                     },
@@ -125,7 +125,7 @@ class LevelScreen(Scene):
                 {
                     "speaker": "character_d",
                     "name": "Claire Bluefield",
-                    "text": "Es MishiBot, la estrella de mis streams. La gente paga por verlo comer, por jugar (incluso por hacer sus necesidades).",
+                    "text": "Es MishiBot, la estrella de mis streams. La gente paga por verlo comer, por jugar.",
                     "position": "left",
                     "emotion": 1
                     
