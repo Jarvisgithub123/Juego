@@ -175,7 +175,7 @@ class SettingsScreen(Scene):
             self.screen.blit(help_surface, help_rect)
             for i, (slider, label) in enumerate(zip(self.sliders, self.slider_labels)):
                 # Etiqueta
-                label_surface = font_pequeña.render(label, True, COLOR_TEXTO_EN_FONDO)
+                label_surface = font_pequeña.render(label, True, COLOR_AMARILLO)
                 label_y = slider.pos[1] - 35
                 self.screen.blit(label_surface, (slider.slider_left_pos, label_y))
                 
