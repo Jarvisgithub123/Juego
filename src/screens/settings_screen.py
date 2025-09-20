@@ -17,7 +17,7 @@ class SettingsScreen(Scene):
         self.current_background = 0 
         
         # Etiquetas para los sliders
-        self.slider_labels = ["Volumen Música", "Volumen Efectos"]
+        self.slider_labels = ["Volumen Musica", "Volumen Efectos"]
         self.initial_music_volume = self.resource_manager.get_music_volume()
         self.initial_sound_volume = self.resource_manager.get_sound_volume()
         
@@ -32,13 +32,18 @@ class SettingsScreen(Scene):
         # CAMBIO: Posicionar botones a la derecha
         margin_from_right = 350  # Margen desde el borde derecho
         start_x =  button_width - margin_from_right
-        start_y = ALTO_PANTALLA // 2 - 80  # Ajustado para 3 botones
+        start_y = ALTO_PANTALLA // 2 - 40
         
-     
         self.sliders = [ 
-            Slider((start_x + button_width // 2, start_y - 100), (300, 20), 0.0, 1.0, self.initial_music_volume, self.resource_manager),
-            Slider((start_x + button_width // 2, start_y - 50), (300, 20), 0.0, 1.0, self.initial_sound_volume, self.resource_manager)
-                        ]
+            Slider((start_x + button_width // 2, start_y - 50), (300, 20), 0.0, 1.0, 
+                   self.initial_music_volume, self.resource_manager, self._update_music_volume),
+            Slider((start_x + button_width // 2, start_y ), (300, 20), 0.0, 1.0, 
+                   self.initial_sound_volume, self.resource_manager, self._update_sound_volume)
+        ]
+        
+        self._update_music_volume(self.initial_music_volume)
+        self._update_sound_volume(self.initial_sound_volume)
+        
         self.buttons = [
             Button("Controles", 
                    start_x, start_y + button_height + spacing,
@@ -47,6 +52,7 @@ class SettingsScreen(Scene):
                    start_x, start_y + 2 * (button_height + spacing),
                    button_width, button_height, self.resource_manager, self._return_to_menu)
         ]
+    
     def _draw_bordered_text(self, text: str, font: pygame.font.Font, pos: tuple, 
                            text_color: tuple, border_color: tuple, border_size: int = 4):
         """Dibuja texto con borde"""
@@ -64,7 +70,7 @@ class SettingsScreen(Scene):
         text_rect = text_surface.get_rect(center=(x, y))
         self.screen.blit(text_surface, text_rect)
     
-    # NUEVOS: Callbacks para actualizar audio
+    # Callbacks para actualizar audio
     def _update_music_volume(self, value):
         """Actualiza volumen de música cuando cambia el slider"""
         self.resource_manager.set_music_volume(value)
@@ -100,6 +106,11 @@ class SettingsScreen(Scene):
         
         for button in self.buttons:
             button.handle_event(event)
+        
+        for slider in self.sliders:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1 and slider.container_rect.collidepoint(event.pos):
+                    slider.move_slider(event.pos[0])
     
     def update(self, dt):
         """Actualiza la pantalla de configuracion"""
@@ -107,19 +118,10 @@ class SettingsScreen(Scene):
         for button in self.buttons:
             button.update(dt)
         
-        for i, slider in enumerate(self.sliders):
+        for slider in self.sliders:
             if slider.container_rect.collidepoint(pygame.mouse.get_pos()):
                 if pygame.mouse.get_pressed()[0]:
-                    old_value = slider.get_value()
                     slider.move_slider(pygame.mouse.get_pos()[0])
-                    new_value = slider.get_value()
-                    
-                    # Solo actualizar si cambió significativamente
-                    if abs(new_value - old_value) > 0.01:
-                        if i == 0:  # Slider de música
-                            self._update_music_volume(new_value)
-                        elif i == 1:  # Slider de efectos
-                            self._update_sound_volume(new_value)
         
         # ACTUALIZAR ANIMACIoN DE FONDO
         self.background_timer += dt
