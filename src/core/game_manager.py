@@ -53,7 +53,10 @@ class GameManager:
         self.resource_manager.load_image("cartel_uaibotina", "Assets/Imagenes/cartel_uaibotina.png")
         self.resource_manager.load_image("cartel_uaibota", "Assets/Imagenes/cartel_uaibota.png")
         self.resource_manager.load_image("cartel_uaibotino", "Assets/Imagenes/cartel_uaibotino.png")
-        self.resource_manager.load_image("avion", "Assets/Imagenes/avion_publicidad.png")
+
+
+        #AVION PUBLICITARIO
+        self.resource_manager.load_spritesheet("avion", "Assets/Sprites/avion_publicidad.png", 384, 256)
         
         # PERSONAJES 
         # UIAbot: tiene spritesheet con animacion
