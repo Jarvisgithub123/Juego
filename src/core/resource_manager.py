@@ -43,11 +43,16 @@ class ResourceManager:
         self.music_loaded = None          # ultima pista registrada
         self.music_tracks: Dict[str, str] = {}
         self.current_music_track = None
+        
         self.music_volume = 0.7
         self.music_enabled = True
         
+        self.sound_volume = 0.7
+        self.sound_enabled = True
+        
         # Fuentes por defecto .
         self._load_default_fonts()
+        self._music_was_paused_by_volume = False
     
     def _load_default_fonts(self):
         """Fuentes base para titulos, botones, HUD, etc."""
@@ -136,10 +141,11 @@ class ResourceManager:
 
     # ===== SONIDOS  =====
     def load_sound(self, name: str, path: str) -> bool:
-        """Carga un efecto de sonido y lo registra con 'name'."""
+        """Carga un efecto de sonido y aplica volumen actual"""
         try:
             if os.path.exists(path):
                 sound = pygame.mixer.Sound(path)
+                sound.set_volume(self.sound_volume)  # NUEVO: Aplicar volumen
                 self.sounds[name] = sound
                 return True
             else:
@@ -148,18 +154,42 @@ class ResourceManager:
         except Exception as e:
             print(f"Error cargando sonido {path}: {e}")
             return False
-    
+        
     def get_sound(self, name: str) -> Optional[pygame.mixer.Sound]:
         """Obtiene un sonido por nombre (o None)."""
         return self.sounds.get(name)
     
+    def set_sound_volume(self, volume: float):
+        """Fija el volumen global de efectos (0.0–1.0)."""
+        self.sound_volume = max(0.0, min(1.0, volume))
+        for sound in self.sounds.values():
+            sound.set_volume(self.sound_volume)
+        print(f"Volumen de efectos establecido a: {self.sound_volume:.2f}")    
+    
+    def get_sound_volume(self) -> float:
+        """Obtiene el volumen actual de efectos"""
+        return self.sound_volume
+    
     def play_sound(self, name: str) -> bool:
-        """Reproduce un sonido si esta cargado."""
+        """Reproduce un sonido con el volumen actual"""
+        if not self.sound_enabled:
+            return False
+            
         sound = self.get_sound(name)
         if sound:
+            # Aplicar volumen antes de reproducir
+            sound.set_volume(self.sound_volume)
             sound.play()
             return True
         return False
+
+    def enable_sound(self, enabled: bool):
+        """Activa/desactiva efectos de sonido"""
+        self.sound_enabled = enabled
+        if not enabled:
+            # Detener todos los sonidos
+            pygame.mixer.stop()
+        print(f"Efectos de sonido {'activados' if enabled else 'desactivados'}")
 
     # ===== MUSICA =====
     def load_music(self, name: str, path: str) -> bool:
@@ -208,14 +238,29 @@ class ResourceManager:
                         pygame.time.wait(fade_ms)
                     
                     pygame.mixer.music.load(path)
-                    pygame.mixer.music.set_volume(volume)
-                    pygame.mixer.music.play(loops)
                     self.current_music_track = name
-                    print(f"Reproduciendo musica: {name}")
+                    
+                    if self.music_volume == 0.0:
+                        pygame.mixer.music.set_volume(volume)
+                        pygame.mixer.music.play(loops)
+                        pygame.mixer.music.pause()  # Pausar inmediatamente si volumen es 0
+                        self._music_was_paused_by_volume = True
+                        print(f"Música cargada pero pausada por volumen 0: {name}")
+                    else:
+                        pygame.mixer.music.set_volume(volume)
+                        pygame.mixer.music.play(loops)
+                        print(f"Reproduciendo musica: {name}")
                     return True
                 else:
                     # Si es la misma pista, solo ajusta el volumen.
-                    pygame.mixer.music.set_volume(volume)
+                    if self.music_volume == 0.0:
+                        pygame.mixer.music.pause()
+                        self._music_was_paused_by_volume = True
+                    else:
+                        if hasattr(self, '_music_was_paused_by_volume') and self._music_was_paused_by_volume:
+                            pygame.mixer.music.unpause()
+                            self._music_was_paused_by_volume = False
+                        pygame.mixer.music.set_volume(volume)
                     return True
             except Exception as e:
                 print(f"Error reproduciendo musica {name}: {e}")
@@ -260,7 +305,24 @@ class ResourceManager:
     def set_music_volume(self, volume: float):
         """Fija el volumen global de musica (0.0–1.0)."""
         self.music_volume = max(0.0, min(1.0, volume))
-        pygame.mixer.music.set_volume(self.music_volume)
+        
+        if self.music_volume == 0.0:
+            if pygame.mixer.music.get_busy():
+                pygame.mixer.music.pause()
+                print("Música pausada por volumen 0")
+        else:
+            # Si el volumen no es 0 y la música estaba pausada, reanudarla
+            if hasattr(self, '_music_was_paused_by_volume') and self._music_was_paused_by_volume:
+                pygame.mixer.music.unpause()
+                self._music_was_paused_by_volume = False
+                print("Música reanudada")
+            pygame.mixer.music.set_volume(self.music_volume)
+            
+        # Marcar si pausamos por volumen 0
+        if self.music_volume == 0.0:
+            self._music_was_paused_by_volume = True
+        else:
+            self._music_was_paused_by_volume = False
     
     def get_music_volume(self) -> float:
         """Devuelve el volumen actual de musica."""

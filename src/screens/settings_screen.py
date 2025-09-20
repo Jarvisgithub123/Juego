@@ -2,18 +2,24 @@ import pygame
 from src.Constantes import *
 from src.core.scene_manager import Scene
 from src.UI.button import Button
-
+from src.UI.Slider import Slider
 class SettingsScreen(Scene):
     """Pantalla de configuracion"""
     
     def __init__(self, screen, resource_manager,scene_manager):
         super().__init__(screen, resource_manager,scene_manager)
         self.buttons = []
+        self.sliders = []
         
         # Variables para animacion de fondo
         self.background_timer = 0.0
         self.animation_speed = 0.5 
         self.current_background = 0 
+        
+        # Etiquetas para los sliders
+        self.slider_labels = ["Volumen Música", "Volumen Efectos"]
+        self.initial_music_volume = self.resource_manager.get_music_volume()
+        self.initial_sound_volume = self.resource_manager.get_sound_volume()
         
         self._create_buttons()
     
@@ -28,12 +34,12 @@ class SettingsScreen(Scene):
         start_x =  button_width - margin_from_right
         start_y = ALTO_PANTALLA // 2 - 80  # Ajustado para 3 botones
         
-        music_enabled = getattr(self.resource_manager, 'music_enabled', True)
-        
+     
+        self.sliders = [ 
+            Slider((start_x + button_width // 2, start_y - 100), (300, 20), 0.0, 1.0, self.initial_music_volume, self.resource_manager),
+            Slider((start_x + button_width // 2, start_y - 50), (300, 20), 0.0, 1.0, self.initial_sound_volume, self.resource_manager)
+                        ]
         self.buttons = [
-            Button(f"Musica: {'Activada' if music_enabled else 'Desactivada'}", 
-                   start_x, start_y,
-                   button_width, button_height, self.resource_manager, self._toggle_sound),
             Button("Controles", 
                    start_x, start_y + button_height + spacing,
                    button_width, button_height, self.resource_manager, self._show_controls),
@@ -57,25 +63,25 @@ class SettingsScreen(Scene):
         text_surface = font.render(text, True, text_color)
         text_rect = text_surface.get_rect(center=(x, y))
         self.screen.blit(text_surface, text_rect)
-    def _toggle_sound(self):
-        """Alterna el sonido"""
-        current_state = getattr(self.resource_manager, 'music_enabled', True)
-        new_state = not current_state
-        
-        # Cambiar el estado global de musica
-        self.resource_manager.enable_music(new_state)
-        
-        if new_state:
-            # Si se activa la musica, reproducir la musica actual o la del menu
-            current_music = self.resource_manager.get_current_music()
-            if current_music:
-                self.resource_manager.unpause_music()
-            else:
-                # Si no hay musica reproduciendose, iniciar la musica del menu
-                self.resource_manager.play_music("menu")
-        
-        # Actualizar texto del boton
-        self.buttons[0].text = f"Musica: {'Activada' if new_state else 'Desactivada'}"
+    
+    # NUEVOS: Callbacks para actualizar audio
+    def _update_music_volume(self, value):
+        """Actualiza volumen de música cuando cambia el slider"""
+        self.resource_manager.set_music_volume(value)
+        if (self.scene_manager and hasattr(self.scene_manager, 'game_manager') 
+            and self.scene_manager.game_manager 
+            and hasattr(self.scene_manager.game_manager, 'shared_data')):
+            self.scene_manager.game_manager.shared_data['music_volume'] = value
+        print(f"Volumen música: {value:.2f}")
+
+    def _update_sound_volume(self, value):
+        """Actualiza volumen de efectos cuando cambia el slider"""
+        self.resource_manager.set_sound_volume(value)
+        if (self.scene_manager and hasattr(self.scene_manager, 'game_manager') 
+            and self.scene_manager.game_manager 
+            and hasattr(self.scene_manager.game_manager, 'shared_data')):
+            self.scene_manager.game_manager.shared_data['sound_volume'] = value
+        print(f"Volumen efectos: {value:.2f}")
     
     def _show_controls(self):
         """Muestra la pantalla de controles"""
@@ -101,17 +107,26 @@ class SettingsScreen(Scene):
         for button in self.buttons:
             button.update(dt)
         
+        for i, slider in enumerate(self.sliders):
+            if slider.container_rect.collidepoint(pygame.mouse.get_pos()):
+                if pygame.mouse.get_pressed()[0]:
+                    old_value = slider.get_value()
+                    slider.move_slider(pygame.mouse.get_pos()[0])
+                    new_value = slider.get_value()
+                    
+                    # Solo actualizar si cambió significativamente
+                    if abs(new_value - old_value) > 0.01:
+                        if i == 0:  # Slider de música
+                            self._update_music_volume(new_value)
+                        elif i == 1:  # Slider de efectos
+                            self._update_sound_volume(new_value)
+        
         # ACTUALIZAR ANIMACIoN DE FONDO
         self.background_timer += dt
         if self.background_timer >= self.animation_speed:
             self.background_timer = 0.0
             self.current_background = 1 - self.current_background  # Alternar entre 0 y 1
         
-        # Actualizar texto del boton de musica si es necesario
-        music_enabled = getattr(self.resource_manager, 'music_enabled', True)
-        expected_text = f"Musica: {'Activada' if music_enabled else 'Desactivada'}"
-        if self.buttons[0].text != expected_text:
-            self.buttons[0].text = expected_text
     
     def draw(self):
         """Dibuja la pantalla de configuracion con fondo animado"""
@@ -156,7 +171,23 @@ class SettingsScreen(Scene):
             help_surface = font_pequeña.render("Presiona ESC para volver", True, COLOR_TEXTO_SUTIL_EN_FONDO)
             help_rect = help_surface.get_rect(center=(ANCHO_PANTALLA // 5, 180))
             self.screen.blit(help_surface, help_rect)
-
+            for i, (slider, label) in enumerate(zip(self.sliders, self.slider_labels)):
+                # Etiqueta
+                label_surface = font_pequeña.render(label, True, COLOR_TEXTO_EN_FONDO)
+                label_y = slider.pos[1] - 35
+                self.screen.blit(label_surface, (slider.slider_left_pos, label_y))
+                
+                # Valor actual
+                value_text = f"{int(slider.get_value() * 100)}%"
+                value_surface = font_pequeña.render(value_text, True, COLOR_AMARILLO)
+                value_rect = value_surface.get_rect()
+                value_rect.right = slider.slider_right_pos
+                value_rect.y = label_y
+                self.screen.blit(value_surface, value_rect)
+        
         # Botones (ya posicionados a la derecha)
         for button in self.buttons:
             button.draw(self.screen)
+        
+        for slider in self.sliders:
+            slider.draw(self.screen)

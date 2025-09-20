@@ -245,3 +245,9 @@ ESCUDO_SPAWN_CHANCE = 0.3  # 30% de probabilidad de generar escudo en lugar de p
 # === CONSTANTES PARA EFECTOS VISUALES ===
 SHIELD_EFFECT_DURATION = 300  # Duracion del efecto visual de impacto en milisegundos
 COLLISION_FLASH_DURATION = 200  # Duracion del flash al colisionar con escudo
+# ===== RUTAS DE RECURSOS (DEPRECADO - USAR RESOURCE_MANAGER) =====
+
+# ===== CONSTANTES DE AUDIO ACTUALIZADAS =====
+DEFAULT_SOUND_VOLUME = 0.7      # Volumen por defecto de efectos
+MIN_VOLUME = 0.0                # Volumen mínimo
+MAX_VOLUME = 1.0                # Volumen máximo

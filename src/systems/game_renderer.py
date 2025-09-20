@@ -348,7 +348,11 @@ class GameRenderer:
         
         # Dibujar la línea divisoria del piso
         pygame.draw.line(self.screen, line_color, (0, PISO_POS_Y), (PANTALLA_ANCHO, PISO_POS_Y), 3)
-        
+    def draw_planes(self, planes, camera_x):
+      for plane in planes:
+        screen_x = plane["x"] - camera_x
+        self.screen.blit(plane["img"], (screen_x, plane["y"]))
+    
     def draw_player(self, player: Player, camera_x: float):
         """Dibuja el jugador con efectos visuales del escudo"""
         screen_x = player.rect.x - camera_x
@@ -366,7 +370,11 @@ class GameRenderer:
             self._draw_player_sprite(player, screen_x, screen_y)
         else:
             self._draw_player_fallback(player, screen_x, screen_y)
-    
+    def draw_planes(self, planes, camera_x):
+      for plane in planes:
+        screen_x = plane["x"] - camera_x
+        self.screen.blit(plane["img"], (screen_x, plane["y"]))
+
     def _draw_shield_effect(self, player: Player, camera_x: float):
         """Dibuja el efecto visual del escudo activo"""
         screen_x = player.rect.x - camera_x + player.rect.width // 2

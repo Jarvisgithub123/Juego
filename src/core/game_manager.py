@@ -27,9 +27,15 @@ class GameManager:
         
         self.running = True
         self.shared_data = {
-            'selected_character': 'UIAbot'  
+            'selected_character': 'UIAbot',
+            'music_volume': DEFAULT_MUSIC_VOLUME,
+            'sound_volume': 0.7  # NUEVO: Volumen de efectos por defecto  
         }
 
+         # Aplicar configuración inicial de audio
+        self.resource_manager.set_music_volume(DEFAULT_MUSIC_VOLUME)
+        self.resource_manager.set_sound_volume(0.7)
+        
     def _load_initial_resources(self):
         """Carga los recursos iniciales del juego"""
         # imagenes estaticas
@@ -54,6 +60,7 @@ class GameManager:
         self.resource_manager.load_image("cartel_uaibotina", "Assets/Imagenes/cartel_uaibotina.png")
         self.resource_manager.load_image("cartel_uaibota", "Assets/Imagenes/cartel_uaibota.png")
         self.resource_manager.load_image("cartel_uaibotino", "Assets/Imagenes/cartel_uaibotino.png")
+        self.resource_manager.load_image("avion", "Assets/Imagenes/avion_publicidad.png")
         
         # PERSONAJES 
         # UIAbot: tiene spritesheet con animacion
@@ -66,8 +73,7 @@ class GameManager:
         #MISIONES
         
         #NPCS
-        self.resource_manager.load_spritesheet("character_b", "Assets/Sprites/Misiones/npc_1.png",450, 780)
-        self.resource_manager.load_spritesheet("character_a", "Assets/Sprites/Misiones/Uiabot_talk.png",450, 780)
+        self.resource_manager.load_spritesheet("character_a", "Assets/Sprites/Misiones/Uiabot_talk.png",450, 780)      
         self.resource_manager.load_spritesheet("character_c", "Assets/Sprites/Misiones/npc_2.png",450, 780)
         self.resource_manager.load_spritesheet("character_d", "Assets/Sprites/Misiones/npc_3.png",450, 780)
         self.resource_manager.load_spritesheet("character_e", "Assets/Sprites/Misiones/npc_4.png",450, 780)
