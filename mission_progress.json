@@ -1,10 +1,4 @@
 {
-  "unlocked_abilities": [
-    "dash",
-    "enhanced_batteries"
-  ],
-  "completed_missions": [
-    "level_2",
-    "level_1"
-  ]
+  "unlocked_abilities": [],
+  "completed_missions": []
 }
