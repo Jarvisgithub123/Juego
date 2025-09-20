@@ -99,6 +99,7 @@ class GameManager:
         self.resource_manager.load_sound("game_over", "Assets/Music/Game-over.mp3")
         self.resource_manager.load_sound("victoria", "Assets/Music/Win.mp3")
         self.resource_manager.load_sound("cambio_personaje", "Assets/Music/cambio_personaje.mp3")
+        self.resource_manager.load_sound("reiniciar", "Assets/Music/reiniciar.mp3")
         
         # musica
         self.resource_manager.load_music("menu", "Assets/Music/Music-menu.mp3")
