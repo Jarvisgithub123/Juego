@@ -238,19 +238,13 @@ class MissionGameScreen(Scene):
                 if self.player.is_protected() or self.player.should_show_collision_effect():
                     self.player.activate_shield_collision_effect()
                     self.shield_collision_just_happened = True
-                    
-                    # Aplicar duracion mejorada del escudo
-                    enhanced_duration = ability_system.get_enhanced_shield_duration()
-                    if self.player.has_shield:
-                        self.player.shield_time = enhanced_duration
-                        self.player.max_shield_time = enhanced_duration
-                    
+                
                     try:
                         self.player.rect.x += 60
                     except Exception:
                         pass
                     
-                    print("¡Escudo protegio de la colision!")
+                    print("¡Escudo protegió de la colisión!")
                     return
                 else:
                     self._trigger_game_over()

@@ -81,30 +81,36 @@ class CollectibleSpawner:
         """Verifica colisiones entre el jugador y los objetos coleccionables"""
         for collectible in self.collectibles:
             if not collectible.collected and player_rect.colliderect(collectible.rect):
-                # Aplicar efecto especifico segun el tipo de objeto
+                # Aplicar efecto específico según el tipo de objeto
                 if isinstance(collectible, Escudo):
                     # Para escudos, necesitamos acceder al player directamente
                     if hasattr(energy_callback, '__self__'):
                         player = energy_callback.__self__
                         if hasattr(player, 'has_shield'):
                             player.has_shield = True
-                            # Usar duracion de escudo desde ability_system
-                            from src.systems.ability_system import ability_system
-                            enhanced_duration = ability_system.get_enhanced_shield_duration()
-                            player.shield_time = enhanced_duration
-                            player.max_shield_time = enhanced_duration
+                            # Usar duración mejorada SOLO al recoger el escudo
+                            try:
+                                from src.systems.ability_system import ability_system
+                                enhanced_duration = ability_system.get_enhanced_shield_duration()
+                                player.shield_time = enhanced_duration
+                                player.max_shield_time = enhanced_duration
+                                print(f"Escudo activado con duración mejorada: {enhanced_duration}s")
+                            except ImportError:
+                                # Fallback si no hay ability_system
+                                player.shield_time = ESCUDO_DURACION
+                                player.max_shield_time = ESCUDO_DURACION
+                                print(f"Escudo activado con duración normal: {ESCUDO_DURACION}s")
                 elif isinstance(collectible, pilas):
-                    # Para pilas, usar la energia mejorada
+                    # Para pilas, usar la energía mejorada
                     if energy_callback:
                         battery_energy = self.get_battery_energy()
                         energy_callback(battery_energy)
-                        
                 
                 # Marcar como recolectado
                 collectible.collect(None)
                 
                 collectible_type = "escudo" if isinstance(collectible, Escudo) else "pila"
-                print(f"¡{collectible_type} recolectado en posicion ({collectible.rect.x}, {collectible.rect.y})!")
+                print(f"¡{collectible_type} recolectado en posición ({collectible.rect.x}, {collectible.rect.y})!")
                 break
     def set_enhanced_battery_energy(self, enhanced_energy: float):
         """Configura la energia mejorada que dan las pilas"""
