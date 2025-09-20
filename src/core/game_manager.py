@@ -74,6 +74,8 @@ class GameManager:
         
         #NPCS
         self.resource_manager.load_spritesheet("character_a", "Assets/Sprites/Misiones/Uiabot_talk.png",450, 780)      
+        self.resource_manager.load_spritesheet("character_b", "Assets/Sprites/Misiones/npc_1.png",450, 780)      
+        
         self.resource_manager.load_spritesheet("character_c", "Assets/Sprites/Misiones/npc_2.png",450, 780)
         self.resource_manager.load_spritesheet("character_d", "Assets/Sprites/Misiones/npc_3.png",450, 780)
         self.resource_manager.load_spritesheet("character_e", "Assets/Sprites/Misiones/npc_4.png",450, 780)

@@ -166,7 +166,7 @@ class GameHUD:
         y_start = PANTALLA_ALTO - 120
         
         # En modo normal, dash siempre disponible. En modo misión, verificar habilidades
-        dash_available = True if game_mode == 'normal' else ability_system.can_dash()
+        dash_available = True if game_mode == 'normal' or game_mode=="infinite" else ability_system.can_dash()
         
         # Lista de instrucciones con sus condiciones
         instructions_to_show = [
