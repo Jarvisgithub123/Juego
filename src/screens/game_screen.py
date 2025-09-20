@@ -378,10 +378,14 @@ class GameScreen(Scene):
         # Guardar estadisticas antes de reiniciar
         self._save_game_statistics()
         
+        # reproducir sonido de respawn antes
+        self.resource_manager.play_sound("reiniciar")      
+        # pausa para que se escuche el sonido
+        pygame.time.wait(500)  # 500ms de espera
+        
         pygame.mixer.stop()
         from src.screens.game_screen import GameScreen
         self.scene_manager.change_scene(GameScreen)
-    
     def _return_to_menu(self):
         """Regresa al menu principal"""
         # Guardar estadisticas antes de volver al menu
