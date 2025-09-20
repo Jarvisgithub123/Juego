@@ -43,7 +43,7 @@ class Slider:
         progress_width = max(0, button_center - self.slider_left_pos)
         if progress_width > 0:
             progress_rect = pygame.Rect(self.slider_left_pos, track_rect.y, 
-                                      progress_width, track_rect.height)
+                                    progress_width, track_rect.height)
             pygame.draw.rect(screen, (70, 130, 255), progress_rect)  # Azul del juego
             pygame.draw.rect(screen, (100, 160, 255), progress_rect, 1)  # Borde más claro
         
@@ -83,14 +83,11 @@ class Slider:
         # Posicionar el botón (esquina izquierda = centro - 5)
         self.button_rect.x = button_center - 5
         
-        # Ejecutar callback si existe
-        if hasattr(self, 'callback') and self.callback:
+        if self.callback:
             new_value = self.get_value()
-            if not hasattr(self, 'current_value'):
-                self.current_value = new_value
-            if abs(new_value - self.current_value) > 0.01:
-                self.current_value = new_value
-                self.callback(new_value)
+            # Siempre ejecutar callback para asegurar que se aplique el volumen
+            self.current_value = new_value
+            self.callback(new_value)
 
     def get_value(self):
         """Obtiene el valor actual del slider"""
