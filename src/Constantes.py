@@ -240,3 +240,8 @@ MAX_CAR_POOL_SIZE = 15
 AVAILABLE_CAR_POOL_LIMIT = 6
 
 # ===== RUTAS DE RECURSOS (DEPRECADO - USAR RESOURCE_MANAGER) =====
+
+# ===== CONSTANTES DE AUDIO ACTUALIZADAS =====
+DEFAULT_SOUND_VOLUME = 0.7      # Volumen por defecto de efectos
+MIN_VOLUME = 0.0                # Volumen mínimo
+MAX_VOLUME = 1.0                # Volumen máximo

@@ -27,9 +27,15 @@ class GameManager:
         
         self.running = True
         self.shared_data = {
-            'selected_character': 'UIAbot'  
+            'selected_character': 'UIAbot',
+            'music_volume': DEFAULT_MUSIC_VOLUME,
+            'sound_volume': 0.7  # NUEVO: Volumen de efectos por defecto  
         }
 
+         # Aplicar configuración inicial de audio
+        self.resource_manager.set_music_volume(DEFAULT_MUSIC_VOLUME)
+        self.resource_manager.set_sound_volume(0.7)
+        
     def _load_initial_resources(self):
         """Carga los recursos iniciales del juego"""
         # imagenes estaticas
