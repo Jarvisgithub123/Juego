@@ -147,24 +147,36 @@ class LevelScreen(Scene):
             "level_4": [
                 {   "speaker": "character_a",
                     "name": "UIABOT",
-                    "text": "(Oh oh...esta persona se ve un poco demasiado intimidante..espero no me pida nada raro..)",
+                    "text": "(Oh oh...esta persona se ve un poco, no, demasiado intimidante..espero no me pida nada raro..)",
                     "position": "right",
                     "emotion": 0
                 },
                 {
                     "speaker": "character_e",
                     "name": "Sr.Kujo",
-                    "text": "Hola, no tengo tiempo para charla, entrega este paquete a esta direccion. Rapido.",
+                    "text": "Hola, no tengo tiempo para hablar, entrega este paquete a esta direccion. Rapido.",
                     "position": "left"
                 },
-                
+                {   "speaker": "character_a",
+                    "name": "UIABOT",
+                    "text": "(Que miedo...) si, enseguida!... Se puede saber que hay dentro del paquete? es por seguridad de la empresa.",
+                    "position": "right",
+                    "emotion": 0
+                },
+                {
+                    "speaker": "character_e",
+                    "name": "Sr.Kujo",
+                    "text": "Es una reliquia muy fragil, necesito que llegue a salvo...ah...y cuidado al entregarlo, no te pinches.",
+                    "position": "left"
+                },
+                {   "speaker": "character_a",
+                    "name": "UIABOT",
+                    "text": "Seguro... Nos vemos! (Que no me pinche? que circuitos quiso decir...)",
+                    "position": "right",
+                    "emotion": 0
+                }
             ]
         }
-        #UIABOT: (Que miedo...) si, enseguida!... Se puede saber que hay dentro del paquete?
-
-#Sr.Kujo: Es una reliquia muy frágil, necesito que llegue a salvo...ah...y cuidado al entregarlo, no te pinches.
-
-#UIBOT: Seguro... Nos vemos! (Que no me pinche? que circuitos quiso decir...)
         # Estado del dialogo
         self.current_dialog_index = 0
         self.dialog_finished = False

@@ -16,6 +16,9 @@ class GameRenderer:
         self.world_scroll_x = 0
         self.world_scroll_speed = 30
 
+        # Inicializar modo noche por defecto
+        self.is_night_mode = False
+
             
         # Cache para superficies escaladas
         self.scaled_backgrounds = {}
@@ -32,7 +35,87 @@ class GameRenderer:
         
         self._init_background_system()
         self._prerender_static_texts()
-    
+    def set_night_mode(self, is_night_mode: bool = False):
+        """Configura el renderer para usar fondos nocturnos"""
+        self.is_night_mode = is_night_mode
+        
+        if is_night_mode:
+            # Recargar con fondos nocturnos
+            night_layers = [
+                ("bg_sky_night", 0),
+                ("bg_mid_night", 2)
+            ]
+            night_front_options = ["bg_front_night", "bg_front_night_2"]
+        else:
+            # Fondos diurnos normales
+            night_layers = [
+                ("bg_sky", 0),
+                ("bg_mid", 2)
+            ]
+            night_front_options = ["bg_front", "bg_front2"]
+        
+        # Limpiar capas existentes
+        self.bg_layers.clear()
+        
+        # Recargar capas con el conjunto apropiado
+        for layer_name, parallax_factor in night_layers:
+            if layer_name not in self.scaled_backgrounds:
+                image = self.resource_manager.get_image(layer_name)
+                if image:
+                    scaled_image = pygame.transform.scale(image, (PANTALLA_ANCHO, PANTALLA_ALTO))
+                    scaled_image = scaled_image.convert_alpha()
+                else:
+                    # Fallback apropiado según el modo
+                    fallback_color = (10, 10, 30) if is_night_mode else (30, 30, 30)
+                    scaled_image = pygame.Surface((PANTALLA_ANCHO, PANTALLA_ALTO))
+                    scaled_image.fill(fallback_color)
+                    scaled_image = scaled_image.convert()
+                
+                self.scaled_backgrounds[layer_name] = scaled_image
+            
+            self.bg_layers.append({
+                "name": layer_name,
+                "image": self.scaled_backgrounds[layer_name],
+                "parallax_factor": parallax_factor,
+                "width": self.scaled_backgrounds[layer_name].get_width()
+            })
+        
+        # Actualizar opciones de frente
+        self.front_options.clear()
+        for name in night_front_options:
+            if name not in self.scaled_backgrounds:
+                image = self.resource_manager.get_image(name)
+                if image:
+                    scaled = pygame.transform.scale(image, (PANTALLA_ANCHO, PANTALLA_ALTO)).convert_alpha()
+                else:
+                    fallback_color = (20, 20, 40) if is_night_mode else (40, 40, 40)
+                    scaled = pygame.Surface((PANTALLA_ANCHO, PANTALLA_ALTO))
+                    scaled.fill(fallback_color)
+                    scaled = scaled.convert()
+                self.scaled_backgrounds[name] = scaled
+            
+            if self.resource_manager.get_image(name):
+                self.front_options.append(name)
+        
+        # Si no hay opciones reales, usar al menos la primera
+        if not self.front_options:
+            self.front_options = [night_front_options[0]]
+        
+        # Elegir variante inicial
+        self.current_front_name = random.choice(self.front_options)
+        front_image = self.scaled_backgrounds[self.current_front_name]
+        
+        # Limpiar el mapa de tiles para empezar fresh
+        self.front_tile_map.clear()
+        self.last_front_segment = -1
+        
+        self.bg_layers.append({
+            "name": "front_dynamic",
+            "image": front_image,
+            "parallax_factor": 3.6,
+            "width": front_image.get_width()
+        })
+        
     def color_aleatorio(self):
         """Actualiza el efecto de parpadeo y cambio de color"""
         tiempo_actual = pygame.time.get_ticks() // 500
@@ -247,14 +330,25 @@ class GameRenderer:
             self.last_camera_x = camera_x
     
     def draw_floor(self):
-        """Dibuja el piso del juego"""
-        # Usar una superficie cacheada para el piso si es posible
+        """Dibuja el piso del juego, cambia color si es modo noche"""
+        # Verificar si tenemos modo noche configurado
+        is_night = getattr(self, 'is_night_mode', False)
+        
+        if is_night:
+            floor_color = (98, 98, 179)  # Color azul oscuro para la noche
+            line_color = (150, 150, 220)  # Línea más clara para contraste nocturno
+        else:
+            floor_color = COLOR_FONDO  # Color original del día
+            line_color = COLOR_LINEA_PISO  # Línea original del día
+        
+        # Dibujar el rectángulo del piso
         floor_height = PANTALLA_ALTO - PISO_POS_Y
         floor_rect = pygame.Rect(0, PISO_POS_Y, PANTALLA_ANCHO, floor_height)
-        pygame.draw.rect(self.screen, COLOR_FONDO, floor_rect)
-        pygame.draw.line(self.screen, COLOR_LINEA_PISO, 
-                        (0, PISO_POS_Y), (PANTALLA_ANCHO, PISO_POS_Y), 3)
-    
+        pygame.draw.rect(self.screen, floor_color, floor_rect)
+        
+        # Dibujar la línea divisoria del piso
+        pygame.draw.line(self.screen, line_color, (0, PISO_POS_Y), (PANTALLA_ANCHO, PISO_POS_Y), 3)
+        
     def draw_player(self, player: Player, camera_x: float):
         """Dibuja el jugador con efectos visuales del escudo"""
         screen_x = player.rect.x - camera_x
