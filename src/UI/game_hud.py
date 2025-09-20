@@ -1,6 +1,7 @@
 import pygame
 from src.Constantes import *
 import math
+from src.systems.ability_system import ability_system
 
 
 #TODO: Añadir iconos
@@ -96,7 +97,7 @@ class GameHUD:
         if shield_time > 0:
             self._draw_shield_indicator(screen, shield_time)
         
-        self._draw_cached_instructions(screen)
+        self._draw_cached_instructions(screen, game_mode)
         
         if distancias_personajes:
             self._draw_distances_panel(screen, distancias_personajes)
@@ -160,13 +161,25 @@ class GameHUD:
             if pulse > 0.3:
                 screen.blit(symbol_surface, (symbol_x, symbol_y))
 
-    def _draw_cached_instructions(self, screen):
-        """Dibuja instrucciones usando cache"""
+    def _draw_cached_instructions(self, screen, game_mode='normal'):
+        """Dibuja instrucciones usando cache, ocultando dash según el modo de juego"""
         y_start = PANTALLA_ALTO - 120
-        for i, key in enumerate(['space', 'z', 'c']):
-            if key in self.cached_instruction_texts:
-                screen.blit(self.cached_instruction_texts[key], 
-                           (20, y_start + i * 30))
+        
+        # En modo normal, dash siempre disponible. En modo misión, verificar habilidades
+        dash_available = True if game_mode == 'normal' or game_mode=="infinite" else ability_system.can_dash()
+        
+        # Lista de instrucciones con sus condiciones
+        instructions_to_show = [
+            ('space', True),  # Saltar siempre disponible
+            ('z', dash_available),  # Dash según modo
+            ('c', True)  # Cambiar personaje siempre disponible
+        ]
+        
+        current_y = y_start
+        for key, should_show in instructions_to_show:
+            if should_show and key in self.cached_instruction_texts:
+                screen.blit(self.cached_instruction_texts[key], (20, current_y))
+            current_y += 30
                 
     def _draw_distances_panel(self, screen: pygame.Surface, distancias_personajes: dict):
         # Configuracion del panel

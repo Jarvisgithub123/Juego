@@ -35,9 +35,17 @@ class LevelSelectScreen(Scene):
                 "characters": ["character_d", "character_a"],  # incluir character_a para que coincida con los dialogos
                 
             }
+            ,
+            "level_4": {
+                "name": "Estrella platinada: La entrega",
+                "description": "Uiabot debe entregar una reliquia muy importante\na un cliente misterioso...",
+                "background": "level4_bg", 
+                "available": True,
+                "characters": ["character_e", "character_a"],  # incluir character_a para que coincida con los dialogos
+            }
             # Facil agregar mas niveles aqui
         }
-        
+    
         self.level_keys = list(self.levels_data.keys())
         self.selected_level_index = 0
         self.buttons = []

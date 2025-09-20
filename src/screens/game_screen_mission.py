@@ -47,6 +47,11 @@ class MissionGameScreen(Scene):
         except Exception as e:
             print(f"Error al obtener datos de mision: {e}")
         
+        # Configurar modo noche SOLO después de tener mission_key
+        if self.mission_key == 'level_4':
+            self.renderer.set_night_mode(True)
+            
+        
         # Crear jugador
         self.player = Player(100, PISO_POS_Y - 60, GRAVEDAD, resource_manager, selected_character)
         
@@ -132,7 +137,7 @@ class MissionGameScreen(Scene):
                 if ability_system.can_dash():
                     self.player.dash(self._consume_energy)
                 else:
-                    print("Dash no disponible - completa mas misiones para desbloquearlo")
+                    pass
             elif event.key == pygame.K_p:
                 self.pause = not self.pause
             elif self.pause:
@@ -388,12 +393,12 @@ class MissionGameScreen(Scene):
         # Dibujar UI
         if not self.game_over and not self.victory and not self.mission_completed:
             autonomia_maxima_actual = self.player.obtener_autonomia_maxima()
-            enhanced_shield_time = ability_system.get_enhanced_shield_duration() if self.player.has_shield else self.player.get_shield_time_remaining()
-            
+            # Corregido: pasar el tiempo real de escudo restante
+            shield_time = self.player.get_shield_time_remaining()
             self.hud.draw(self.screen, self.energy_remaining, 
                          autonomia_maxima_actual, self.kilometers_remaining,
                          self.distancias_personajes, 'mission',
-                         enhanced_shield_time)
+                         shield_time)
         
         # Pantalla de mision completada
         if self.mission_completed:
@@ -414,3 +419,4 @@ class MissionGameScreen(Scene):
             text = font.render("Mision Pausada", True, (255, 255, 255))
             rect = text.get_rect(center=(PANTALLA_ANCHO // 2, PANTALLA_ALTO // 2))
             self.screen.blit(text, rect)
+            

@@ -9,9 +9,9 @@ class PlaneSpawner:
         
         test_img = self.resource_manager.get_image("avion")
         if test_img:
-            print("✓ Imagen de avión cargada correctamente")
+            print("Imagen de avión cargada correctamente")
         else:
-            print("✗ ERROR: No se pudo cargar la imagen del avión")
+            print("ERROR: No se pudo cargar la imagen del avión")
 
     def update(self, delta_time, camera_x):
         self.timer += delta_time * 1000  
