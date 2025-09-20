@@ -207,12 +207,7 @@ TEXT_BORDER_SIZE_DEFAULT = 2
 TEXT_BORDER_SIZE_TITLE = 3
 TEXT_BORDER_SIZE_LARGE = 4
 
-# ===== CONSTANTES DE AUDIO =====
 
-# Volumenes por defecto
-DEFAULT_MUSIC_VOLUME = 0.7
-MENU_MUSIC_VOLUME = 0.5
-GAME_MUSIC_VOLUME = 0.6
 
 # ===== CONSTANTES DE BACKGROUND Y PARALLAX =====
 
@@ -251,3 +246,8 @@ COLLISION_FLASH_DURATION = 200  # Duracion del flash al colisionar con escudo
 DEFAULT_SOUND_VOLUME = 0.7      # Volumen por defecto de efectos
 MIN_VOLUME = 0.0                # Volumen mínimo
 MAX_VOLUME = 1.0                # Volumen máximo
+
+# Volumenes por defecto
+DEFAULT_MUSIC_VOLUME = 0.7
+MENU_MUSIC_VOLUME = 0.5
+GAME_MUSIC_VOLUME = 0.6

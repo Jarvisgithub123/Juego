@@ -46,6 +46,13 @@ class GameManager:
         self.resource_manager.load_image("bg_mid", "Assets/Imagenes/Background/bg_mid.png")
         self.resource_manager.load_image("bg_front", "Assets/Imagenes/Background/bg_front1.png")
         self.resource_manager.load_image("bg_front2", "Assets/Imagenes/Background/bg_front2.png")
+        
+        self.resource_manager.load_image("bg_sky_night", "Assets/Imagenes/Background/background_back_night.png")
+        self.resource_manager.load_image("bg_mid_night", "Assets/Imagenes/Background/background_mid_night.png")
+        self.resource_manager.load_image("bg_front_night", "Assets/Imagenes/Background/background_front_night.png")
+        self.resource_manager.load_image("bg_front_night_2", "Assets/Imagenes/Background/backgorund_front_nigth_2.png")
+        
+        
         self.resource_manager.load_image("pila", "Assets/Imagenes/bateria.png")
         self.resource_manager.load_image("escudo", "Assets/Imagenes/escudo.png")
         self.resource_manager.load_image("cartel", "Assets/Imagenes/Background/billboard.png")
@@ -70,13 +77,17 @@ class GameManager:
         
         #NPCS
         self.resource_manager.load_spritesheet("character_a", "Assets/Sprites/Misiones/Uiabot_talk.png",450, 780)      
+        self.resource_manager.load_spritesheet("character_b", "Assets/Sprites/Misiones/npc_1.png",450, 780)      
+        
         self.resource_manager.load_spritesheet("character_c", "Assets/Sprites/Misiones/npc_2.png",450, 780)
         self.resource_manager.load_spritesheet("character_d", "Assets/Sprites/Misiones/npc_3.png",450, 780)
+        self.resource_manager.load_spritesheet("character_e", "Assets/Sprites/Misiones/npc_4.png",450, 780)
         
         #FONDOS DE MISIONES
         self.resource_manager.load_image("level1_bg", "Assets/Imagenes/Background/fondo_mision_1.png")
-        self.resource_manager.load_image("level2_bg", "Assets/Imagenes/Background/fondo_mision_2.png")     
-        
+        self.resource_manager.load_image("level2_bg", "Assets/Imagenes/Background/fondo_mision_2.png")
+        self.resource_manager.load_image("level3_bg", "Assets/Imagenes/Background/fondo_mision_3.png")
+        self.resource_manager.load_image("level4_bg", "Assets/Imagenes/Background/fondo_mision_4.png")
         # spritesheets de autos
         self.resource_manager.load_spritesheet("Auto_azul", "Assets/Sprites/Autos/Auto-azul.png", 126, 86)
         self.resource_manager.load_spritesheet("Auto_rojo", "Assets/Sprites/Autos/Auto-rojo.png", 126, 86)
