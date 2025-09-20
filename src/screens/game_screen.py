@@ -7,6 +7,7 @@ from src.core.Camera import Camera
 from src.systems.car_spawner import CarSpawner
 from src.systems.Collectible_spawner import CollectibleSpawner
 from src.systems.game_renderer import GameRenderer
+from src.systems.avion_spawn import PlaneSpawner
 import csv
 import os
 from datetime import datetime
@@ -25,6 +26,7 @@ class GameScreen(Scene):
         #Reemplazar pila_spawner con collectible_spawner
         self.collectible_spawner = CollectibleSpawner(resource_manager)
         self.renderer = GameRenderer(screen, resource_manager)
+        self.plane_spawner = PlaneSpawner(resource_manager)
         self.hud = GameHUD(resource_manager)
         
         selected_character = 'UIAbot'  # pj por defecto
@@ -142,6 +144,8 @@ class GameScreen(Scene):
             self._update_game_systems(delta_time)
             self._update_entities(delta_time)
             self._check_game_conditions()
+            self.plane_spawner.update(delta_time, self.camera.x)
+
             
             # Actualizar tracking de distancias
             self._update_distance_tracking(delta_time)
@@ -394,6 +398,7 @@ class GameScreen(Scene):
         self.renderer.draw_floor()
         self.renderer.draw_player(self.player, self.camera.x)
         self.renderer.draw_cars(self.car_spawner.get_cars(), self.camera.x)
+        self.renderer.draw_planes(self.plane_spawner.get_planes(), self.camera.x)
         
         #Usar el metodo unificado para dibujar todos los coleccionables
         self.renderer.draw_collectibles(self.collectible_spawner.get_collectibles(), self.camera.x)
