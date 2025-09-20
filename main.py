@@ -3,6 +3,7 @@ import sys
 import cProfile
 import pstats
 import io
+import traceback
 from src.core.game_manager import GameManager
 
 def main():
@@ -16,7 +17,52 @@ def main():
     finally:
         pygame.quit()
         sys.exit()
+def main_debug():
+    """Ejecuta el juego y, si ocurre un error, muestra archivo y linea exacta."""
+    try:
+        pygame.init()
+        game = GameManager()
+        game.run()
+    except Exception as e:
+        # Extraer lista de frames del traceback
+        tb_list = traceback.extract_tb(e.__traceback__)
+        if tb_list:
+            last = tb_list[-1]
+            filename = last.filename
+            lineno = last.lineno
+            func = last.name
+            line_text = last.line
+            print(f"ERROR: excepcion en {filename}, linea {lineno}, funcion {func}")
+            if line_text:
+                print(f"  Codigo: {line_text.strip()}")
+        else:
+            print("ERROR: excepcion sin traceback disponible")
 
+        # Imprimir traceback completo en consola
+        print("\nTraceback completo:")
+        traceback.print_exc()
+
+        # Guardar informe en archivo para inspeccion posterior
+        try:
+            with open("crash_report.txt", "w", encoding="utf-8") as f:
+                f.write("ERROR: excepcion capturada\n\n")
+                if tb_list:
+                    f.write(f"Archivo: {filename}\nLinea: {lineno}\nFuncion: {func}\n")
+                    if line_text:
+                        f.write(f"Codigo: {line_text.strip()}\n\n")
+                f.write("Traceback completo:\n")
+                traceback.print_exc(file=f)
+            print("Crash report guardado en crash_report.txt")
+        except Exception as write_err:
+            print(f"No se pudo escribir crash_report.txt: {write_err}")
+
+        # Salir con codigo de error
+        try:
+            pygame.quit()
+        except Exception:
+            pass
+        sys.exit(1)
+        
 def main_with_profiling():
     """Ejecuta el juego con profiling activado"""
     profiler = cProfile.Profile() 
@@ -41,5 +87,7 @@ if __name__ == "__main__":
     import sys
     if '--profile' in sys.argv:
         main_with_profiling()
+    if '--debug' in sys.argv:
+        main_debug()
     else:
         main()

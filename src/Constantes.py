@@ -234,11 +234,17 @@ DEBUG_MODE = False              # Activar modo debug
 SHOW_HITBOXES = False          # Mostrar hitboxes de colision
 ENABLE_CONSOLE_LOGS = True     # Habilitar logs en consola
 
-# Pool sizes para optimizacion
+# Pool sizes
 INITIAL_CAR_POOL_SIZE = 8
 MAX_CAR_POOL_SIZE = 15
 AVAILABLE_CAR_POOL_LIMIT = 6
 
+ESCUDO_DURACION = 8.0  # Duracion del escudo en segundos
+ESCUDO_SPAWN_CHANCE = 0.3  # 30% de probabilidad de generar escudo en lugar de pila
+
+# === CONSTANTES PARA EFECTOS VISUALES ===
+SHIELD_EFFECT_DURATION = 300  # Duracion del efecto visual de impacto en milisegundos
+COLLISION_FLASH_DURATION = 200  # Duracion del flash al colisionar con escudo
 # ===== RUTAS DE RECURSOS (DEPRECADO - USAR RESOURCE_MANAGER) =====
 
 # ===== CONSTANTES DE AUDIO ACTUALIZADAS =====

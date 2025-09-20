@@ -16,7 +16,7 @@ class CharacterScreen(Scene):
         scale_x = ANCHO_PANTALLA / original_width
         scale_y = ALTO_PANTALLA / original_height
 
-        original_area = pygame.Rect(225, 160, 575, 260)
+        original_area = pygame.Rect(244, 110, 544, 314)
         self.billboard_area = pygame.Rect(
             int(original_area.x * scale_x),
             int(original_area.y * scale_y),
@@ -24,12 +24,11 @@ class CharacterScreen(Scene):
             int(original_area.height * scale_y)
         )
 
-        # Lista de personajes disponibles (puedes añadir mas)
         self.characters = [
             ("UIAbot", self.resource_manager.get_image("cartel_uaibot")),
-            ("UAIBOTA", self.resource_manager.get_image("personaje3")),
+            ("UAIBOTA", self.resource_manager.get_image("cartel_uaibota")),
             ("UAIBOTINA", self.resource_manager.get_image("cartel_uaibotina")),
-            ("UAIBOTINO", self.resource_manager.get_image("UAIBOTINO_walk")),
+            ("UAIBOTINO", self.resource_manager.get_image("cartel_uaibotino")),
         ]
         self.current_index = 0
 
@@ -50,7 +49,7 @@ class CharacterScreen(Scene):
                 self.billboard_area.width / card_rect.width,
                 self.billboard_area.height / card_rect.height
             )
-            new_width = int(card_rect.width * scale_ratio * 1.20)
+            new_width = int(card_rect.width * scale_ratio * 1.16)
             new_height = int(card_rect.height * scale_ratio)
 
             self.character_scaled = pygame.transform.scale(image, (new_width, new_height))
@@ -106,19 +105,38 @@ class CharacterScreen(Scene):
         """Confirma la seleccion del personaje y guarda la eleccion"""
         if self.selected_character:
             try:
-                if hasattr(self.scene_manager, 'game_manager') and self.scene_manager.game_manager:
-                    if not hasattr(self.scene_manager.game_manager, 'shared_data'):
-                        self.scene_manager.game_manager.shared_data = {}
-                    self.scene_manager.game_manager.shared_data['selected_character'] = self.selected_character
+                gm = getattr(self.scene_manager, 'game_manager', None)
+                if gm is not None:
+                    if not hasattr(gm, 'shared_data') or gm.shared_data is None:
+                        gm.shared_data = {}
+                    gm.shared_data['selected_character'] = self.selected_character
                     print(f"Personaje seleccionado guardado: {self.selected_character}")
                 else:
                     print("Warning: No se pudo acceder a game_manager")
             except Exception as e:
                 print(f"Error al guardar personaje seleccionado: {e}")
             
-            from src.screens.game_screen import GameScreen
+            # Detener musica antes de cambiar de escena
             self.resource_manager.stop_music()
-            self.scene_manager.change_scene(GameScreen)
+            
+            # Elegir pantalla destino segun el modo de juego (mission vs normal/infinite)
+            target_mode = 'normal'
+            try:
+                gm = getattr(self.scene_manager, 'game_manager', None)
+                if gm is not None:
+                    shared = getattr(gm, 'shared_data', None) or {}
+                    target_mode = shared.get('game_mode', 'normal')
+            except Exception:
+                target_mode = 'normal'
+            
+            if target_mode == 'mission':
+                # Ir a la pantalla de mision especifica
+                from src.screens.game_screen_mission import MissionGameScreen
+                self.scene_manager.change_scene(MissionGameScreen)
+            else:
+                # Flujo por defecto: modo normal/infinito
+                from src.screens.game_screen import GameScreen
+                self.scene_manager.change_scene(GameScreen)
         else:
             print("Primero selecciona un personaje")
     

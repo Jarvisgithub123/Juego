@@ -12,41 +12,159 @@ class LevelScreen(Scene):
         # Configuracion de dialogos por nivel - Facil de extender
         self.dialogs_data = {
             "level_1": [
+                      {
+                        "speaker": "character_a",
+                        "name": "UIABOT",
+                        "text": """(Primer dia de trabajo..., asi se sienten los humanos cuando estan nerviosos? necesito un poco de acido de baterias...""",
+                        "position": "left",
+                        "emotion": 1
+                    },
                     {
                         "speaker": "character_b",
+                        "name": "Supervisor Connor",
+                        "text": "Bienvenido UIABOT, Soy Connor, tu supervisor. Te asignaron una entrega sencilla para empezar, nada dificil.",
+                        "position": "right"
+                    },
+                    {
+                        "speaker": "character_a",
+                        "name": "UIABOT",
+                        "text": "Hola Connor, encantado de conocerte.",
+                        "position": "left",
+                        "emotion": 0
+                    },
+                    {
+                        "speaker": "character_a",
+                        "name": "UIABOT",
+                        "text": "(Bien, un paquete misterioso. Ojala sea algo que salve a la humanidad... o al menos que contenga mis queridas baterias...)",
+                        "position": "left",
+                        "emotion": 1
+                    },
+                    {
+                        "speaker": "character_b",
+                        "name": "Supervisor Connor",
+                        "text": "Es un lote de instrucciones de como dormir, para humanos hecho por robots. El cliente esta al norte de el distrito 67, entrega rapida!.",
+                        "position": "right"
+                    },
+                    {
+                        "speaker": "character_a",
+                        "name": "UIABOT",
+                        "text": "No sabia q los robots podian especializarse en eso.., bueno perfecto!, voy a entregarlo lo mas rapido posible.",
+                        "position": "left"
+                    },
+                    {
+                        "speaker": "character_b",
+                        "name": "Supervisor Connor",
+                        "text": "Buena suerte UIABOT.",
+                        "position": "right"
+                    },
+                    {
+                        "speaker": "character_b",
+                        "name": "Supervisor Connor",
+                        "text": "(Espero que no se pierda en su primer dia...)",
+                        "position": "right"
+                    },
+            ],
+            "level_2": [
+                    {
+                        "speaker": "character_c",
                         "name": "Amigo del mago",
                         "text": "Gracias por venir, necesito tu ayuda para que lleves una cosa...",
-                        "position": "left"
+                        "position": "left",
+                        "emotion": 0 
                     },
                     {
                         "speaker": "character_a",
                         "name": "UIAbot",
                         "text": "Claro, ese es mi trabaj... ¿Una paloma robotica? Parece muy real..",
-                        "position": "right"
+                        "position": "right",
+                        "emotion": 0
                     },
                     {
-                        "speaker": "character_b",
+                        "speaker": "character_c",
                         "name": "Amigo del mago",
-                        "text": "Es… un proyecto especial del club de inventores. Solo llevala antes del show.",
-                        "position": "left"
+                        "text": "Es un proyecto especial del club de inventores. Solo llevalo antes del show...",
+                        "position": "left",
+                        "emotion": 1
                     },
                     {
                         "speaker": "character_a",
                         "name": "UIAbot",
                         "text": "Perfecto, Mision: Entregar una paloma que probablemente tiene camaras instaladas...",
-                        "position": "right"
+                        "position": "right",
+                        "emotion": 3   # emocion 2 -> frames 4 / 5
                     },
                     {
                         "speaker": "character_a",
                         "name": "UIAbot",
-                        "text": "( Nota mental: Todas las palomas son asi? deberia investigar en mi base de datos... )",
-                        "position": "right"
+                        "text": "(Nota mental: Todas las palomas son asi? deberia investigar en mi base de datos... )",
+                        "position": "right",
+                        "emotion": 2
                     },
             ],
-            "level_2": [
+            "level_3": [
+                {
+                    "speaker": "character_a",
+                    "name": "UIABOT",
+                    "text": "Mi segundo encargo oficial es llevar croquetas premium a un gato... robot. Que tierno!.",
+                    "position": "right"
+                },
+                {
+                    "speaker": "character_a",
+                    "name": "UIABOT",
+                    "text": "(Ojala me hubieran fabricado como un gato robot... y no como uno repartidor)",
+                    "position": "right",
+                    "emotion": 1
+                    
+                },
+                {
+                    "speaker": "character_d",
+                    "name": "Claire Bluefield",
+                    "text": "¡No es cualquier gato!",
+                    "position": "left"
+                },
+                {
+                    "speaker": "character_d",
+                    "name": "Claire Bluefield",
+                    "text": "Es MishiBot, la estrella de mis streams. La gente paga por verlo comer, por jugar y por ser un gato!.",
+                    "position": "left",
+                    "emotion": 1
+                    
+                },
+                {
+                    "speaker": "character_a",
+                    "name": "UIABOT",
+                    "text": "Genial. Yo entrenando miles de protocolos de precision o salto y termino como repartidor en vez de un felino famoso...",
+                    "position": "right",
+                    "emotion": 4
+                },
+                {
+                    "speaker": "character_d",
+                    "name": "Claire Bluefield",
+                    "text": "Apurate! Si tardo en la entrega... pierdo a los viewers del chat, y sin ellos, no soy nada!!!.",
+                    "position": "left"
+                },
+            ],
+            "level_4": [
+                {   "speaker": "character_a",
+                    "name": "UIABOT",
+                    "text": "(Oh oh...esta persona se ve un poco demasiado intimidante..espero no me pida nada raro..)",
+                    "position": "right",
+                    "emotion": 0
+                },
+                {
+                    "speaker": "character_e",
+                    "name": "Sr.Kujo",
+                    "text": "Hola, no tengo tiempo para charla, entrega este paquete a esta direccion. Rapido.",
+                    "position": "left"
+                },
+                
             ]
         }
-        
+        #UIABOT: (Que miedo...) si, enseguida!... Se puede saber que hay dentro del paquete?
+
+#Sr.Kujo: Es una reliquia muy frágil, necesito que llegue a salvo...ah...y cuidado al entregarlo, no te pinches.
+
+#UIBOT: Seguro... Nos vemos! (Que no me pinche? que circuitos quiso decir...)
         # Estado del dialogo
         self.current_dialog_index = 0
         self.dialog_finished = False
@@ -67,6 +185,11 @@ class LevelScreen(Scene):
         
         # Estado de entrada para evitar spam
         self.enter_pressed = False
+        
+        # cache de frames por personaje (frames ya escalados a character_size)
+        self._char_frames_cache = {}  # key -> [Surface, Surface, ...]
+        # intervalo (ms) entre alternar boca abierta/cerrada mientras habla
+        self._talk_frame_interval_ms = 160
     
     def _load_level_data(self):
         """Carga los datos del nivel seleccionado"""
@@ -96,7 +219,7 @@ class LevelScreen(Scene):
     
     def on_enter(self):
         """Se ejecuta al entrar en la pantalla del nivel"""
-        self.resource_manager.play_music("menu", volume=0.3)
+        self.resource_manager.play_music("level_music", volume=0.3)
     
     def handle_event(self, event):
         """Maneja los eventos de la pantalla"""
@@ -147,9 +270,25 @@ class LevelScreen(Scene):
         return None
     
     def _go_to_character_select(self):
-        """Transicion a la pantalla de seleccion de personajes"""
-        from src.screens.character_screen import CharacterScreen
-        self.scene_manager.change_scene(CharacterScreen)
+            """Transicion a la pantalla de seleccion de personajes"""
+            # Asegurar que el modo este configurado como mision
+            try:
+                if (hasattr(self.scene_manager, 'game_manager') and 
+                    self.scene_manager.game_manager and
+                    hasattr(self.scene_manager.game_manager, 'shared_data')):
+                    
+                    if not hasattr(self.scene_manager.game_manager, 'shared_data'):
+                        self.scene_manager.game_manager.shared_data = {}
+                    
+                    # Configurar modo mision
+                    self.scene_manager.game_manager.shared_data['game_mode'] = 'mission'
+                    print("Modo configurado como mision")
+                    
+            except Exception as e:
+                print(f"Error configurando modo mision: {e}")
+                
+            from src.screens.character_screen import CharacterScreen
+            self.scene_manager.change_scene(CharacterScreen)
     
     def _skip_to_character_select(self):
         """Saltar directamente a seleccion de personajes"""
@@ -219,14 +358,18 @@ class LevelScreen(Scene):
         text_x = dialog_rect.x + self.text_margin
         text_y = dialog_rect.y + self.text_margin
         
+        # Definir colores por si no estan en constantes
+        color_amarillo = (255, 255, 0)
+        color_blanco = (255, 255, 255)
+        
         # Nombre del hablante
         font_name = self.resource_manager.get_font('boton')
         if font_name:
-            name_surface = font_name.render(dialog_data["name"], True, COLOR_AMARILLO)
+            name_surface = font_name.render(dialog_data["name"], True, color_amarillo)
             self.screen.blit(name_surface, (text_x, text_y))
         
         # Texto del dialogo (con animacion)
-        font_dialog = self.resource_manager.get_font('pequeña')
+        font_dialog = self.resource_manager.get_font('pequeña')  # Corregir el caracter especial
         if font_dialog:
             # Obtener texto hasta el progreso actual
             full_text = dialog_data["text"]
@@ -239,7 +382,7 @@ class LevelScreen(Scene):
             
             for word in words:
                 test_line = current_line + word + " "
-                test_surface = font_dialog.render(test_line, True, COLOR_BLANCO)
+                test_surface = font_dialog.render(test_line, True, color_blanco)
                 
                 if test_surface.get_width() <= text_area_width - 40:
                     current_line = test_line
@@ -260,26 +403,69 @@ class LevelScreen(Scene):
             
             for i, line in enumerate(lines):
                 if line.strip():
-                    line_surface = font_dialog.render(line, True, COLOR_BLANCO)
+                    line_surface = font_dialog.render(line, True, color_blanco)
                     self.screen.blit(line_surface, (text_x, start_y + i * line_height))
         
         # Indicador de "presiona Enter"
         if self.waiting_for_input:
-            font_small = self.resource_manager.get_font('pequeña')
+            font_small = self.resource_manager.get_font('pequeña')  # Corregir el caracter especial
             if font_small:
                 # Crear efecto de parpadeo
                 alpha = int(127 * (1 + math.sin(pygame.time.get_ticks() * 0.005)))
                 
                 continue_text = "Presiona ENTER para continuar..."
-                continue_surface = font_small.render(continue_text, True, COLOR_AMARILLO)
+                continue_surface = font_small.render(continue_text, True, color_amarillo)
                 continue_surface.set_alpha(alpha)
                 
                 continue_x = dialog_rect.right - continue_surface.get_width() - 30
                 continue_y = dialog_rect.bottom - continue_surface.get_height() - 15
                 self.screen.blit(continue_surface, (continue_x, continue_y))
     
+    def _get_scaled_frames_for(self, key: str):
+        """
+        Obtiene lista de frames escalados a self.character_size para 'key'.
+        Busca hoja de sprites con resource_manager.get_spritesheet(key) o imagen simple.
+        """
+        if key in self._char_frames_cache:
+            return self._char_frames_cache[key]
+
+        frames = []
+        # intentar spritesheet primero (ResourceManager.load_spritesheet guarda en sprite_sheets)
+        sheet = None
+        try:
+            sheet = self.resource_manager.get_spritesheet(key)
+        except Exception:
+            sheet = None
+
+        if sheet:
+            # obtener todos los frames de la primera fila (row 0)
+            cols = sheet.columns
+            for c in range(cols):
+                try:
+                    f = sheet.get_frame(c, 0).copy()
+                except Exception:
+                    continue
+                # escalar al tamaño objetivo
+                try:
+                    f = pygame.transform.smoothscale(f, self.character_size)
+                except Exception:
+                    f = pygame.transform.scale(f, self.character_size)
+                frames.append(f.convert_alpha() if f.get_flags() & pygame.SRCALPHA else f.convert())
+        else:
+            # fallback: usar imagen estatica si existe
+            img = self.resource_manager.get_image(key)
+            if img:
+                try:
+                    f = pygame.transform.smoothscale(img, self.character_size)
+                except Exception:
+                    f = pygame.transform.scale(img, self.character_size)
+                frames = [f.convert_alpha() if f.get_flags() & pygame.SRCALPHA else f.convert()]
+
+        self._char_frames_cache[key] = frames
+        return frames
+
     def _draw_characters(self):
-        """Dibuja los personajes en pantalla: el que habla a tamaño normal, el otro más pequeño y oscurecido."""
+        """Dibuja los personajes en pantalla: usa spritesheet para hablar segÃºn 'emotion'."""
         dialog_data = self._get_current_dialog_data()
         if not dialog_data:
             return
@@ -291,97 +477,120 @@ class LevelScreen(Scene):
 
         speaker_position = dialog_data.get("position", "left")
 
-        # Obtener nombres de recursos para personajes desde level_data (fallback a keys conocidas)
+        # Obtener keys de personajes
         chars = self.level_data.get("characters", ["character_a", "character_b"])
         left_key = chars[0] if len(chars) > 0 else "character_a"
         right_key = chars[1] if len(chars) > 1 else "character_b"
 
-        # Cargar imagenes (si estan disponibles)
-        left_img = self.resource_manager.get_image(left_key)
-        right_img = self.resource_manager.get_image(right_key)
+        # obtener frames escalados (cache)
+        left_frames = self._get_scaled_frames_for(left_key)
+        right_frames = self._get_scaled_frames_for(right_key)
 
-        def draw_character(img, pos_x, pos_y, speaking):
-            """Dibuja img en pos; si speaking True -> tamaño normal, si False -> más pequeño y oscurecido."""
-            target_w, target_h = self.character_size
+        # SOLUCION: Determinar quien habla basado en position y aplicar emotion solo al hablante
+        dialog_speaker_key = dialog_data.get("speaker")
+        dialog_emotion = dialog_data.get("emotion", 0)
+        
+        # Solo el hablante recibe la emocion del dialogo
+        left_emotion = None
+        right_emotion = None
+        
+        # Determinar quien habla basado en la posicion
+        if speaker_position == "left":
+            left_emotion = dialog_emotion
+            # El personaje de la derecha no habla, no tiene emocion especial
+        elif speaker_position == "right":
+            right_emotion = dialog_emotion
+            # El personaje de la izquierda no habla, no tiene emocion especial
 
-            if speaking:
-                # dibujar al tamaño completo
-                try:
-                    surf = pygame.transform.smoothscale(img, (target_w, target_h))
-                except Exception:
-                    surf = pygame.transform.scale(img, (target_w, target_h))
-                surf = surf.convert_alpha() if surf.get_flags() & pygame.SRCALPHA else surf.convert()
-                self.screen.blit(surf, (pos_x, pos_y))
+        # Helpers para indices open/closed segun emotion
+        def _frame_indices(frames, emotion_idx):
+            # Si emotion_idx es None => usar base (0/1) - personaje en reposo
+            if not frames:
+                return (None, None)
+            if emotion_idx is None:
+                # personaje no hablante: usar frames de reposo (0/1)
+                if len(frames) > 1:
+                    return (0, 1)
+                return (0, 0)
+            # personaje hablante: usar frames segun su emocion
+            open_i = emotion_idx * 2
+            closed_i = open_i + 1
+            # si no hay closed_i, fallback a 0/1 o 0
+            if closed_i >= len(frames):
+                if len(frames) > 1:
+                    return (0, 1)
+                else:
+                    return (0, 0)
+            return (open_i, closed_i)
+
+        # determinar si estamos en fase de hablar (animando texto) -> alternar
+        is_animating = not self.waiting_for_input
+        now = pygame.time.get_ticks()
+        toggle_open = ((now // self._talk_frame_interval_ms) % 2) == 0
+
+        # renderizado para quien habla: alterna entre open/closed mientras animando, termina en closed
+        def render_speaking(frames, pos_x, pos_y, emotion_idx):
+            if not frames:
+                # placeholder si no hay frames
+                rect = pygame.Rect(pos_x, pos_y, *self.character_size)
+                pygame.draw.rect(self.screen, COLOR_AMARILLO, rect)
+                return
+            open_i, closed_i = _frame_indices(frames, emotion_idx)
+            # elegir Ã­ndice
+            if is_animating:
+                idx = open_i if toggle_open else closed_i
             else:
-                # reducir un poco (ej. 90%)
-                scale = 0.90
-                small_w = max(1, int(target_w * scale))
-                small_h = max(1, int(target_h * scale))
-                try:
-                    surf = pygame.transform.smoothscale(img, (small_w, small_h))
-                except Exception:
-                    surf = pygame.transform.scale(img, (small_w, small_h))
-                surf = surf.convert_alpha() if surf.get_flags() & pygame.SRCALPHA else surf.convert()
+                idx = closed_i
+            if idx is None or idx >= len(frames):
+                idx = 0
+            frame = frames[idx]
+            self.screen.blit(frame, (pos_x, pos_y))
 
-                # centrar la versión reducida dentro del área original
+        # renderizado para quien NO habla: dibuja version reducida y aplica mascara oscurecedora
+        def render_not_speaking(frames, pos_x, pos_y, emotion_idx):
+            # si hay frames, usar closed frame y reescalar un poco mas chiquito
+            target_w, target_h = self.character_size
+            scale = 0.90
+            small_w = max(1, int(target_w * scale))
+            small_h = max(1, int(target_h * scale))
+            if frames:
+                _, closed_i = _frame_indices(frames, emotion_idx)
+                if closed_i is None or closed_i >= len(frames):
+                    closed_i = 0
+                frame = frames[closed_i]
+                try:
+                    small_frame = pygame.transform.smoothscale(frame, (small_w, small_h))
+                except Exception:
+                    small_frame = pygame.transform.scale(frame, (small_w, small_h))
                 offset_x = pos_x + (target_w - small_w) // 2
                 offset_y = pos_y + (target_h - small_h) // 2
-                self.screen.blit(surf, (offset_x, offset_y))
-
-                # --- NUEVO: usar máscara del sprite para oscurecer SOLO la silueta ---
+                self.screen.blit(small_frame, (offset_x, offset_y))
+                # overlay oscuro usando mascara del sprite reducido
                 try:
-                    mask = pygame.mask.from_surface(surf)
-                    # Generar superficie a partir de la máscara: píxeles setcolor opacos, unsetcolor transparentes
-                    mask_surf = mask.to_surface(setcolor=(0, 0, 0, 255), unsetcolor=(0, 0, 0, 0))
-                    mask_surf = mask_surf.convert_alpha()
-                    # Ajustar transparencia del overlay (ej. 120/255)
+                    mask = pygame.mask.from_surface(small_frame)
+                    mask_surf = mask.to_surface(setcolor=(0,0,0,255), unsetcolor=(0,0,0,0)).convert_alpha()
                     mask_surf.set_alpha(120)
-                    # Blitear la máscara centrada en la misma posición que el sprite reducido
                     self.screen.blit(mask_surf, (offset_x, offset_y))
                 except Exception:
-                    # Fallback: capa rectangular semitransparente si falla la máscara
                     dark = pygame.Surface((small_w, small_h), pygame.SRCALPHA)
-                    dark.fill((0, 0, 0, 120))
+                    dark.fill((0,0,0,120))
                     self.screen.blit(dark, (offset_x, offset_y))
-
-        # Dibujar izquierdo
-        if left_img:
-            draw_character(left_img, left_char_x, char_y, speaker_position == "left")
-        else:
-            # placeholder
-            placeholder_rect = pygame.Rect(left_char_x, char_y, *self.character_size)
-            if speaker_position == "left":
-                pygame.draw.rect(self.screen, COLOR_AMARILLO, placeholder_rect)
             else:
-                small_rect = pygame.Rect(
-                    left_char_x + int(self.character_size[0] * 0.05),
-                    char_y + int(self.character_size[1] * 0.05),
-                    int(self.character_size[0] * 0.90),
-                    int(self.character_size[1] * 0.90)
-                )
-                pygame.draw.rect(self.screen, (100, 100, 100), small_rect)
-                dark = pygame.Surface((small_rect.width, small_rect.height), pygame.SRCALPHA)
+                # placeholder reducido + oscuro
+                offset_x = pos_x + int(self.character_size[0] * 0.05)
+                offset_y = pos_y + int(self.character_size[1] * 0.05)
+                pygame.draw.rect(self.screen, (100,100,100), (offset_x, offset_y, small_w, small_h))
+                dark = pygame.Surface((small_w, small_h), pygame.SRCALPHA)
                 dark.fill((0,0,0,120))
-                self.screen.blit(dark, (small_rect.x, small_rect.y))
+                self.screen.blit(dark, (offset_x, offset_y))
 
-        # Dibujar derecho
-        if right_img:
-            draw_character(right_img, right_char_x, char_y, speaker_position == "right")
+        # Dibujar izquierdo / derecho segun quien habla
+        if speaker_position == "left":
+            render_speaking(left_frames, left_char_x, char_y, left_emotion)
+            render_not_speaking(right_frames, right_char_x, char_y, right_emotion)
         else:
-            placeholder_rect = pygame.Rect(right_char_x, char_y, *self.character_size)
-            if speaker_position == "right":
-                pygame.draw.rect(self.screen, COLOR_AMARILLO, placeholder_rect)
-            else:
-                small_rect = pygame.Rect(
-                    right_char_x + int(self.character_size[0] * 0.05),
-                    char_y + int(self.character_size[1] * 0.05),
-                    int(self.character_size[0] * 0.90),
-                    int(self.character_size[1] * 0.90)
-                )
-                pygame.draw.rect(self.screen, (100, 100, 100), small_rect)
-                dark = pygame.Surface((small_rect.width, small_rect.height), pygame.SRCALPHA)
-                dark.fill((0,0,0,120))
-                self.screen.blit(dark, (small_rect.x, small_rect.y))
+            render_not_speaking(left_frames, left_char_x, char_y, left_emotion)
+            render_speaking(right_frames, right_char_x, char_y, right_emotion)
     
     def draw(self):
         """Dibuja la pantalla del nivel"""
