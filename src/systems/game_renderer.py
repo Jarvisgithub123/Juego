@@ -254,7 +254,11 @@ class GameRenderer:
         pygame.draw.rect(self.screen, COLOR_FONDO, floor_rect)
         pygame.draw.line(self.screen, COLOR_LINEA_PISO, 
                         (0, PISO_POS_Y), (PANTALLA_ANCHO, PISO_POS_Y), 3)
-    
+    def draw_planes(self, planes, camera_x):
+      for plane in planes:
+        screen_x = plane["x"] - camera_x
+        self.screen.blit(plane["img"], (screen_x, plane["y"]))
+
     def draw_player(self, player: Player, camera_x: float):
         """Dibuja el jugador con efectos visuales del escudo"""
         screen_x = player.rect.x - camera_x

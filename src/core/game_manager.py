@@ -53,6 +53,7 @@ class GameManager:
         self.resource_manager.load_image("cartel_uaibotina", "Assets/Imagenes/cartel_uaibotina.png")
         self.resource_manager.load_image("cartel_uaibota", "Assets/Imagenes/cartel_uaibota.png")
         self.resource_manager.load_image("cartel_uaibotino", "Assets/Imagenes/cartel_uaibotino.png")
+        self.resource_manager.load_image("avion", "Assets/Imagenes/avion_publicidad.png")
         
         # PERSONAJES 
         # UIAbot: tiene spritesheet con animacion
@@ -65,15 +66,13 @@ class GameManager:
         #MISIONES
         
         #NPCS
-        self.resource_manager.load_spritesheet("character_b", "Assets/Sprites/Misiones/npc_1.png",450, 780)
-        self.resource_manager.load_spritesheet("character_a", "Assets/Sprites/Misiones/Uiabot_talk.png",450, 780)
+        self.resource_manager.load_spritesheet("character_a", "Assets/Sprites/Misiones/Uiabot_talk.png",450, 780)      
         self.resource_manager.load_spritesheet("character_c", "Assets/Sprites/Misiones/npc_2.png",450, 780)
         self.resource_manager.load_spritesheet("character_d", "Assets/Sprites/Misiones/npc_3.png",450, 780)
         
         #FONDOS DE MISIONES
         self.resource_manager.load_image("level1_bg", "Assets/Imagenes/Background/fondo_mision_1.png")
-        self.resource_manager.load_image("level2_bg", "Assets/Imagenes/Background/fondo_mision_2.png")
-        self.resource_manager.load_image("level3_bg", "Assets/Imagenes/Background/fondo_mision_4.png")
+        self.resource_manager.load_image("level2_bg", "Assets/Imagenes/Background/fondo_mision_2.png")     
         
         # spritesheets de autos
         self.resource_manager.load_spritesheet("Auto_azul", "Assets/Sprites/Autos/Auto-azul.png", 126, 86)
