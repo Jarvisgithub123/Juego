@@ -14,9 +14,7 @@ class PlaneSpawner:
             self.plane_frames = []
             for row in range(self.plane_spritesheet.rows):
                 self.plane_frames.extend(self.plane_spritesheet.get_row(row))
-            print(f"✓ Avión animado cargado con {len(self.plane_frames)} frames de {self.plane_spritesheet.rows} filas")
         else:
-            print("✗ ERROR: No se pudo cargar el spritesheet del avión")
             self.plane_frames = []
 
     def update(self, delta_time, camera_x):
